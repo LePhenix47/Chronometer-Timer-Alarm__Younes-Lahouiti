@@ -60,3 +60,5 @@ export function getAncestor(
 ): HTMLElement | null {
   return elementOfReference.closest(cssSelector);
 }
+
+export function cloneNode() {}

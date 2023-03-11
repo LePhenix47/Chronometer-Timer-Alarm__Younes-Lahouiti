@@ -7,7 +7,7 @@
  * @returns {HTMLElement|null} - The element selected or `null` if the element doesn't exist
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAncestor = exports.getChildNodes = exports.selectQueryAll = exports.selectQuery = void 0;
+exports.cloneNode = exports.getAncestor = exports.getChildNodes = exports.selectQueryAll = exports.selectQuery = void 0;
 function selectQuery(query, container) {
     if (container) {
         return container.querySelector(query);
@@ -51,3 +51,5 @@ function getAncestor(elementOfReference, cssSelector = "") {
     return elementOfReference.closest(cssSelector);
 }
 exports.getAncestor = getAncestor;
+function cloneNode() { }
+exports.cloneNode = cloneNode;
