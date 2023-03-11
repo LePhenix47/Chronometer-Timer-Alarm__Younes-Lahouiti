@@ -1,18 +1,33 @@
 {
   "name": "21.-timerchrono",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A simple web app built with TypeScript and SASS that allows users to set and track a timer, stopwatch or chronometer, and alarm.",
+  "main": "./dist/ts/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "sass": "sass --watch ./style/sass/main.scss:./style/css/style.css --style compressed",
-    "ts": "tsc --watch"
+    "ts": "tsc --watch",
+    "build": "webpack"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "timer",
+    "chronometer",
+    "stopwatch",
+    "alarm",
+    "web app",
+    "TypeScript",
+    "SASS"
+  ],
+  "author": "Younes Lahouiti",
   "license": "ISC",
   "devDependencies": {
+    "css-loader": "^6.7.3",
     "sass": "^1.59.2",
-    "typescript": "^4.9.5"
+    "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.1",
+    "ts-loader": "^9.4.2",
+    "typescript": "^4.9.5",
+    "webpack": "^5.76.1",
+    "webpack-cli": "^5.0.1"
   }
 }
