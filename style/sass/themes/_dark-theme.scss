@@ -1,0 +1,55 @@
+@media (prefers-color-scheme: dark) {
+    //SASS
+    $bg-primary: #050505;
+    $bg-secondary: black;
+
+    $backdrop-bg-color: rgba(0, 0, 0, 0.5);
+
+    $color-primary: #cdcdcd;
+    $color-primary--hover: darken($color-primary, 5%);
+    $color-primary--active: darken($color-primary, 20%);
+    $color-secondary: #848484;
+
+    $border-color: #242424;
+
+    $selection-bg: #838383;
+    $selection-color: white;
+
+    $scrollbar-track-bg-color: black;
+    $scrollbar-thumb-bg-color: #ababab;
+    $scrollbar-thumb-bg-color--hover: #8a8a8a;
+    $scrollbar-thumb-bg-color--active: #4f4f4f;
+
+    //CSS
+    :root {
+        --bg-primary: #{$bg-primary};
+        --bg-secondary: #{$bg-secondary};
+
+        --color-primary: #{$color-primary};
+        --color-primary--hover: #{$color-primary--hover};
+        --color-primary--active: #{$color-primary--active};
+        --color-secondary: #{$color-secondary};
+        --border-color: #{$border-color};
+
+
+        --scrollbar-track-bg-color:#{$scrollbar-track-bg-color};
+
+        --scrollbar-thumb-bg-color:#{$scrollbar-thumb-bg-color};
+        --scrollbar-thumb-bg-color--hover:#{$scrollbar-thumb-bg-color--hover};
+        --scrollbar-thumb-bg-color--active:#{$scrollbar-thumb-bg-color--active};
+
+        //For the images
+
+
+    }
+
+    ::backdrop {
+        --backdrop-bg-color: #{$backdrop-bg-color};
+
+        --scrollbar-track-bg-color:#{$scrollbar-track-bg-color};
+
+        --scrollbar-thumb-bg-color:#{$scrollbar-thumb-bg-color};
+        --scrollbar-thumb-bg-color--hover:#{$scrollbar-thumb-bg-color--hover};
+        --scrollbar-thumb-bg-color--active:#{$scrollbar-thumb-bg-color--active};
+    }
+}
