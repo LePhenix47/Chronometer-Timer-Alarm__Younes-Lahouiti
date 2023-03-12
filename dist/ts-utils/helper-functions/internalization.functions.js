@@ -1,6 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.getRelativeTimePeriod = exports.formatRelativeTime = exports.formatDate = exports.formatCurrencyValueNumber = exports.formatSignificantDigitsNumber = void 0;
 /**
  * Formats a number by separating every thousand with a format from the user's locale.
  * If no locale is specified, it uses the default locale of the user's browser.
@@ -17,13 +14,12 @@ exports.getRelativeTimePeriod = exports.formatRelativeTime = exports.formatDate 
  * @param number
  * @returns
  */
-function formatSignificantDigitsNumber(number, locale) {
+export function formatSignificantDigitsNumber(number, locale) {
     const formatter = new Intl.NumberFormat(locale, {
         maximumSignificantDigits: 3,
     });
     return formatter.format(number);
 }
-exports.formatSignificantDigitsNumber = formatSignificantDigitsNumber;
 /**
  *
  * Function that formats currency values by the user's locale
@@ -34,16 +30,10 @@ exports.formatSignificantDigitsNumber = formatSignificantDigitsNumber;
  *
  * @returns {string} The formatted currency value
  */
-function formatCurrencyValueNumber(number, locale = undefined, currencyType = "USD", options) {
-    const formatter = new Intl.NumberFormat(locale, {
-        currency: currencyType,
-        style: "currency",
-        maximumFractionDigits: 2,
-        ...options,
-    });
+export function formatCurrencyValueNumber(number, locale = undefined, currencyType = "USD", options) {
+    const formatter = new Intl.NumberFormat(locale, Object.assign({ currency: currencyType, style: "currency", maximumFractionDigits: 2 }, options));
     return formatter.format(number);
 }
-exports.formatCurrencyValueNumber = formatCurrencyValueNumber;
 /**
  *
  * Formats a date object according to the user's locale and specified options using the `Intl.DateTimeFormat` API
@@ -55,7 +45,7 @@ exports.formatCurrencyValueNumber = formatCurrencyValueNumber;
  * @returns {string} The formatted date string
  * @throws {string} If the first argument is not a Date object
  */
-function formatDate(unformattedDateObject, locale, options) {
+export function formatDate(unformattedDateObject, locale, options) {
     const dateIsNotADateObject = !(unformattedDateObject instanceof Date);
     if (dateIsNotADateObject) {
         throw `"${unformattedDateObject}" is not a date object`;
@@ -66,7 +56,6 @@ function formatDate(unformattedDateObject, locale, options) {
     let dateFormatter = new Intl.DateTimeFormat(locale, options);
     return dateFormatter.format(unformattedDateObject);
 }
-exports.formatDate = formatDate;
 /**
  *
  * Returns a string representing the relative time format of the input date.
@@ -87,7 +76,7 @@ exports.formatDate = formatDate;
  *
  * @returns {string} A string representing the relative time format of the input date.
  */
-function formatRelativeTime(relativeDateInput, locale, options = {
+export function formatRelativeTime(relativeDateInput, locale, options = {
     localeMatcher: "best fit",
     numeric: "always",
     style: "long", // other values: "short" or "narrow"
@@ -103,14 +92,13 @@ function formatRelativeTime(relativeDateInput, locale, options = {
     let { unit, value } = getRelativeTimePeriod(diffInSeconds);
     return formatter.format(relativeDirection * value, unit);
 }
-exports.formatRelativeTime = formatRelativeTime;
 /**
  *Returns the relative time period based on the input in seconds.
  *
  *@param {number} dateInSeconds - The input date in seconds.
  *@returns {object} - The relative time period in string format.
  */
-function getRelativeTimePeriod(dateInSeconds) {
+export function getRelativeTimePeriod(dateInSeconds) {
     /**
      * The number of seconds in one minute.
      */
@@ -183,4 +171,3 @@ function getRelativeTimePeriod(dateInSeconds) {
         return { value: years, unit: "years" };
     }
 }
-exports.getRelativeTimePeriod = getRelativeTimePeriod;

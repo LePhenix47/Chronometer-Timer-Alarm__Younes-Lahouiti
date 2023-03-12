@@ -1,4 +1,4 @@
-import { log } from "./console-funtions";
+import { log } from "./console-funtions.js";
 
 /**
  *Function that formats a given string in 3 cases: lowercase, uppercase and titlecase
@@ -194,6 +194,7 @@ export function replaceText(
   replacedText: string,
   replacer: string
 ): string {
+  //@ts-ignore
   return stringOfText.replaceAll(replacedText, replacer);
 }
 

@@ -8,12 +8,22 @@
 
 export function selectQuery(
   query: string,
-  container: HTMLElement
+  container?: HTMLElement
 ): HTMLElement | null {
-  if (container) {
-    return container.querySelector(query);
+  if (!container) {
+    return document.querySelector(query);
   }
-  return document.querySelector(query);
+  /**
+   * We check if it's a web component, they always have a hyphen in their tag name
+   */
+  const isWebComponent: boolean = container?.tagName?.includes("-");
+
+  if (isWebComponent) {
+    //@ts-ignore
+    return container.shadowRoot.querySelector(query);
+  }
+
+  return container.querySelector(query);
 }
 
 /**
@@ -25,12 +35,20 @@ export function selectQuery(
  */
 export function selectQueryAll(
   query: string,
-  container: HTMLElement
+  container?: HTMLElement
 ): HTMLElement[] | null {
-  if (container) {
-    return Array.from(container.querySelectorAll(query));
+  if (!container) {
+    return Array.from(document.querySelectorAll(query));
   }
-  return Array.from(document.querySelectorAll(query));
+
+  const isWebComponent: boolean = container.tagName.includes("-");
+
+  if (isWebComponent) {
+    //@ts-ignore
+    return Array.from(container.shadowRoot.querySelectorAll(query));
+  }
+
+  return Array.from(container.querySelectorAll(query));
 }
 
 /**
@@ -60,5 +78,3 @@ export function getAncestor(
 ): HTMLElement | null {
   return elementOfReference.closest(cssSelector);
 }
-
-export function cloneNode() {}

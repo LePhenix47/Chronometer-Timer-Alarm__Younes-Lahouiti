@@ -1,33 +1,31 @@
 /**
  * Utility class that sets and clears intervals
  */
-class IntervalUtility {
-  private static id: number;
-  private static arrayOfIds: number[];
+class Interval {
+  private static id: NodeJS.Timer;
+  private static arrayOfIds: NodeJS.Timer[] = [];
 
   constructor() {}
 
   /**
    * Method that creates an interval
    *
-   * @param {function(...args: any[]): any | void} callback Callback function that will be called after the timer runs out
+   * @param {(...args: any) => any | void} callback Callback function that will be called after the timer runs out
    * @param milliseconds Duration of the timer in milliseconds before executing the callback function
    * @returns A number as an ID for the interval
    *
    * @example
-   * const intervalCreator = new Interval();
-   *
    * let fct = () => {
    *   console.log("Hello World");
    * };
    *
-   * let intervalTrigger = intervalCreator.addInterval(fct, 2_500);
+   * let intervalTrigger = Interval.add(fct, 2_500);
    *
    */
   static add(
     callback: (...args: any) => any | void,
     milliseconds: number
-  ): number {
+  ): NodeJS.Timer {
     this.id = setInterval(() => {
       callback();
     }, milliseconds);
@@ -44,27 +42,28 @@ class IntervalUtility {
    *
    * @example
    *
-   * const intervalCreator = new Interval();
-   *
    * function fct() {
    *   console.log("Hello world!");
    * }
    *
-   * let intervalTrigger = intervalCreator.addInterval(fct, 2_500);
+   *
+   * let intervalTrigger = Interval.add(fct, 2_500);
    *
    * // ...
    *
-   * intervalCreator.removeInterval(intervalTrigger);
+   * Interval.remove(intervalTrigger);
    *
    */
-  static remove(id: number): void {
-    const actualId: number = this.arrayOfIds.filter((idNumber: number) => {
-      return idNumber === id;
-    })[0];
+  static remove(id: NodeJS.Timer): void {
+    const actualId: NodeJS.Timer = this.arrayOfIds.filter(
+      (idNumber: NodeJS.Timer) => {
+        return idNumber === id;
+      }
+    )[0];
 
     clearInterval(actualId);
 
-    this.arrayOfIds = this.arrayOfIds.filter((idNumber: number) => {
+    this.arrayOfIds = this.arrayOfIds.filter((idNumber: NodeJS.Timer) => {
       return idNumber !== actualId;
     });
   }
