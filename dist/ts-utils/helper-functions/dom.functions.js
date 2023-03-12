@@ -3,7 +3,7 @@
  *
  * @param {string} query - HTML Element to select
  * @param {HTMLElement} container - HTML Element to select the query from
- * @returns {HTMLElement|null} - The element selected or `null` if the element doesn't exist
+ * @returns  - The element selected or `null` if the element doesn't exist
  */
 export function selectQuery(query, container) {
     var _a;
