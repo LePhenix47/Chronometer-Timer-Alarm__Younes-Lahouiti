@@ -17,22 +17,30 @@ timerTemplate.innerHTML = `
   r: 45;
   
   stroke: grey;
-  stroke-dasharray: var(--svg-circle-length-end);
-  stroke-dashoffset: calc(var(--svg-circle-length) * 2);
+  stroke-dasharray: var(--svg-dasharray);
+  stroke-dashoffset: var(--svg-dashoffset);
 
+  transition: stroke-dasharray 350ms ease, stroke-dashoffset 350ms ease;
 
   transform-origin: center;
-  rotate: 0deg;
+  rotate: 270deg;
+}
+
+.timer-component__container {
+    background-color: black;
+    display: block;
 }
 </style>
 
+<div class="timer-component__container">
 <svg 
-  viewBox="0 0 100 100"
-   xmlns="http://www.w3.org/2000/svg">
+viewBox="0 0 100 100"
+  xmlns="http://www.w3.org/2000/svg">
 
-    <circle class="circle"></circle>
-   
+  <circle class="circle"></circle>
+  
 </svg>
+</div>
 `;
 
 class TimerComponent extends HTMLElement {
@@ -59,13 +67,9 @@ class TimerComponent extends HTMLElement {
     const svgCircle = selectQuery("circle", this.shadowRoot);
     //@ts-ignore
     const svgCircleLength: number = svgCircle?.getTotalLength();
-    console.log(svgCircle, svgCircleLength);
 
-    svgCircle?.style.setProperty("--svg-circle-length", `${svgCircleLength}`);
-    svgCircle?.style.setProperty(
-      "--svg-circle-length-end",
-      `${svgCircleLength}`
-    );
+    svgCircle?.style.setProperty("--svg-dasharray", `${svgCircleLength}`);
+    svgCircle?.style.setProperty("--svg-dashoffset", `${2 * svgCircleLength}`);
   }
 }
 
