@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./ts/index.ts",
+  entry: "./src/index.ts",
   output: {
     filename: "main.js",
     path: path.resolve(__dirname, "dist"),
@@ -28,4 +28,5 @@ module.exports = {
     },
     port: 3001,
   },
+  watch: true,
 };
