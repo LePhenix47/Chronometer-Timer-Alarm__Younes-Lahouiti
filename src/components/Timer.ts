@@ -3,6 +3,9 @@ import {
   selectQuery,
   selectQueryAll,
   setStyleProp,
+  getChild,
+  getAncestor,
+  getClassListValues,
 } from "../ts-utils/helper-functions/dom.functions";
 
 import { log } from "../ts-utils/helper-functions/console-funtions";
@@ -27,6 +30,10 @@ const style: string = `
     padding: 0;
 }
 
+.hide {
+    display: none;
+}
+
 button {
     border-color: transparent;
     background-color: transparent;
@@ -49,11 +56,13 @@ button:hover:disabled {
 svg{
   aspect-ratio: 1/1;
   width: 100%;
+
+  pointer-events: none;
 }
 
 .circle{
   scale: -100% 100%;
-  fill: #222;
+  fill: rgb(38, 38, 38);
   
   cx: 50;
   cy: 50;
@@ -114,27 +123,50 @@ fill: none;
   border: 2px solid rgb(64, 64, 64);
   aspect-ratio: 1/1;
   width: 35px;
-  
+
   border-radius: 50%;
   
   position: absolute;
   top: 70%; 
 }
 
-.timer-component__button > svg{
+
+.timer-component__svg{
   aspect-ratio: 1/1;
-  width: 30px;
+  width: 20px;
+
 }
 
-.timer-component__button--play{
-left: 30%;
-background-color: rgb(210, 77, 87);
+.timer-component__svg--pause{
+ 
+}
 
+.timer-component__svg--play{
+
+}
+
+.timer-component__svg--restart{
+
+}
+
+.timer-component__button{
+  display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+.timer-component__button--play{
+  left: 30%;
+  background-color: rgb(210, 77, 87);
+  color: black;
 }
 
 .timer-component__button--restart{
 right: 30%;
 }
+
+
 `;
 
 /**
@@ -151,10 +183,30 @@ ${style}
     <circle class="timer-component__circle circle"></circle>
   </svg>
   <p class="timer-component__paragraph" for="time-input">00:00:00</p>
-  <button type="button" class="timer-component__button timer-component__button--play">Play-pause</button>
+  <button type="button" class="timer-component__button timer-component__button--play">
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 256.000000 256.000000" preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--play">
+      <g transform="translate(0.000000,256.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">
+          <path d="M623 2210 c-18 -10 -42 -39 -55 -62 l-23 -43 0 -820 0 -820 22 -47
+  c29 -62 70 -88 143 -88 33 0 72 8 98 20 24 11 175 108 335 217 161 109 398
+  268 527 354 129 86 247 167 261 181 109 103 115 243 14 344 -46 45 -1071 734
+  -1140 765 -54 25 -140 25 -182 -1z" />
+      </g>
+  </svg>
+  <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
+    preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--pause hide">
+
+    <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
+        <path d="M610 1280 l0 -840 165 0 165 0 0 840 0 840 -165 0 -165 0 0 -840z" />
+        <path d="M1620 1280 l0 -840 165 0 165 0 0 840 0 840 -165 0 -165 0 0 -840z" />
+    </g>
+</svg>
+</button>
   <button type="button" class="timer-component__button timer-component__button--restart">
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
-        preserveAspectRatio="xMidYMid meet">
+        preserveAspectRatio="xMidYMid meet" 
+         class="timer-component__svg timer-component__svg--restart"
+        >
 
             <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
                 <path d="M1200 2336 c-279 -58 -528 -222 -681 -447 -49 -73 -123 -225 -140
@@ -223,10 +275,78 @@ class TimerComponent extends HTMLElement {
     );
 
     //@ts-ignore
-    container.addEventListener("click", (e) => {
-      log(e.target);
+    container.addEventListener("click", (e: MouseEvent) => {
+      const clickedElement: EventTarget | null = e.target;
+
+      //@ts-ignore
+      const isButton: boolean = clickedElement.tagName.includes("BUTTON");
+
+      if (isButton) {
+        handleButtonEvents(clickedElement);
+      } else {
+        log("open dialog modal");
+      }
     });
   }
+}
+
+/**
+ * Handles click events on the timer button elements
+ *
+ * @param {any} buttonElement - The timer button element
+ * @returns {void}
+ */
+function handleButtonEvents(buttonElement: any): void {
+  //@ts-ignore
+  log(buttonElement.classList);
+
+  const isPlayButton: boolean = getClassListValues(buttonElement).includes(
+    "timer-component__button--play"
+  );
+
+  if (isPlayButton) {
+    handlePlayButton(buttonElement);
+  } else {
+    handleRestartButton(buttonElement);
+  }
+}
+
+/**
+ * Handles click events on the play button element
+ * @param {any} buttonElement - The play button element
+ * @returns {void}
+ */
+
+function handlePlayButton(buttonElement: any): void {
+  log("Play button");
+
+  const [playSvg, pauseSvg]: any = getChild(buttonElement);
+
+  /**
+   * We check if the timer is running
+   */
+  const timerIsPaused: boolean = getClassListValues(pauseSvg).includes("hide");
+
+  if (timerIsPaused) {
+    //The button was clicked, the timer was paused and is now running, we show the paused icon
+    pauseSvg.classList.remove("hide");
+    playSvg.classList.add("hide");
+    log("playing", pauseSvg);
+  } else {
+    //The button was clicked, the timer was running and is now paused, we show the play icon
+    pauseSvg.classList.add("hide");
+    playSvg.classList.remove("hide");
+    log("paused", playSvg);
+  }
+}
+
+/**
+ * Handles click events on the restart button element
+ * @param {any} buttonElement - The restart button element
+ * @returns {void}
+ */
+function handleRestartButton(buttonElement: any): void {
+  log("restart button", { buttonElement });
 }
 
 /**

@@ -57,10 +57,8 @@ export function selectQueryAll(
  * @param {HTMLElement} elementOfReference The parent HTML element whose children to select.
  * @returns {ChildNode[]|null} An array containing all child nodes of the parent element or null if the parent element has no children.
  */
-export function getChildNodes(
-  elementOfReference: HTMLElement
-): ChildNode[] | null {
-  return Array.from(elementOfReference.childNodes);
+export function getChild(elementOfReference: HTMLElement): Element[] | null {
+  return Array.from(elementOfReference.children);
 }
 
 /**
@@ -77,6 +75,18 @@ export function getAncestor(
   cssSelector: string = ""
 ): HTMLElement | null {
   return elementOfReference.closest(cssSelector);
+}
+
+/**
+ *
+ * Returns an array of strings representing the classes of the specified element.
+ *
+ * @param {HTMLElement} elementOfReference - The element to retrieve class values from.
+ *
+ * @returns An array of strings representing the classes of the specified element.
+ */
+export function getClassListValues(elementOfReference: HTMLElement): string[] {
+  return Array.from(elementOfReference.classList);
 }
 
 /**
