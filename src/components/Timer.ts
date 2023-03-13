@@ -2,11 +2,11 @@
 import {
   selectQuery,
   selectQueryAll,
-} from "../../ts-utils/helper-functions/dom.functions.js";
+} from "../ts-utils/helper-functions/dom.functions";
 
-import { log } from "../../ts-utils/helper-functions/console-funtions.js";
+import { log } from "../ts-utils/helper-functions/console-funtions.js";
 
-import { sliceString } from "../../ts-utils/helper-functions/string.function.js";
+import { sliceString } from "../ts-utils/helper-functions/string.function.js";
 
 /**
  * We set the elements of our Web Component inside a `<template>`
