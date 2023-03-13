@@ -2,9 +2,10 @@ const path = require("path");
 
 module.exports = {
   entry: "./src/index.ts",
+  mode: "development",
   output: {
     filename: "main.js",
-    path: path.resolve(__dirname, "dist"),
+    path: path.resolve(__dirname, "./dist"),
   },
   module: {
     rules: [
@@ -13,20 +14,9 @@ module.exports = {
         use: "ts-loader",
         exclude: /node_modules/,
       },
-      {
-        test: /\.s[ac]ss$/i,
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
     ],
   },
   resolve: {
     extensions: [".ts", ".js"],
   },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "./"),
-    },
-    port: 3001,
-  },
-  watch: true,
 };

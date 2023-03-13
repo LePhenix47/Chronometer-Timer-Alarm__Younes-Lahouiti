@@ -78,3 +78,20 @@ export function getAncestor(
 ): HTMLElement | null {
   return elementOfReference.closest(cssSelector);
 }
+
+/**
+ * Sets the value of a specified CSS property for the given HTML element.
+ *
+ * @param {string} property - The name of the style property to set.
+ * @param {string} value - The value to set for the specified style property.
+ * @param {HTMLElement} [element=document.body] - The HTML element to set the style property for, ***NOT mandatory***.
+
+* @returns {void}
+ */
+export function setStyleProp(
+  property: string,
+  value: string,
+  element: HTMLElement = document.body
+): void {
+  return element.style.setProperty(property, value);
+}
