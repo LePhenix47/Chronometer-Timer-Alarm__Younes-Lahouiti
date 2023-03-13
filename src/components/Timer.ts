@@ -18,6 +18,9 @@ import { sliceString } from "../ts-utils/helper-functions/string.function";
 //Component specific functions
 import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component.functions";
 
+//Component specific variables
+import { timerStates } from "../ts-utils/variables/timer-component.variables";
+
 /**
  * We set the elements of our Web Component inside a `<template>`
  */
@@ -232,8 +235,6 @@ ${style}
 </div>
 `;
 
-let timerState = { state: "idle", isRunning: false };
-
 class TimerComponent extends HTMLElement {
   constructor() {
     super();
@@ -299,12 +300,6 @@ class TimerComponent extends HTMLElement {
     });
   }
 }
-
-function resumePlayTimer() {}
-
-function stopTimer() {}
-
-function restart() {}
 
 /**
  * We defined it so that we can use it
