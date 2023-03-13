@@ -1,4 +1,5 @@
 //Utils
+//DOM helper functions
 import {
   selectQuery,
   selectQueryAll,
@@ -8,9 +9,14 @@ import {
   getClassListValues,
 } from "../ts-utils/helper-functions/dom.functions";
 
+//Console methods
 import { log } from "../ts-utils/helper-functions/console-funtions";
 
+//String methods
 import { sliceString } from "../ts-utils/helper-functions/string.function";
+
+//Component specific functions
+import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component.functions";
 
 /**
  * We set the elements of our Web Component inside a `<template>`
@@ -226,9 +232,12 @@ ${style}
 </div>
 `;
 
+let timerState = { state: "idle", isRunning: false };
+
 class TimerComponent extends HTMLElement {
   constructor() {
     super();
+    //
     /**
      * Container that holds our web component
      *
@@ -245,6 +254,7 @@ class TimerComponent extends HTMLElement {
      * We append the template content to the container
      */
     shadowRoot.appendChild(clonedTemplate);
+    //
 
     /**
      * We get the circle
@@ -290,64 +300,11 @@ class TimerComponent extends HTMLElement {
   }
 }
 
-/**
- * Handles click events on the timer button elements
- *
- * @param {any} buttonElement - The timer button element
- * @returns {void}
- */
-function handleButtonEvents(buttonElement: any): void {
-  //@ts-ignore
-  log(buttonElement.classList);
+function resumePlayTimer() {}
 
-  const isPlayButton: boolean = getClassListValues(buttonElement).includes(
-    "timer-component__button--play"
-  );
+function stopTimer() {}
 
-  if (isPlayButton) {
-    handlePlayButton(buttonElement);
-  } else {
-    handleRestartButton(buttonElement);
-  }
-}
-
-/**
- * Handles click events on the play button element
- * @param {any} buttonElement - The play button element
- * @returns {void}
- */
-
-function handlePlayButton(buttonElement: any): void {
-  log("Play button");
-
-  const [playSvg, pauseSvg]: any = getChild(buttonElement);
-
-  /**
-   * We check if the timer is running
-   */
-  const timerIsPaused: boolean = getClassListValues(pauseSvg).includes("hide");
-
-  if (timerIsPaused) {
-    //The button was clicked, the timer was paused and is now running, we show the paused icon
-    pauseSvg.classList.remove("hide");
-    playSvg.classList.add("hide");
-    log("playing", pauseSvg);
-  } else {
-    //The button was clicked, the timer was running and is now paused, we show the play icon
-    pauseSvg.classList.add("hide");
-    playSvg.classList.remove("hide");
-    log("paused", playSvg);
-  }
-}
-
-/**
- * Handles click events on the restart button element
- * @param {any} buttonElement - The restart button element
- * @returns {void}
- */
-function handleRestartButton(buttonElement: any): void {
-  log("restart button", { buttonElement });
-}
+function restart() {}
 
 /**
  * We defined it so that we can use it
