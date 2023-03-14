@@ -57,7 +57,7 @@ export function selectQueryAll(
  * @param {HTMLElement} elementOfReference The parent HTML element whose children to select.
  * @returns {ChildNode[]|null} An array containing all child nodes of the parent element or null if the parent element has no children.
  */
-export function getChild(elementOfReference: HTMLElement): Element[] | null {
+export function getChildren(elementOfReference: HTMLElement): Element[] | null {
   return Array.from(elementOfReference.children);
 }
 
@@ -78,6 +78,19 @@ export function getAncestor(
 }
 
 /**
+ * Returns the next sibling element of the specified element.
+ *
+ * @param {HTMLElement} elementOfReference - The reference element whose sibling to return.
+ * @returns {HTMLElement | null} The next sibling element, or null if there is none.
+ */
+export function getSibling(
+  elementOfReference: HTMLElement
+): HTMLElement | null {
+  //@ts-ignore
+  return elementOfReference.nextElementSibling;
+}
+
+/**
  *
  * Returns an array of strings representing the classes of the specified element.
  *
@@ -93,15 +106,16 @@ export function getClassListValues(elementOfReference: HTMLElement): string[] {
  * Sets the value of a specified CSS property for the given HTML element.
  *
  * @param {string} property - The name of the style property to set.
- * @param {string} value - The value to set for the specified style property.
+ * @param {any} value - The value to set for the specified style property.
  * @param {HTMLElement} [element=document.body] - The HTML element to set the style property for, ***NOT mandatory***.
 
 * @returns {void}
  */
 export function setStyleProp(
   property: string,
-  value: string,
+  value: any,
   element: HTMLElement = document.body
 ): void {
-  return element.style.setProperty(property, value);
+  const stringifiedValue = JSON.stringify(value);
+  return element.style.setProperty(property, stringifiedValue);
 }

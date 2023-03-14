@@ -4,8 +4,9 @@ import {
   selectQuery,
   selectQueryAll,
   setStyleProp,
-  getChild,
+  getChildren,
   getAncestor,
+  getSibling,
   getClassListValues,
 } from "../ts-utils/helper-functions/dom.functions";
 
@@ -19,7 +20,6 @@ import { sliceString } from "../ts-utils/helper-functions/string.function";
 import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component.functions";
 
 //Component specific variables
-import { timerStates } from "../ts-utils/variables/timer-component.variables";
 
 /**
  * We set the elements of our Web Component inside a `<template>`
@@ -211,7 +211,7 @@ ${style}
     </g>
 </svg>
 </button>
-  <button type="button" class="timer-component__button timer-component__button--restart">
+  <button type="button" class="timer-component__button timer-component__button--restart" disabled>
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
         preserveAspectRatio="xMidYMid meet" 
          class="timer-component__svg timer-component__svg--restart"
@@ -236,9 +236,20 @@ ${style}
 `;
 
 class TimerComponent extends HTMLElement {
+  /**
+   * Object representing the current state of a timer.
+   *
+   * @type {Object}
+   * @property {"idle" | "started" | "finished"} state - The current state of the timer.
+   * @property {boolean} isRunning - Whether the timer is currently running or not.
+   */
+  timerState: { state: string; isRunning: boolean };
+
   constructor() {
     super();
     //
+
+    this.timerState = { state: "idle", isRunning: false };
     /**
      * Container that holds our web component
      *
@@ -293,7 +304,7 @@ class TimerComponent extends HTMLElement {
       const isButton: boolean = clickedElement.tagName.includes("BUTTON");
 
       if (isButton) {
-        handleButtonEvents(clickedElement);
+        handleButtonEvents(clickedElement, this.timerState);
       } else {
         log("open dialog modal");
       }
@@ -306,3 +317,215 @@ class TimerComponent extends HTMLElement {
  */
 customElements.define("timer-component", TimerComponent);
 // <timer-component></timer-component>
+
+/**
+Functions for the timer setter in the modal window aka <dialog>
+
+HTML:
+
+<p class="timer">
+  <span class="timer__slot timer__slot--hours"> <input type="number" value="00" min="0" max="99" class="timer__input timer__input--hours"><button class="timer__button timer__button--increment">↑</button><button class="timer__button timer__button--decrement">↓</button></span>
+  <span class="timer__slot-separator">:</span>
+  <span class="timer__slot timer__slot--minutes"> <input type="number" value="00" min="0" max="59" class="timer__input timer__input--minutes"><button class="timer__button timer__button--increment">↑</button><button class="timer__button timer__button--decrement">↓</button></span>
+  <span class="timer__slot-separator">:</span>
+  <span class="timer__slot timer__slot--seconds"> <input type="number" value="00" min="0" max="59" class="timer__input timer__input--seconds"><button class="timer__button timer__button--increment">↑</button><button class="timer__button timer__button--decrement">↓</button></span>
+</p>
+
+CSS:
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(36, 36, 36);
+  color: white;
+}
+
+.timer {
+  background-color: rgb(31, 31, 31);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+
+  padding: 5px;
+
+  border: 2px solid #333333;
+  border-bottom: 2px solid #e4505c;
+  border-radius: 3px;
+  
+  font-weight: 700;
+
+  &__slot {
+    position: relative;
+    &--hours {
+    }
+
+    &--minutes {
+    }
+
+    &--seconds {
+    }
+  }
+
+  &__input {
+    text-align: center;
+
+    background-color: inherit;
+    border: transparent;
+
+    padding: 10px 10px;
+    border-radius: 2px;
+    
+    display: inline-block;
+    width: 50px;
+    
+    
+    font-size: 32px;
+    font-weight: inherit;
+
+    
+    color: rgb(165, 165, 165);
+
+    &::-webkit-inner-spin-button {
+      appearance: none;
+    }
+
+    &::-webkit-outer-spin-button {
+      appearance: none;
+    }
+
+    &:focus {
+      background-color: rgb(44, 44, 44);
+      outline: transparent;
+      color: inherit;
+    }
+
+    &--hours {
+    }
+
+    &--minutes {
+    }
+
+    &--seconds {
+    }
+  }
+
+  &__button {
+    position: absolute;
+    left: 50%;
+    translate: -50% 0%;
+
+    background-color: transparent;
+    color: inherit;
+    border: transparent;
+
+    &:hover {
+      background-color: rgb(47, 47, 47);
+    }
+
+    &:active {
+      background-color: rgb(42, 42, 42);
+    }
+
+    &--increment {
+      bottom: 130%;
+    }
+
+    &--decrement {
+      top: 130%;
+    }
+  }
+
+  &__slot-separator {
+       font-size: 32px;
+    font-weight: inherit;
+  }
+}
+
+
+
+JS:
+const hoursSlot = selectQuery(".timer__slot--hours");
+const minutesSlot = selectQuery(".timer__slot--minutes");
+const secondsSlot = selectQuery(".timer__slot--seconds");
+
+const allSlots = [hoursSlot, minutesSlot, secondsSlot];
+
+function addEventListeners() {
+  for (const slot of allSlots) {
+    const [input, incrementButton, decrementButton] = getChildren(slot);
+
+    input.addEventListener("input", handleInput);
+
+    incrementButton.addEventListener("click", handleButton);
+    decrementButton.addEventListener("click", handleButton);
+
+    const valueOfInput = input.value;
+  }
+}
+
+addEventListeners();
+
+function handleInput(event) {
+  let { value } = event.target;
+
+  verifyInputValue(event.target, false);
+
+  let currentValue = Number(event.target.value);
+}
+
+function handleButton(event) {
+  const isIncrementButton = getClassListValues(event.target).includes(
+    "timer__button--increment"
+  );
+
+  const valueToSum = isIncrementButton ? 1 : -1;
+
+  const slotContainer = getAncestor(event.target, ".timer__slot");
+
+  const input = getChildren(slotContainer)[0];
+
+  input.valueAsNumber += valueToSum;
+
+  verifyInputValue(input, true);
+
+  let currentValue = Number(input.value);
+}
+
+function verifyInputValue(inputElement, isButtonEvent) {
+  const classes = getClassListValues(inputElement);
+  const isHoursInput = classes.includes("timer__input--hours");
+  const inputLimit = isHoursInput ? 99 : 59;
+  log({ isHoursInput });
+
+  if (isButtonEvent) {
+    const valueOfInputUnderflows = Number(inputElement.value) < 0;
+
+    if (valueOfInputUnderflows) {
+      inputElement.value = inputLimit;
+    }
+  }
+  log(inputElement.value);
+  const valueIsUnderTen = Number(inputElement.value) < 10;
+  if (valueIsUnderTen) {
+    inputElement.value = `0${inputElement.value.slice(-1)}`;
+  }
+
+  const valueOverflows = isHoursInput
+    ? inputElement.value.slice(1, 3) > 99
+    : inputElement.value > 59;
+
+  if (valueOverflows) {
+    let currentValue = inputElement.value.slice(1, 3);
+    inputElement.value = `0${currentValue.slice(-1)}`;
+  }
+
+  const valueIsOverThreeDigits = inputElement.value.length > 2;
+  if (valueIsOverThreeDigits) {
+    inputElement.value = `${inputElement.value.slice(1, 3)}`;
+  }
+}
+ */
