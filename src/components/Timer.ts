@@ -176,6 +176,94 @@ right: 30%;
 }
 
 
+.timer-dialog {
+  background-color: rgb(31, 31, 31);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 5px;
+  border: 2px solid #333333;
+  border-bottom: 2px solid #e4505c;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.timer-dialog__slot {
+  position: relative;
+}
+
+.timer-dialog__slot--hours {}
+
+.timer-dialog__slot--minutes {}
+
+.timer-dialog__slot--seconds {}
+
+.timer-dialog__input {
+  text-align: center;
+  background-color: inherit;
+  border: transparent;
+  padding: 10px 10px;
+  border-radius: 2px;
+  display: inline-block;
+  width: 50px;
+  font-size: 32px;
+  font-weight: inherit;
+  color: rgb(165, 165, 165);
+}
+
+.timer-dialog__input::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+.timer-dialog__input::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+.timer-dialog__input:focus {
+  background-color: rgb(44, 44, 44);
+  outline: transparent;
+    color: white;
+}
+
+.timer-dialog__input--hours {}
+
+.timer-dialog__input--minutes {}
+
+.timer-dialog__input--seconds {}
+
+.timer-dialog__button {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0%;
+  background-color: transparent;
+  color: inherit;
+  border: transparent;
+}
+
+.timer-dialog__button:hover {
+  background-color: rgb(47, 47, 47);
+}
+
+.timer-dialog__button:active {
+  background-color: rgb(42, 42, 42);
+}
+
+.timer-dialog__button--increment {
+  bottom: 130%;
+}
+
+.timer-dialog__button--decrement {
+  top: 130%;
+}
+
+.timer-dialog__slot-separator {
+  font-size: 32px;
+  font-weight: inherit;
+
+  color: white;
+}
+
 `;
 
 /**
@@ -187,6 +275,33 @@ ${style}
 </style>
 
 <div class="timer-component__container">
+
+<dialog class="timer-dialog" open>
+<p class="timer-dialog__container">
+  <span class="timer-dialog__slot timer-dialog__slot--hours"> 
+  <input type="number" value="00" min="0" max="99" class="timer-dialog__input timer-dialog__input--hours">
+  <button class="timer-dialog__button timer-dialog__button--increment">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="50" height="50" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg>
+</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  </span>
+  <span class="timer-dialog__slot-separator">:</span>
+  <span class="timer-dialog__slot timer-dialog__slot--minutes"> 
+  <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--minutes">
+  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  </span>
+  <span class="timer-dialog__slot-separator">:</span>
+  <span class="timer-dialog__slot timer-dialog__slot--seconds"> 
+  <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--seconds">
+  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  </span>
+</p>
+</dialog>
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="timer__svg">
     <circle class="timer-component__circle--bg circle--bg"></circle>
     <circle class="timer-component__circle circle"></circle>
@@ -323,12 +438,24 @@ Functions for the timer setter in the modal window aka <dialog>
 
 HTML:
 
-<p class="timer">
-  <span class="timer__slot timer__slot--hours"> <input type="number" value="00" min="0" max="99" class="timer__input timer__input--hours"><button class="timer__button timer__button--increment">↑</button><button class="timer__button timer__button--decrement">↓</button></span>
-  <span class="timer__slot-separator">:</span>
-  <span class="timer__slot timer__slot--minutes"> <input type="number" value="00" min="0" max="59" class="timer__input timer__input--minutes"><button class="timer__button timer__button--increment">↑</button><button class="timer__button timer__button--decrement">↓</button></span>
-  <span class="timer__slot-separator">:</span>
-  <span class="timer__slot timer__slot--seconds"> <input type="number" value="00" min="0" max="59" class="timer__input timer__input--seconds"><button class="timer__button timer__button--increment">↑</button><button class="timer__button timer__button--decrement">↓</button></span>
+<p class="timer-dialog">
+  <span class="timer-dialog__slot timer-dialog__slot--hours"> 
+  <input type="number" value="00" min="0" max="99" class="timer-dialog__input timer-dialog__input--hours">
+  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  </span>
+  <span class="timer-dialog__slot-separator">:</span>
+  <span class="timer-dialog__slot timer-dialog__slot--minutes"> 
+  <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--minutes">
+  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  </span>
+  <span class="timer-dialog__slot-separator">:</span>
+  <span class="timer-dialog__slot timer-dialog__slot--seconds"> 
+  <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--seconds">
+  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  </span>
 </p>
 
 CSS:
@@ -343,114 +470,14 @@ body {
   color: white;
 }
 
-.timer {
-  background-color: rgb(31, 31, 31);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
 
-  padding: 5px;
-
-  border: 2px solid #333333;
-  border-bottom: 2px solid #e4505c;
-  border-radius: 3px;
-  
-  font-weight: 700;
-
-  &__slot {
-    position: relative;
-    &--hours {
-    }
-
-    &--minutes {
-    }
-
-    &--seconds {
-    }
-  }
-
-  &__input {
-    text-align: center;
-
-    background-color: inherit;
-    border: transparent;
-
-    padding: 10px 10px;
-    border-radius: 2px;
-    
-    display: inline-block;
-    width: 50px;
-    
-    
-    font-size: 32px;
-    font-weight: inherit;
-
-    
-    color: rgb(165, 165, 165);
-
-    &::-webkit-inner-spin-button {
-      appearance: none;
-    }
-
-    &::-webkit-outer-spin-button {
-      appearance: none;
-    }
-
-    &:focus {
-      background-color: rgb(44, 44, 44);
-      outline: transparent;
-      color: inherit;
-    }
-
-    &--hours {
-    }
-
-    &--minutes {
-    }
-
-    &--seconds {
-    }
-  }
-
-  &__button {
-    position: absolute;
-    left: 50%;
-    translate: -50% 0%;
-
-    background-color: transparent;
-    color: inherit;
-    border: transparent;
-
-    &:hover {
-      background-color: rgb(47, 47, 47);
-    }
-
-    &:active {
-      background-color: rgb(42, 42, 42);
-    }
-
-    &--increment {
-      bottom: 130%;
-    }
-
-    &--decrement {
-      top: 130%;
-    }
-  }
-
-  &__slot-separator {
-       font-size: 32px;
-    font-weight: inherit;
-  }
-}
 
 
 
 JS:
-const hoursSlot = selectQuery(".timer__slot--hours");
-const minutesSlot = selectQuery(".timer__slot--minutes");
-const secondsSlot = selectQuery(".timer__slot--seconds");
+const hoursSlot = selectQuery(".timer-dialog__slot--hours");
+const minutesSlot = selectQuery(".timer-dialog__slot--minutes");
+const secondsSlot = selectQuery(".timer-dialog__slot--seconds");
 
 const allSlots = [hoursSlot, minutesSlot, secondsSlot];
 
@@ -479,12 +506,12 @@ function handleInput(event) {
 
 function handleButton(event) {
   const isIncrementButton = getClassListValues(event.target).includes(
-    "timer__button--increment"
+    "timer-dialog__button--increment"
   );
 
   const valueToSum = isIncrementButton ? 1 : -1;
 
-  const slotContainer = getAncestor(event.target, ".timer__slot");
+  const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
 
   const input = getChildren(slotContainer)[0];
 
