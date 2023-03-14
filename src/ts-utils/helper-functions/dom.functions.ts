@@ -116,6 +116,6 @@ export function setStyleProp(
   value: any,
   element: HTMLElement = document.body
 ): void {
-  const stringifiedValue = JSON.stringify(value);
+  const stringifiedValue = value.toString();
   return element.style.setProperty(property, stringifiedValue);
 }

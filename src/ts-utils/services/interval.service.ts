@@ -1,7 +1,7 @@
 /**
  * Utility class that sets and clears intervals
  */
-class Interval {
+export class Interval {
   private static id: NodeJS.Timer;
   private static arrayOfIds: NodeJS.Timer[] = [];
 
@@ -19,10 +19,10 @@ class Interval {
    *   console.log("Hello World");
    * };
    *
-   * let intervalTrigger = Interval.add(fct, 2_500);
+   * let intervalTrigger = Interval.set(fct, 2_500);
    *
    */
-  static add(
+  static set(
     callback: (...args: any) => any | void,
     milliseconds: number
   ): NodeJS.Timer {
@@ -36,9 +36,9 @@ class Interval {
   }
 
   /**
-   * Method that removes an interval
+   * Method that clears an interval
    *
-   * @param {number} id ID of the interval to remove (stored inside the trigger of the interval)
+   * @param {number} id ID of the interval to clear (stored inside the trigger of the interval)
    *
    * @example
    *
@@ -47,14 +47,14 @@ class Interval {
    * }
    *
    *
-   * let intervalTrigger = Interval.add(fct, 2_500);
+   * let intervalTrigger = Interval.set(fct, 2_500);
    *
    * // ...
    *
-   * Interval.remove(intervalTrigger);
+   * Interval.clear(intervalTrigger);
    *
    */
-  static remove(id: NodeJS.Timer): void {
+  static clear(id: NodeJS.Timer): void {
     const actualId: NodeJS.Timer = this.arrayOfIds.filter(
       (idNumber: NodeJS.Timer) => {
         return idNumber === id;

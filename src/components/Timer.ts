@@ -1,3 +1,7 @@
+//Services
+import { Interval } from "../ts-utils/services/interval.service";
+import { Timeout } from "../ts-utils/services/timeout.service";
+
 //Utils
 //DOM helper functions
 import {
@@ -26,19 +30,32 @@ import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component
  */
 const timerTemplate: HTMLTemplateElement = document.createElement("template");
 
-const dialogStyle: string = `
+const dialogStyle: string = /* css */ `
 
 .timer-dialog{
+  z-index: 69;
+
   border: transparent;
   padding: 10px;
-  background-color: transparent;
+
+  color: white;
+  background-color: rgb(35, 35, 35);
 
   position: fixed;
   inset: 50%;
   translate: -50% -50%;
+
+  width: 435px;
+  height: 530px;
+
+}
+
+.timer-dialog::backdrop{
+  background-color: #000000ad;
 }
 
 .timer-dialog__container {
+      margin-top: 60px;
   background-color: rgb(31, 31, 31);
   display: flex;
   justify-content: center;
@@ -60,25 +77,42 @@ const dialogStyle: string = `
 
 .timer-dialog__slot--seconds {}
 
+.timer-dialog__label-input{
+  margin-block: 50px;
+}
+
 .timer-dialog__input {
   text-align: center;
+
   background-color: inherit;
   border: transparent;
+
   padding: 10px 10px;
+
   border-radius: 2px;
+
   display: inline-block;
-  width: 80px;
-  min-width: 20px;
+  min-width: 80px;
+
   font-size: 32px;
   font-weight: inherit;
+
   color: rgb(165, 165, 165);
 }
 
-.timer-dialog__input::-webkit-inner-spin-button {
+.timer-dialog__input--title{
+    font-weight: inherit;
+  color:white;
+   background-color: rgb(48, 48, 48);
+  border: transparent;
+   border-bottom: 2px solid rgb(146, 146, 146);
+} 
+
+.timer-dialog__input[type=number]::-webkit-inner-spin-button {
   appearance: none;
 }
 
-.timer-dialog__input::-webkit-outer-spin-button {
+.timer-dialog__input[type=number]::-webkit-outer-spin-button {
   appearance: none;
 }
 
@@ -98,9 +132,18 @@ const dialogStyle: string = `
   position: absolute;
   left: 50%;
   translate: -50% 0%;
+
   background-color: transparent;
   color: inherit;
+
   border: transparent;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  aspect-ratio: 1/1;
+  height: 30px;
 }
 
 .timer-dialog__button:hover {
@@ -111,12 +154,39 @@ const dialogStyle: string = `
   background-color: rgb(42, 42, 42);
 }
 
+.timer-dialog__delete {
+  color: rgb(213, 130, 139);
+}
+
 .timer-dialog__button--increment {
   bottom: 130%;
 }
 
 .timer-dialog__button--decrement {
   top: 130%;
+}
+
+.timer-dialog__button--decrement > svg{
+  rotate: 180deg;
+}
+
+.timer-dialog__button--cancel{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  background-color: rgb(46, 46, 46);
+}
+
+.timer-dialog__button--register{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  background-color: rgb(228, 80, 92);
+  color: black;
 }
 
 .timer-dialog__slot-separator {
@@ -127,7 +197,7 @@ const dialogStyle: string = `
 }
 `;
 
-const timerStyle: string = `
+const timerStyle: string = /* css */ `
 *,
 ::before,
 ::after {
@@ -275,40 +345,101 @@ right: 30%;
 /**
  * Style for the component
  */
-const style: string = `
+const componentStyle: string = `
 ${timerStyle}
 ${dialogStyle}
 `;
 
-const dialogUI: string = `
+const dialogUI: string = /* html */ `
 <dialog class="timer-dialog" open>
+  <div>
+    <h2 class="timer-dialog__title">Modify the timer</h2>
+    <button type="button" class="timer-dialog__delete">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92" width="20" height="20" fill="currentColor">
+    <path
+        d="m78.4 30.4-3.1 57.8c-.1 2.1-1.9 3.8-4 3.8H20.7c-2.1 0-3.9-1.7-4-3.8l-3.1-57.8c-.1-2.2 1.6-4.1 3.8-4.2 2.2-.1 4.1 1.6 4.2 3.8l2.9 54h43.1l2.9-54c.1-2.2 2-3.9 4.2-3.8 2.1.1 3.8 2 3.7 4.2zM89 17c0 2.2-1.8 4-4 4H7c-2.2 0-4-1.8-4-4s1.8-4 4-4h22V4c0-1.9 1.3-3 3.2-3h27.6C61.7 1 63 2.1 63 4v9h22c2.2 0 4 1.8 4 4zm-53-4h20V8H36v5zm1.7 65c2 0 3.5-1.9 3.5-3.8l-1-43.2c0-1.9-1.6-3.5-3.6-3.5-1.9 0-3.5 1.6-3.4 3.6l1 43.3c0 1.9 1.6 3.6 3.5 3.6zm16.5 0c1.9 0 3.5-1.6 3.5-3.5l1-43.2c0-1.9-1.5-3.6-3.4-3.6-2 0-3.5 1.5-3.6 3.4l-1 43.2c-.1 2 1.5 3.7 3.5 3.7-.1 0-.1 0 0 0z" />
+</svg>  
+
+    </button>
+  </div>
+<!--    -->
+<!--    -->
+  <!-- Timer begin -->
+
+
 <p class="timer-dialog__container">
   <span class="timer-dialog__slot timer-dialog__slot--hours"> 
   <input type="number" value="00" min="0" max="99" class="timer-dialog__input timer-dialog__input--hours">
   <button class="timer-dialog__button timer-dialog__button--increment">
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="50" height="50" fill="white">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg>
 </button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
-  </span>
+  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
+</span>
   <span class="timer-dialog__slot-separator">:</span>
   <span class="timer-dialog__slot timer-dialog__slot--minutes"> 
   <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--minutes">
-  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  <button class="timer-dialog__button timer-dialog__button--increment"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
   </span>
   <span class="timer-dialog__slot-separator">:</span>
   <span class="timer-dialog__slot timer-dialog__slot--seconds"> 
   <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--seconds">
-  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  <button class="timer-dialog__button timer-dialog__button--increment"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
   </span>
 </p>
+
+<!-- Timer end -->
+<!--    -->
+<!--    -->
+
+<div class="timer-dialog__label-input">
+  <label class="timer-dialog__label"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+    <path
+        d="M21,12a1,1,0,0,0-1,1v6a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V5A1,1,0,0,1,5,4h6a1,1,0,0,0,0-2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V13A1,1,0,0,0,21,12ZM6,12.76V17a1,1,0,0,0,1,1h4.24a1,1,0,0,0,.71-.29l6.92-6.93h0L21.71,8a1,1,0,0,0,0-1.42L17.47,2.29a1,1,0,0,0-1.42,0L13.23,5.12h0L6.29,12.05A1,1,0,0,0,6,12.76ZM16.76,4.41l2.83,2.83L18.17,8.66,15.34,5.83ZM8,13.17l5.93-5.93,2.83,2.83L10.83,16H8Z" />
+    </svg> <input type="text" class="timer-dialog__input--title" value="input"/>
+  </label>
+</div>
+
+<div class="timer-dialog__buttons">
+  <button class="timer-dialog__button--register">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">
+    <path fill="black"
+        d="M31.707,7.293l-7-7A1,1,0,0,0,24,0H1A1,1,0,0,0,0,1V31a1,1,0,0,0,1,1H31a1,1,0,0,0,1-1V8A1,1,0,0,0,31.707,7.293ZM18,2V6H8V2ZM8,30V18H24V30Zm22,0H26V17a1,1,0,0,0-1-1H7a1,1,0,0,0-1,1V30H2V2H6V7A1,1,0,0,0,7,8H19a1,1,0,0,0,1-1V2h3.586L30,8.414Z" />
+</svg> Register</button>
+
+  <button class="timer-dialog__button--cancel">
+   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" width="20" height="20" fill="white">
+    <switch>
+        <g>
+            <path
+                d="m53.657 48 25.171-25.172a4 4 0 1 0-5.656-5.656L48 42.343 22.829 17.172a4 4 0 0 0-5.657 5.656L42.344 48 17.172 73.172a4 4 0 1 0 5.657 5.656L48 53.657l25.172 25.171C73.953 79.609 74.977 80 76 80s2.048-.391 2.828-1.172a4 4 0 0 0 0-5.656L53.657 48z" />
+        </g>
+    </switch>
+</svg>
+Cancel</button>
+</div>
 </dialog>`;
 
-const timerUI: string = `
+const timerUI: string = /* html */ `
 
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="timer__svg">
     <circle class="timer-component__circle--bg circle--bg"></circle>
@@ -359,16 +490,14 @@ const timerUI: string = `
 /**
  * Content of the component
  */
-timerTemplate.innerHTML = `
+timerTemplate.innerHTML = /* html */ `
 <style>
-${style}
+  ${componentStyle}
 </style>
 
 <div class="timer-component__container">
-${dialogUI}
-
-${timerUI}
-
+  ${dialogUI}
+  ${timerUI}
 </div>
 `;
 
@@ -405,20 +534,6 @@ class TimerComponent extends HTMLElement {
     shadowRoot.appendChild(clonedTemplate);
     //
 
-    /**
-     * We get the circle
-     */
-    //@ts-ignore
-    const svgCircle: HTMLElement = selectQuery(".circle", this.shadowRoot);
-    //@ts-ignore
-    const svgCircleLength: number = svgCircle?.getTotalLength();
-
-    /**
-     * We set the style prop of these variables to equal to the svgLength
-     */
-    setStyleProp("--svg-dasharray", `${svgCircleLength}`);
-    setStyleProp("--svg-dashoffset", `${2 * svgCircleLength}`);
-
     //@ts-ignore
     const paragraph: HTMLElement = selectQuery(
       ".timer-component__paragraph",
@@ -432,18 +547,48 @@ class TimerComponent extends HTMLElement {
       //@ts-ignore
       this.shadowRoot
     );
+    /**
+     * We get the circle
+     */
+    //@ts-ignore
+    const svgCircle: HTMLElement = selectQuery(".circle", this.shadowRoot);
+    //@ts-ignore
+    const svgCircleLength: number = svgCircle?.getTotalLength();
+
+    /**
+     * We set the style prop of these variables to equal to the svgLength
+     */
+    setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
+    setStyleProp("--svg-dashoffset", `${2 * svgCircleLength}`, container);
 
     //@ts-ignore
     container.addEventListener("click", (e: MouseEvent) => {
       const clickedElement: EventTarget | null = e.target;
 
+      const modalWindow = selectQuery(".timer-dialog", container);
       //@ts-ignore
       const isButton: boolean = clickedElement.tagName.includes("BUTTON");
 
       if (isButton) {
         handleButtonEvents(clickedElement, this.timerState);
       } else {
-        log("open dialog modal");
+        const isNotContainer = clickedElement !== modalWindow;
+        log("click", clickedElement);
+        if (isNotContainer) {
+          //@ts-ignore
+          const modalIsAlreadyOpened = modalWindow?.attributes.open;
+          log({ modalIsAlreadyOpened });
+          if (modalIsAlreadyOpened) {
+            // // @ts-ignore
+            // modalWindow.close();
+            return;
+          } else {
+            //@ts-ignore
+            modalWindow.showModal();
+          }
+        } else {
+          return;
+        }
       }
     });
   }
@@ -464,19 +609,28 @@ HTML:
   <span class="timer-dialog__slot timer-dialog__slot--hours"> 
   <input type="number" value="00" min="0" max="99" class="timer-dialog__input timer-dialog__input--hours">
   <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
   </span>
   <span class="timer-dialog__slot-separator">:</span>
   <span class="timer-dialog__slot timer-dialog__slot--minutes"> 
   <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--minutes">
   <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
   </span>
   <span class="timer-dialog__slot-separator">:</span>
   <span class="timer-dialog__slot timer-dialog__slot--seconds"> 
   <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--seconds">
   <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
+  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+    <path
+        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
+</svg></button>
   </span>
 </p>
 

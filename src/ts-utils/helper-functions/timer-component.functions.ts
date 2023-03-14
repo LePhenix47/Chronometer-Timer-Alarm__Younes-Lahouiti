@@ -17,10 +17,13 @@ export function handleButtonEvents(
   const isPlayButton: boolean = getClassListValues(buttonElement).includes(
     "timer-component__button--play"
   );
+  const isRestartButton: boolean = getClassListValues(buttonElement).includes(
+    "timer-component__button--restart"
+  );
 
   if (isPlayButton) {
     handlePlayButton(buttonElement, timerState);
-  } else {
+  } else if (isRestartButton) {
     handleRestartButton(buttonElement, timerState);
   }
 }
