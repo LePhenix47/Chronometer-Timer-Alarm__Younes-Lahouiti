@@ -33,10 +33,13 @@ const timerTemplate: HTMLTemplateElement = document.createElement("template");
 const dialogStyle: string = /* css */ `
 
 .timer-dialog{
+  overflow-y: hidden;
+  border-radius: 10px;
+
   z-index: 69;
 
   border: transparent;
-  padding: 10px;
+  padding: 30px;
 
   color: white;
   background-color: rgb(35, 35, 35);
@@ -45,8 +48,8 @@ const dialogStyle: string = /* css */ `
   inset: 50%;
   translate: -50% -50%;
 
-  width: 435px;
-  height: 530px;
+  aspect-ratio: 1/1;
+  height: 435px;
 
 }
 
@@ -54,17 +57,37 @@ const dialogStyle: string = /* css */ `
   background-color: #000000ad;
 }
 
+.timer-dialog__title-delete{
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+
+}
+
+.timer-dialog__title{
+  
+}
+
 .timer-dialog__container {
-      margin-top: 60px;
+  margin-top: 60px;
+
   background-color: rgb(31, 31, 31);
+
   display: flex;
   justify-content: center;
   gap: 5px;
+
   padding: 5px;
+
   border: 2px solid #333333;
-  border-bottom: 2px solid #e4505c;
-  border-radius: 3px;
+  border-bottom: 2px solid rgb(146, 146, 146);
+  border-radius: 6px;
+
   font-weight: 700;
+}
+
+.timer-dialog__container:has(input:focus){
+  border-bottom: 2px solid #e4505c;
 }
 
 .timer-dialog__slot {
@@ -78,7 +101,20 @@ const dialogStyle: string = /* css */ `
 .timer-dialog__slot--seconds {}
 
 .timer-dialog__label-input{
-  margin-block: 50px;
+    margin: 80px 0 70px 0;
+}
+
+.timer-dialog__label{
+  width: 100%;
+
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.timer-dialog__label > svg{
+  flex: 1;
 }
 
 .timer-dialog__input {
@@ -92,7 +128,9 @@ const dialogStyle: string = /* css */ `
   border-radius: 2px;
 
   display: inline-block;
-  min-width: 80px;
+
+  min-width: 50px;
+  max-width: 80px;
 
   font-size: 32px;
   font-weight: inherit;
@@ -101,12 +139,30 @@ const dialogStyle: string = /* css */ `
 }
 
 .timer-dialog__input--title{
-    font-weight: inherit;
-  color:white;
-   background-color: rgb(48, 48, 48);
+  flex: 10;
+  
+  height: 35px;
+
+  padding: 5px 10px;
+
+  font-weight: inherit;
+  font-size: 14px;
+
+  color: white;
+  background-color: rgb(48, 48, 48);
+
   border: transparent;
-   border-bottom: 2px solid rgb(146, 146, 146);
+  border-bottom: 2px solid rgb(146, 146, 146);
+  border-radius: 3px;
 } 
+
+.timer-dialog__input--title:focus{
+  outline: transparent;
+  
+  background-color: rgb(31, 31, 31);
+
+  border-bottom: 2px solid #e4505c;
+}
 
 .timer-dialog__input[type=number]::-webkit-inner-spin-button {
   appearance: none;
@@ -137,6 +193,7 @@ const dialogStyle: string = /* css */ `
   color: inherit;
 
   border: transparent;
+  border-radius: 5px;
 
   display: inline-flex;
   justify-content: center;
@@ -144,6 +201,7 @@ const dialogStyle: string = /* css */ `
 
   aspect-ratio: 1/1;
   height: 30px;
+
 }
 
 .timer-dialog__button:hover {
@@ -156,6 +214,17 @@ const dialogStyle: string = /* css */ `
 
 .timer-dialog__delete {
   color: rgb(213, 130, 139);
+  padding: 8px;
+
+  border-radius: 5px;
+
+  outline: transparent;
+}
+.timer-dialog__delete:hover {
+   background-color: rgb(47, 47, 47);
+}
+.timer-dialog__delete:active {
+  background-color: rgb(42, 42, 42);
 }
 
 .timer-dialog__button--increment {
@@ -171,22 +240,65 @@ const dialogStyle: string = /* css */ `
 }
 
 .timer-dialog__button--cancel{
+  flex: 1;
+  
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
+
+  padding: 5px 15px;
+
+  border-radius: 5px;
 
   background-color: rgb(46, 46, 46);
 }
 
 .timer-dialog__button--register{
+  flex: 1;
+  
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
 
+  padding: 5px 15px;
+
+  border-radius: 5px;
+
   background-color: rgb(228, 80, 92);
   color: black;
+}
+
+.timer-dialog__button--cancel> svg, .timer-dialog__button--register> svg{
+  width: fit-content !important;
+}
+
+.timer-dialog__button--cancel:hover {
+   background-color: rgb(51, 51, 51);
+}
+
+.timer-dialog__button--cancel:active {
+  background-color: rgb(40, 40, 40);
+  outline: 2px solid rgb(43, 43, 43);
+}
+
+.timer-dialog__button--register:hover {
+   background-color: rgb(208, 75, 85);
+}
+
+.timer-dialog__button--register:active {
+  background-color: rgb(189, 71, 80);
+  color: rgb(112, 42, 47)
+}
+
+
+.timer-dialog__buttons{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
 }
 
 .timer-dialog__slot-separator {
@@ -351,8 +463,8 @@ ${dialogStyle}
 `;
 
 const dialogUI: string = /* html */ `
-<dialog class="timer-dialog" open>
-  <div>
+<dialog class="timer-dialog">
+  <div class="timer-dialog__title-delete">
     <h2 class="timer-dialog__title">Modify the timer</h2>
     <button type="button" class="timer-dialog__delete">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92" width="20" height="20" fill="currentColor">
@@ -415,14 +527,14 @@ const dialogUI: string = /* html */ `
   <label class="timer-dialog__label"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
     <path
         d="M21,12a1,1,0,0,0-1,1v6a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V5A1,1,0,0,1,5,4h6a1,1,0,0,0,0-2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V13A1,1,0,0,0,21,12ZM6,12.76V17a1,1,0,0,0,1,1h4.24a1,1,0,0,0,.71-.29l6.92-6.93h0L21.71,8a1,1,0,0,0,0-1.42L17.47,2.29a1,1,0,0,0-1.42,0L13.23,5.12h0L6.29,12.05A1,1,0,0,0,6,12.76ZM16.76,4.41l2.83,2.83L18.17,8.66,15.34,5.83ZM8,13.17l5.93-5.93,2.83,2.83L10.83,16H8Z" />
-    </svg> <input type="text" class="timer-dialog__input--title" value="input"/>
+    </svg> <input type="text" class="timer-dialog__input--title" placeholder="Name of timer"/>
   </label>
 </div>
 
 <div class="timer-dialog__buttons">
   <button class="timer-dialog__button--register">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="16" height="16">
-    <path fill="black"
+    <path fill="currentColor"
         d="M31.707,7.293l-7-7A1,1,0,0,0,24,0H1A1,1,0,0,0,0,1V31a1,1,0,0,0,1,1H31a1,1,0,0,0,1-1V8A1,1,0,0,0,31.707,7.293ZM18,2V6H8V2ZM8,30V18H24V30Zm22,0H26V17a1,1,0,0,0-1-1H7a1,1,0,0,0-1,1V30H2V2H6V7A1,1,0,0,0,7,8H19a1,1,0,0,0,1-1V2h3.586L30,8.414Z" />
 </svg> Register</button>
 
