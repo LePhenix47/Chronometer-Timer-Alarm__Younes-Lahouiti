@@ -26,11 +26,108 @@ import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component
  */
 const timerTemplate: HTMLTemplateElement = document.createElement("template");
 
-/**
- * Style for the component
- */
-const style: string = `
+const dialogStyle: string = `
 
+.timer-dialog{
+  border: transparent;
+  padding: 10px;
+  background-color: transparent;
+
+  position: fixed;
+  inset: 50%;
+  translate: -50% -50%;
+}
+
+.timer-dialog__container {
+  background-color: rgb(31, 31, 31);
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 5px;
+  border: 2px solid #333333;
+  border-bottom: 2px solid #e4505c;
+  border-radius: 3px;
+  font-weight: 700;
+}
+
+.timer-dialog__slot {
+  position: relative;
+}
+
+.timer-dialog__slot--hours {}
+
+.timer-dialog__slot--minutes {}
+
+.timer-dialog__slot--seconds {}
+
+.timer-dialog__input {
+  text-align: center;
+  background-color: inherit;
+  border: transparent;
+  padding: 10px 10px;
+  border-radius: 2px;
+  display: inline-block;
+  width: 80px;
+  min-width: 20px;
+  font-size: 32px;
+  font-weight: inherit;
+  color: rgb(165, 165, 165);
+}
+
+.timer-dialog__input::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+.timer-dialog__input::-webkit-outer-spin-button {
+  appearance: none;
+}
+
+.timer-dialog__input:focus {
+  background-color: rgb(44, 44, 44);
+  outline: transparent;
+    color: white;
+}
+
+.timer-dialog__input--hours {}
+
+.timer-dialog__input--minutes {}
+
+.timer-dialog__input--seconds {}
+
+.timer-dialog__button {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0%;
+  background-color: transparent;
+  color: inherit;
+  border: transparent;
+}
+
+.timer-dialog__button:hover {
+  background-color: rgb(47, 47, 47);
+}
+
+.timer-dialog__button:active {
+  background-color: rgb(42, 42, 42);
+}
+
+.timer-dialog__button--increment {
+  bottom: 130%;
+}
+
+.timer-dialog__button--decrement {
+  top: 130%;
+}
+
+.timer-dialog__slot-separator {
+  font-size: 32px;
+  font-weight: inherit;
+
+  color: white;
+}
+`;
+
+const timerStyle: string = `
 *,
 ::before,
 ::after {
@@ -174,108 +271,16 @@ fill: none;
 .timer-component__button--restart{
 right: 30%;
 }
-
-
-.timer-dialog {
-  background-color: rgb(31, 31, 31);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-  padding: 5px;
-  border: 2px solid #333333;
-  border-bottom: 2px solid #e4505c;
-  border-radius: 3px;
-  font-weight: 700;
-}
-
-.timer-dialog__slot {
-  position: relative;
-}
-
-.timer-dialog__slot--hours {}
-
-.timer-dialog__slot--minutes {}
-
-.timer-dialog__slot--seconds {}
-
-.timer-dialog__input {
-  text-align: center;
-  background-color: inherit;
-  border: transparent;
-  padding: 10px 10px;
-  border-radius: 2px;
-  display: inline-block;
-  width: 50px;
-  font-size: 32px;
-  font-weight: inherit;
-  color: rgb(165, 165, 165);
-}
-
-.timer-dialog__input::-webkit-inner-spin-button {
-  appearance: none;
-}
-
-.timer-dialog__input::-webkit-outer-spin-button {
-  appearance: none;
-}
-
-.timer-dialog__input:focus {
-  background-color: rgb(44, 44, 44);
-  outline: transparent;
-    color: white;
-}
-
-.timer-dialog__input--hours {}
-
-.timer-dialog__input--minutes {}
-
-.timer-dialog__input--seconds {}
-
-.timer-dialog__button {
-  position: absolute;
-  left: 50%;
-  translate: -50% 0%;
-  background-color: transparent;
-  color: inherit;
-  border: transparent;
-}
-
-.timer-dialog__button:hover {
-  background-color: rgb(47, 47, 47);
-}
-
-.timer-dialog__button:active {
-  background-color: rgb(42, 42, 42);
-}
-
-.timer-dialog__button--increment {
-  bottom: 130%;
-}
-
-.timer-dialog__button--decrement {
-  top: 130%;
-}
-
-.timer-dialog__slot-separator {
-  font-size: 32px;
-  font-weight: inherit;
-
-  color: white;
-}
-
+`;
+/**
+ * Style for the component
+ */
+const style: string = `
+${timerStyle}
+${dialogStyle}
 `;
 
-/**
- * Content of the component
- */
-timerTemplate.innerHTML = `
-<style>
-${style}
-</style>
-
-<div class="timer-component__container">
-
+const dialogUI: string = `
 <dialog class="timer-dialog" open>
 <p class="timer-dialog__container">
   <span class="timer-dialog__slot timer-dialog__slot--hours"> 
@@ -301,7 +306,10 @@ ${style}
   <button class="timer-dialog__button timer-dialog__button--decrement">↓</button>
   </span>
 </p>
-</dialog>
+</dialog>`;
+
+const timerUI: string = `
+
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="timer__svg">
     <circle class="timer-component__circle--bg circle--bg"></circle>
     <circle class="timer-component__circle circle"></circle>
@@ -346,7 +354,21 @@ ${style}
         35 -470 15z" />
             </g>
     </svg>
-</button>
+</button>`;
+
+/**
+ * Content of the component
+ */
+timerTemplate.innerHTML = `
+<style>
+${style}
+</style>
+
+<div class="timer-component__container">
+${dialogUI}
+
+${timerUI}
+
 </div>
 `;
 
