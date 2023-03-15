@@ -563,7 +563,7 @@ const timerUI: string = /* html */ `
     <circle cx="50" cy="50" r="45" class="timer-component__circle--bg circle--bg"></circle>
     <circle cx="50" cy="50" r="45" class="timer-component__circle circle"></circle>
   </svg>
-  <p class="timer-component__paragraph" for="time-input">00:00:00</p>
+  <p class="timer-component__paragraph">00:00:00</p>
   <button type="button" class="timer-component__button timer-component__button--play">
   <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 256.000000 256.000000" preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--play">
