@@ -81,6 +81,19 @@ export function getAncestor(
 }
 
 /**
+ *Returns the host element of a web component given a reference element within it.
+ *
+ *@param {Element} elementOfReference - An element that is a child of the web component.
+ *
+ * @returns {Element} - The host element of the web component.
+ */
+
+export function getComponentHost(elementOfReference: Element): Element {
+  //@ts-ignore
+  return elementOfReference.getRootNode().host;
+}
+
+/**
  * Returns the next sibling element of the specified element.
  *
  * @param {HTMLElement} elementOfReference - The reference element whose sibling to return.

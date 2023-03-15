@@ -370,15 +370,17 @@ svg{
 }
 
 .circle--bg{
-fill: none;
+  fill: none;
   
   cx: 50;
   cy: 50;
   r: 45;
   
-  stroke: #954444;
+  stroke: rgb(210, 77, 87);
   stroke-width: 5px;
 
+  transform-origin: center;
+  rotate: 270deg;
 
   /* We make them  */
    stroke-dasharray: var(--svg-dasharray);
@@ -625,7 +627,7 @@ export class TimerComponent extends HTMLElement {
    * @property {"idle" | "started" | "finished"} state - The current state of the timer.
    * @property {boolean} isRunning - Whether the timer is currently running or not.
    */
-  timerState: { state: string; isRunning: boolean };
+  timerState: { state: "idle" | "started" | "finished"; isRunning: boolean };
 
   constructor() {
     super();
@@ -659,22 +661,6 @@ export class TimerComponent extends HTMLElement {
     /**
      * We get the circle
      */
-    //@ts-ignore
-    const svgCircle: HTMLElement = selectQuery(".circle", this.shadowRoot);
-
-    svgCircle?.addEventListener("load", () => {
-      //@ts-ignore
-      const svgCircleLength: number = svgCircle?.getTotalLength();
-      /**
-       * We set the style prop of these variables to equal to the svgLength
-       */
-      setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
-      setStyleProp(
-        "--svg-dashoffset",
-        `${svgCircleLength * (1 + this.currentTime / this.initialTime)}`,
-        container
-      );
-    });
 
     //@ts-ignore
     container?.addEventListener("click", (e: MouseEvent) => {
@@ -841,7 +827,7 @@ export class TimerComponent extends HTMLElement {
    * ```
    */
   get currentTime() {
-    const attributeValue: string | null = this.getAttribute("initial-time");
+    const attributeValue: string | null = this.getAttribute("current-time");
 
     const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
     if (attributeIsNotANumber) {
@@ -873,7 +859,8 @@ export class TimerComponent extends HTMLElement {
   /**
    * Methods as a callback function that is called by the browser's web API
    *  when an observed attribute of a custom element is added, removed, or changed.
-   * @param name
+   *
+   * @param {string} name
    */
   attributeChangedCallback(name: string) {
     log({ name });
@@ -885,20 +872,9 @@ export class TimerComponent extends HTMLElement {
     );
     switch (name) {
       case "initial-time": {
-        const hours: string =
-          this.initialTime / 3_600 < 10
-            ? `0${Math.floor(this.initialTime / 3_600)}`
-            : Math.floor(this.initialTime / 3_600).toString();
+        const { hours, minutes, seconds } = getTimeValues(this.initialTime);
 
-        const minutes: string =
-          this.initialTime / 60 < 10
-            ? `0${Math.floor((this.initialTime / 60) % 60)}`
-            : Math.floor((this.initialTime / 60) % 60).toString();
-
-        const seconds: string =
-          this.initialTime % 60 < 10
-            ? `0${this.initialTime % 60}`
-            : (this.initialTime % 60).toString();
+        log({ hours }, { minutes }, { seconds });
 
         paragraph.textContent = `${hours}:${minutes}:${seconds}`;
         break;
@@ -906,6 +882,32 @@ export class TimerComponent extends HTMLElement {
 
       case "current-time": {
         log("Current time changed", this.currentTime);
+        //@ts-ignore
+        const container: HTMLElement = selectQuery(
+          ".timer-component__container",
+          //@ts-ignore
+          this.shadowRoot
+        );
+        //@ts-ignore
+        const svgCircle: HTMLElement = selectQuery(".circle", this.shadowRoot);
+
+        //@ts-ignore
+        const svgCircleLength: number = svgCircle?.getTotalLength();
+        /**
+         * We set the style prop of these variables to equal to the svgLength
+         */
+        setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
+        setStyleProp(
+          "--svg-dashoffset",
+          `${svgCircleLength * (1 + this.currentTime / this.initialTime)}`,
+          container
+        );
+
+        const { hours, minutes, seconds } = getTimeValues(this.currentTime);
+
+        log({ hours }, { minutes }, { seconds });
+
+        paragraph.textContent = `${hours}:${minutes}:${seconds}`;
         break;
       }
 
@@ -915,6 +917,25 @@ export class TimerComponent extends HTMLElement {
       }
     }
   }
+}
+
+function getTimeValues(totalSeconds: number) {
+  const hours: string =
+    totalSeconds / 3_600 < 10
+      ? `0${Math.floor(totalSeconds / 3_600)}`
+      : Math.floor(totalSeconds / 3_600).toString();
+
+  const minutes: string =
+    (totalSeconds / 60) % 60 < 10
+      ? `0${Math.floor((totalSeconds / 60) % 60)}`
+      : Math.floor((totalSeconds / 60) % 60).toString();
+
+  const seconds: string =
+    totalSeconds % 60 < 10
+      ? `0${totalSeconds % 60}`
+      : (totalSeconds % 60).toString();
+
+  return { hours, minutes, seconds };
 }
 
 /**

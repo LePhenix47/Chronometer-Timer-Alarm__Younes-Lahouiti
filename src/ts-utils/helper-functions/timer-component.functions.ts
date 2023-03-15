@@ -2,6 +2,7 @@
 import { log } from "./console-funtions";
 import {
   getAncestor,
+  getComponentHost,
   getChildren,
   getClassListValues,
   selectQueryAll,
@@ -9,7 +10,7 @@ import {
 } from "./dom.functions";
 
 import { WebStorageService } from "../services/webstorage.service";
-
+import { Interval } from "../services/interval.service";
 //
 
 /**
@@ -75,38 +76,34 @@ export function handlePlayButton(
 
   const [playSvg, pauseSvg]: any = getChildren(buttonElement);
 
-  /**
-   * We check if the timer is running
-   */
-  const timerIsPaused: boolean = getClassListValues(pauseSvg).includes("hide");
+  const timerComponent: Element = getComponentHost(buttonElement);
+  let currentAmountOfSeconds: number = Number(
+    timerComponent.getAttribute("initial-time")
+  );
+  log({ timerComponent, currentAmountOfSeconds });
 
   log("play-resume/pause button", { buttonElement });
   const timerHasNotStarted: boolean = timerState.state === "idle";
 
   if (timerHasNotStarted) {
     //We make the restart button disabled
-  }
-
-  const timerHasStarted: boolean = timerState.state === "started";
-  if (timerHasStarted) {
-    log("Has started");
-    //We enable the restart button
-    if (timerState.isRunning) {
-      log("Is running");
-      //We just reset the countdown and keep the timer running
-    } else {
-      log("Is paused");
-      //We reset the countdown and we
-    }
+    timerState.state === "idle";
   }
 
   const timerHasReachedZero: boolean = timerState.state === "finished";
   if (timerHasReachedZero) {
     //We still enable it
+    timerState.state === "finished";
   }
 
+  /**
+   * We check if the timer is running
+   */
+  const timerIsPaused: boolean = getClassListValues(pauseSvg).includes("hide");
+  // const timerIsPaused: boolean = timerState.isRunning;
   if (timerIsPaused) {
     //The button was clicked, the timer was paused and is now running, we show the paused icon
+    log("Is running");
     pauseSvg.classList.remove("hide");
     playSvg.classList.add("hide");
 
@@ -114,11 +111,29 @@ export function handlePlayButton(
     timerState.isRunning = false;
   } else {
     //The button was clicked, the timer was running and is now paused, we show the play icon
+    log("Is paused");
+
     pauseSvg.classList.add("hide");
     playSvg.classList.remove("hide");
 
     timerState.state = "started";
     timerState.isRunning = true;
+    //@ts-ignore
+    const set = Interval.set(() => {
+      const countdownFinished = currentAmountOfSeconds <= 0;
+      log({ currentAmountOfSeconds });
+      if (countdownFinished) {
+        //@ts-ignore
+        Interval.clear(set);
+        return;
+      }
+
+      currentAmountOfSeconds--;
+      timerComponent.setAttribute(
+        "current-time",
+        currentAmountOfSeconds.toString()
+      );
+    }, 1_000);
   }
 }
 
@@ -176,7 +191,7 @@ export function handleDialogButtons(buttonElement: any, timerState) {
   const modalWindow = getAncestor(buttonElement, "dialog");
 
   //@ts-ignore
-  const timerComponent = modalWindow.getRootNode().host;
+  const timerComponent = getComponentHost(modalWindow);
 
   //@ts-ignore
   const inputs = selectQueryAll("input", modalWindow);
@@ -199,8 +214,16 @@ export function handleDialogButtons(buttonElement: any, timerState) {
       }
     }
     log({ inputsValues });
+    const hoursValue = Number(inputsValues[0]);
+    const minutesValue = Number(inputsValues[1]);
+    const secondsValue = Number(inputsValues[2]);
 
-    timerComponent.setAttribute("initial-time", 1000);
+    log({ hoursValue, minutesValue, secondsValue });
+
+    const totalTimeInSeconds =
+      3_600 * hoursValue + 60 * minutesValue + secondsValue;
+
+    timerComponent.setAttribute("initial-time", totalTimeInSeconds.toString());
     //@ts-ignore
     modalWindow.close();
     log("Register button", timerComponent.attributes);
