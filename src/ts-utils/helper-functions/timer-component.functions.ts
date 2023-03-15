@@ -1,10 +1,15 @@
+//Utils
 import { log } from "./console-funtions";
 import {
   getAncestor,
   getChildren,
   getClassListValues,
+  selectQueryAll,
   setStyleProp,
 } from "./dom.functions";
+
+import { WebStorageService } from "../services/webstorage.service";
+//
 
 /**
  * Handles click events on the timer button elements
@@ -150,7 +155,7 @@ export function handleRestartButton(
   }
 }
 
-export function handleDialogButtons(buttonElement, timerState) {
+export function handleDialogButtons(buttonElement: any, timerState) {
   const buttonClasses: string[] = getClassListValues(buttonElement);
 
   const isDeleteButton: boolean = buttonClasses.includes(
@@ -168,7 +173,11 @@ export function handleDialogButtons(buttonElement, timerState) {
     "timer-dialog__button--cancel"
   );
   const modalWindow = getAncestor(buttonElement, "dialog");
-  log("Is dialog button:", modalWindow);
+
+  //@ts-ignore
+  const inputs = selectQueryAll("input", modalWindow);
+  log({ inputs });
+
   if (isDeleteButton) {
     log("Delete button");
   } else if (isTimerDialogButton) {
@@ -177,6 +186,18 @@ export function handleDialogButtons(buttonElement, timerState) {
       buttonClasses.includes("timer-dialog__button--increment") ? "Up" : "Down"
     );
   } else if (isRegisterButton) {
+    let inputsValues: any[] = [];
+    if (inputs) {
+      for (const input of inputs) {
+        //@ts-ignore
+        const valueOfInput = input.value;
+        inputsValues.push(valueOfInput);
+      }
+    }
+    log({ inputsValues });
+
+    //@ts-ignore
+    modalWindow.close();
     log("Register button");
   } else if (isCancelButton) {
     //@ts-ignore
