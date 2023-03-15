@@ -9,6 +9,7 @@ import {
 } from "./dom.functions";
 
 import { WebStorageService } from "../services/webstorage.service";
+
 //
 
 /**
@@ -175,6 +176,9 @@ export function handleDialogButtons(buttonElement: any, timerState) {
   const modalWindow = getAncestor(buttonElement, "dialog");
 
   //@ts-ignore
+  const timerComponent = modalWindow.getRootNode().host;
+
+  //@ts-ignore
   const inputs = selectQueryAll("input", modalWindow);
   log({ inputs });
 
@@ -196,9 +200,10 @@ export function handleDialogButtons(buttonElement: any, timerState) {
     }
     log({ inputsValues });
 
+    timerComponent.setAttribute("initial-time", 1000);
     //@ts-ignore
     modalWindow.close();
-    log("Register button");
+    log("Register button", timerComponent.attributes);
   } else if (isCancelButton) {
     //@ts-ignore
     modalWindow.close();

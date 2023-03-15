@@ -358,6 +358,7 @@ svg{
   r: 45;
   
   stroke: grey;
+  stroke-width: 5px;
   stroke-linecap: round;
   stroke-dasharray: var(--svg-dasharray);
   stroke-dashoffset: var(--svg-dashoffset);
@@ -376,6 +377,8 @@ fill: none;
   r: 45;
   
   stroke: #954444;
+  stroke-width: 5px;
+
 
   /* We make them  */
    stroke-dasharray: var(--svg-dasharray);
@@ -614,7 +617,7 @@ timerTemplate.innerHTML = /* html */ `
 </div>
 `;
 
-class TimerComponent extends HTMLElement {
+export class TimerComponent extends HTMLElement {
   /**
    * Object representing the current state of a timer.
    *
@@ -648,13 +651,6 @@ class TimerComponent extends HTMLElement {
     //
 
     //@ts-ignore
-    const paragraph: HTMLElement = selectQuery(
-      ".timer-component__paragraph",
-      //@ts-ignore
-      this.shadowRoot
-    );
-
-    //@ts-ignore
     const container: HTMLElement = selectQuery(
       ".timer-component__container",
       //@ts-ignore
@@ -665,14 +661,20 @@ class TimerComponent extends HTMLElement {
      */
     //@ts-ignore
     const svgCircle: HTMLElement = selectQuery(".circle", this.shadowRoot);
-    //@ts-ignore
-    const svgCircleLength: number = svgCircle?.getTotalLength();
 
-    /**
-     * We set the style prop of these variables to equal to the svgLength
-     */
-    setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
-    setStyleProp("--svg-dashoffset", `${2 * svgCircleLength}`, container);
+    svgCircle?.addEventListener("load", () => {
+      //@ts-ignore
+      const svgCircleLength: number = svgCircle?.getTotalLength();
+      /**
+       * We set the style prop of these variables to equal to the svgLength
+       */
+      setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
+      setStyleProp(
+        "--svg-dashoffset",
+        `${svgCircleLength * (1 + this.currentTime / this.initialTime)}`,
+        container
+      );
+    });
 
     //@ts-ignore
     container?.addEventListener("click", (e: MouseEvent) => {
@@ -809,6 +811,110 @@ class TimerComponent extends HTMLElement {
       log({ currentValue });
     }
   }
+
+  /**
+   * Gets the value of the initial timer
+   */
+  get initialTime() {
+    const attributeValue: string | null = this.getAttribute("initial-time");
+
+    const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
+    if (attributeIsNotANumber) {
+      return 0;
+    }
+    return Number(attributeValue);
+  }
+
+  /**
+   * Sets the value of the initialTime
+   */
+  set initialTime(value) {
+    log("changed!", value);
+  }
+
+  /**
+   * Getter that gets the current time of the timer in seconds
+   *
+   * **ex:**
+   * ```js
+   *  const a = this.currentTime;
+   * ```
+   */
+  get currentTime() {
+    const attributeValue: string | null = this.getAttribute("initial-time");
+
+    const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
+    if (attributeIsNotANumber) {
+      return 0;
+    }
+    return Number(attributeValue);
+  }
+
+  /**
+   * Setter that changes the value of the timer
+   *
+   * **ex:**
+   * ```js
+    this.currentTime = 69;
+   * ```
+   */
+  set currentTime(value) {
+    log("Current value changed!", value);
+  }
+
+  /**
+   * Static getter methods that indicates the
+   * list of attributes that the custom element wants to observe for changes.
+   */
+  static get observedAttributes() {
+    return ["initial-time", "current-time"];
+  }
+
+  /**
+   * Methods as a callback function that is called by the browser's web API
+   *  when an observed attribute of a custom element is added, removed, or changed.
+   * @param name
+   */
+  attributeChangedCallback(name: string) {
+    log({ name });
+    //@ts-ignore
+    const paragraph: HTMLElement = selectQuery(
+      ".timer-component__paragraph",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    switch (name) {
+      case "initial-time": {
+        const hours: string =
+          this.initialTime / 3_600 < 10
+            ? `0${Math.floor(this.initialTime / 3_600)}`
+            : Math.floor(this.initialTime / 3_600).toString();
+
+        const minutes: string =
+          this.initialTime / 60 < 10
+            ? `0${Math.floor((this.initialTime / 60) % 60)}`
+            : Math.floor((this.initialTime / 60) % 60).toString();
+
+        const seconds: string =
+          this.initialTime % 60 < 10
+            ? `0${this.initialTime % 60}`
+            : (this.initialTime % 60).toString();
+
+        paragraph.textContent = `${hours}:${minutes}:${seconds}`;
+        break;
+      }
+
+      case "current-time": {
+        log("Current time changed", this.currentTime);
+        break;
+      }
+
+      default: {
+        log("other", name);
+        break;
+      }
+    }
+  }
 }
 
 /**
@@ -816,136 +922,3 @@ class TimerComponent extends HTMLElement {
  */
 customElements.define("timer-component", TimerComponent);
 // <timer-component></timer-component>
-
-/**
-Functions for the timer setter in the modal window aka <dialog>
-
-HTML:
-
-<p class="timer-dialog">
-  <span class="timer-dialog__slot timer-dialog__slot--hours"> 
-  <input type="number" value="00" min="0" max="99" class="timer-dialog__input timer-dialog__input--hours">
-  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
-    <path
-        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
-</svg></button>
-  </span>
-  <span class="timer-dialog__slot-separator">:</span>
-  <span class="timer-dialog__slot timer-dialog__slot--minutes"> 
-  <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--minutes">
-  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
-    <path
-        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
-</svg></button>
-  </span>
-  <span class="timer-dialog__slot-separator">:</span>
-  <span class="timer-dialog__slot timer-dialog__slot--seconds"> 
-  <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--seconds">
-  <button class="timer-dialog__button timer-dialog__button--increment">↑</button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
-    <path
-        d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
-</svg></button>
-  </span>
-</p>
-
-CSS:
-body {
-  min-height: 100vh;
-  overflow-x: hidden;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgb(36, 36, 36);
-  color: white;
-}
-
-
-
-
-
-JS:
-const hoursSlot = selectQuery(".timer-dialog__slot--hours");
-const minutesSlot = selectQuery(".timer-dialog__slot--minutes");
-const secondsSlot = selectQuery(".timer-dialog__slot--seconds");
-
-const allSlots = [hoursSlot, minutesSlot, secondsSlot];
-
-function addEventListeners() {
-  for (const slot of allSlots) {
-    const [input, incrementButton, decrementButton] = getChildren(slot);
-
-    input.addEventListener("input", handleInput);
-
-    incrementButton.addEventListener("click", handleButton);
-    decrementButton.addEventListener("click", handleButton);
-
-    const valueOfInput = input.value;
-  }
-}
-
-addEventListeners();
-
-function handleInput(event) {
-  let { value } = event.target;
-
-  verifyInputValue(event.target, false);
-
-  let currentValue = Number(event.target.value);
-}
-
-function handleButton(event) {
-  const isIncrementButton = getClassListValues(event.target).includes(
-    "timer-dialog__button--increment"
-  );
-
-  const valueToSum = isIncrementButton ? 1 : -1;
-
-  const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
-
-  const input = getChildren(slotContainer)[0];
-
-  input.valueAsNumber += valueToSum;
-
-  verifyInputValue(input, true);
-
-  let currentValue = Number(input.value);
-}
-
-function verifyInputValue(inputElement, isButtonEvent) {
-  const classes = getClassListValues(inputElement);
-  const isHoursInput = classes.includes("timer__input--hours");
-  const inputLimit = isHoursInput ? 99 : 59;
-  log({ isHoursInput });
-
-  if (isButtonEvent) {
-    const valueOfInputUnderflows = Number(inputElement.value) < 0;
-
-    if (valueOfInputUnderflows) {
-      inputElement.value = inputLimit;
-    }
-  }
-  log(inputElement.value);
-  const valueIsUnderTen = Number(inputElement.value) < 10;
-  if (valueIsUnderTen) {
-    inputElement.value = `0${inputElement.value.slice(-1)}`;
-  }
-
-  const valueOverflows = isHoursInput
-    ? inputElement.value.slice(1, 3) > 99
-    : inputElement.value > 59;
-
-  if (valueOverflows) {
-    let currentValue = inputElement.value.slice(1, 3);
-    inputElement.value = `0${currentValue.slice(-1)}`;
-  }
-
-  const valueIsOverThreeDigits = inputElement.value.length > 2;
-  if (valueIsOverThreeDigits) {
-    inputElement.value = `${inputElement.value.slice(1, 3)}`;
-  }
-}
- */
