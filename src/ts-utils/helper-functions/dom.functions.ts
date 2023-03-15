@@ -55,9 +55,12 @@ export function selectQueryAll(
  * Function that returns an array containing all child nodes of an HTML element.
  *
  * @param {HTMLElement} elementOfReference The parent HTML element whose children to select.
- * @returns {ChildNode[]|null} An array containing all child nodes of the parent element or null if the parent element has no children.
+ * @returns {Element[]} An array containing all child nodes of the parent element or null if the parent element has no children.
  */
-export function getChildren(elementOfReference: HTMLElement): Element[] | null {
+export function getChildren(elementOfReference: HTMLElement | null): Element[] {
+  if (!elementOfReference) {
+    return [];
+  }
   return Array.from(elementOfReference.children);
 }
 

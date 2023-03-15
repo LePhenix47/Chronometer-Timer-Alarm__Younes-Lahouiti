@@ -60,6 +60,7 @@ const dialogStyle: string = /* css */ `
 .timer-dialog__title-delete{
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 5px;
 
 }
@@ -674,7 +675,7 @@ class TimerComponent extends HTMLElement {
     setStyleProp("--svg-dashoffset", `${2 * svgCircleLength}`, container);
 
     //@ts-ignore
-    container.addEventListener("click", (e: MouseEvent) => {
+    container?.addEventListener("click", (e: MouseEvent) => {
       const clickedElement: EventTarget | null = e.target;
 
       const modalWindow = selectQuery(".timer-dialog", container);
@@ -703,6 +704,110 @@ class TimerComponent extends HTMLElement {
         }
       }
     });
+    const hoursSlot = selectQuery(
+      ".timer-dialog__slot--hours",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    const minutesSlot = selectQuery(
+      ".timer-dialog__slot--minutes",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    const secondsSlot = selectQuery(
+      ".timer-dialog__slot--seconds",
+      //@ts-ignore
+      this.shadowRoot
+    );
+
+    const allSlots = [hoursSlot, minutesSlot, secondsSlot];
+
+    function addEventListeners() {
+      for (const slot of allSlots) {
+        const [input, incrementButton, decrementButton] = getChildren(slot);
+
+        input.addEventListener("input", handleInput);
+
+        incrementButton.addEventListener("click", handleButton);
+        decrementButton.addEventListener("click", handleButton);
+      }
+    }
+
+    addEventListeners();
+
+    function handleInput(event: InputEvent) {
+      //@ts-ignore
+      verifyInputValue(event.target, false);
+    }
+
+    function handleButton(event: MouseEvent) {
+      //@ts-ignore
+      const isIncrementButton = getClassListValues(event.target).includes(
+        "timer-dialog__button--increment"
+      );
+
+      const valueToSum = isIncrementButton ? 1 : -1;
+      log({ isIncrementButton }, valueToSum);
+
+      //@ts-ignore
+      const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
+      log(event.target);
+      log({ slotContainer });
+
+      //@ts-ignore
+      const input: HTMLInputElement = getChildren(slotContainer)[0];
+
+      log({ input });
+      const newValue: number = Number(input.value) + Number(valueToSum);
+
+      input.value = newValue.toString();
+
+      verifyInputValue(input, true);
+    }
+
+    function verifyInputValue(
+      inputElement: HTMLInputElement,
+      isButtonEvent: boolean
+    ) {
+      const classes: string[] = getClassListValues(inputElement);
+
+      const isHoursInput: boolean = classes.includes(
+        "timer-dialog__input--hours"
+      );
+
+      const inputLimit: number = isHoursInput ? 99 : 59;
+
+      log({ isHoursInput });
+
+      if (isButtonEvent) {
+        const valueOfInputUnderflows: boolean = Number(inputElement.value) < 0;
+
+        if (valueOfInputUnderflows) {
+          inputElement.value = inputLimit.toString().slice(-2);
+        }
+      }
+      const valueIsUnderTen: boolean = Number(inputElement.value) < 10;
+      if (valueIsUnderTen) {
+        inputElement.value = `0${inputElement.value.slice(-1)}`;
+      }
+
+      const valueOverflows: boolean = isHoursInput
+        ? Number(inputElement.value.slice(1, 3)) > 99
+        : Number(inputElement.value.slice(-2)) > 59;
+
+      if (valueOverflows) {
+        let currentValue: string = inputElement.value.slice(1, 3);
+        inputElement.value = `0${currentValue.slice(-1)}`;
+      }
+
+      const valueIsOverThreeDigits: boolean = inputElement.value.length > 2;
+      if (valueIsOverThreeDigits) {
+        inputElement.value = `${inputElement.value.slice(1, 3)}`;
+      }
+
+      const currentValue = inputElement.value;
+      log({ currentValue });
+    }
   }
 }
 

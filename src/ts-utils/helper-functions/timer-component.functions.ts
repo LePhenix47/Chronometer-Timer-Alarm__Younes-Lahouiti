@@ -1,5 +1,10 @@
 import { log } from "./console-funtions";
-import { getChildren, getClassListValues, setStyleProp } from "./dom.functions";
+import {
+  getAncestor,
+  getChildren,
+  getClassListValues,
+  setStyleProp,
+} from "./dom.functions";
 
 /**
  * Handles click events on the timer button elements
@@ -11,20 +16,42 @@ export function handleButtonEvents(
   buttonElement: any,
   timerState: { state: string; isRunning: boolean }
 ): void {
-  //@ts-ignore
-  log(getClassListValues(buttonElement));
+  const buttonClasses: string[] = getClassListValues(buttonElement);
 
-  const isPlayButton: boolean = getClassListValues(buttonElement).includes(
+  log(buttonClasses);
+
+  const isPlayButton: boolean = buttonClasses.includes(
     "timer-component__button--play"
   );
-  const isRestartButton: boolean = getClassListValues(buttonElement).includes(
+  const isRestartButton: boolean = buttonClasses.includes(
     "timer-component__button--restart"
   );
+  const isDeleteButton: boolean = buttonClasses.includes(
+    "timer-dialog__delete"
+  );
+
+  const isTimerDialogButton: boolean = buttonClasses.includes(
+    "timer-dialog__button"
+  );
+
+  const isRegisterButton: boolean = buttonClasses.includes(
+    "timer-dialog__button--register"
+  );
+  const isCancelButton: boolean = buttonClasses.includes(
+    "timer-dialog__button--cancel"
+  );
+
+  const isDialogButton: boolean =
+    isDeleteButton || isTimerDialogButton || isRegisterButton || isCancelButton;
 
   if (isPlayButton) {
     handlePlayButton(buttonElement, timerState);
   } else if (isRestartButton) {
     handleRestartButton(buttonElement, timerState);
+  } else if (isDialogButton) {
+    handleDialogButtons(buttonElement, timerState);
+  } else {
+    log("Unknown button pressed");
   }
 }
 
@@ -120,5 +147,40 @@ export function handleRestartButton(
   const timerHasReachedZero: boolean = state === "finished";
   if (timerHasReachedZero) {
     //We still enable it
+  }
+}
+
+export function handleDialogButtons(buttonElement, timerState) {
+  const buttonClasses: string[] = getClassListValues(buttonElement);
+
+  const isDeleteButton: boolean = buttonClasses.includes(
+    "timer-dialog__delete"
+  );
+
+  const isTimerDialogButton: boolean = buttonClasses.includes(
+    "timer-dialog__button"
+  );
+
+  const isRegisterButton: boolean = buttonClasses.includes(
+    "timer-dialog__button--register"
+  );
+  const isCancelButton: boolean = buttonClasses.includes(
+    "timer-dialog__button--cancel"
+  );
+  const modalWindow = getAncestor(buttonElement, "dialog");
+  log("Is dialog button:", modalWindow);
+  if (isDeleteButton) {
+    log("Delete button");
+  } else if (isTimerDialogButton) {
+    log(
+      "Timer button",
+      buttonClasses.includes("timer-dialog__button--increment") ? "Up" : "Down"
+    );
+  } else if (isRegisterButton) {
+    log("Register button");
+  } else if (isCancelButton) {
+    //@ts-ignore
+    modalWindow.close();
+    log("Cancel button");
   }
 }
