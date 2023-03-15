@@ -353,9 +353,9 @@ svg{
   scale: -100% 100%;
   fill: rgb(38, 38, 38);
   
-  cx: 50;
+  /* cx: 50;
   cy: 50;
-  r: 45;
+  r: 45; */
   
   stroke: grey;
   stroke-width: 5px;
@@ -372,9 +372,9 @@ svg{
 .circle--bg{
   fill: none;
   
-  cx: 50;
+  /* cx: 50;
   cy: 50;
-  r: 45;
+  r: 45; */
   
   stroke: rgb(210, 77, 87);
   stroke-width: 5px;
@@ -560,8 +560,8 @@ Cancel</button>
 const timerUI: string = /* html */ `
 
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="timer__svg">
-    <circle class="timer-component__circle--bg circle--bg"></circle>
-    <circle class="timer-component__circle circle"></circle>
+    <circle cx="50" cy="50" r="45" class="timer-component__circle--bg circle--bg"></circle>
+    <circle cx="50" cy="50" r="45" class="timer-component__circle circle"></circle>
   </svg>
   <p class="timer-component__paragraph" for="time-input">00:00:00</p>
   <button type="button" class="timer-component__button timer-component__button--play">
