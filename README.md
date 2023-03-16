@@ -7,3 +7,7 @@ Additionally, the app makes use of drag and drop functionality, allowing users t
 The app is also built using web components, a set of standardized APIs that allow developers to create reusable and modular components for the web. These components can be easily shared across applications and help to promote consistency and maintainability in codebases.
 
 Furthermore, the app is written in TypeScript, a statically-typed superset of JavaScript, which helps to catch bugs at compile-time and improve code readability and maintainability. The TypeScript code is compiled using Webpack, a popular module bundler that helps to package and optimize code for deployment to production environments. By using TypeScript and Webpack, the app benefits from improved development workflows and code organization, without requiring the use of a heavier framework like React.
+
+A GitHub pages is available here:
+
+https://lephenix47.github.io/Chronometer-Timer-Alarm__Younes-Lahouiti/

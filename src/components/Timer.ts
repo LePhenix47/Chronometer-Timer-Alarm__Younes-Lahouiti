@@ -12,10 +12,10 @@ import {
   getAncestor,
   getSibling,
   getClassListValues,
+  getComponentHost,
 } from "../ts-utils/helper-functions/dom.functions";
 
 //Console methods
-import { log } from "../ts-utils/helper-functions/console-funtions";
 
 //String methods
 import { sliceString } from "../ts-utils/helper-functions/string.function";
@@ -670,9 +670,7 @@ export class TimerComponent extends HTMLElement {
   /**
    * Sets the value of the initialTime
    */
-  set initialTime(value) {
-    log("changed!", value);
-  }
+  set initialTime(value) {}
 
   /**
    * Getter that gets the current time of the timer in seconds
@@ -700,17 +698,13 @@ export class TimerComponent extends HTMLElement {
     this.currentTime = 69;
    * ```
    */
-  set currentTime(value) {
-    log("Current value changed!", value);
-  }
+  set currentTime(value) {}
 
   get timerTitle() {
     return this.getAttribute("timer-title");
   }
 
-  set timerTitle(title: string | null) {
-    log("Timer title changed!", title);
-  }
+  set timerTitle(title: string | null) {}
 
   /**
    * Static getter methods that indicates the
@@ -739,7 +733,6 @@ export class TimerComponent extends HTMLElement {
 
     //@ts-ignore
     const svgCircleLength: number = this.svgCircle?.getTotalLength();
-    log(this.svgCircle);
     /**
      * We set the style prop of these variables to equal to the svgLength
      */
@@ -758,11 +751,9 @@ export class TimerComponent extends HTMLElement {
         handleButtonEvents(clickedElement, this.timerState);
       } else {
         const isNotContainer = clickedElement !== modalWindow;
-        log("click", clickedElement);
         if (isNotContainer) {
           //@ts-ignore
           const modalIsAlreadyOpened = modalWindow?.attributes.open;
-          log({ modalIsAlreadyOpened });
           if (modalIsAlreadyOpened) {
             return;
           } else {
@@ -817,17 +808,13 @@ export class TimerComponent extends HTMLElement {
       );
 
       const valueToSum = isIncrementButton ? 1 : -1;
-      log({ isIncrementButton }, valueToSum);
 
       //@ts-ignore
       const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
-      log(event.target);
-      log({ slotContainer });
 
       //@ts-ignore
       const input: HTMLInputElement = getChildren(slotContainer)[0];
 
-      log({ input });
       const newValue: number = Number(input.value) + Number(valueToSum);
 
       input.value = newValue.toString();
@@ -846,8 +833,6 @@ export class TimerComponent extends HTMLElement {
       );
 
       const inputLimit: number = isHoursInput ? 99 : 59;
-
-      log({ isHoursInput });
 
       if (isButtonEvent) {
         const valueOfInputUnderflows: boolean = Number(inputElement.value) < 0;
@@ -876,7 +861,6 @@ export class TimerComponent extends HTMLElement {
       }
 
       const currentValue = inputElement.value;
-      log({ currentValue });
     }
   }
 
@@ -892,7 +876,6 @@ export class TimerComponent extends HTMLElement {
    * @param {string} name
    */
   attributeChangedCallback(name: string) {
-    log({ name });
     //@ts-ignore
     const paragraph: HTMLElement = selectQuery(
       ".timer-component__paragraph",
@@ -903,14 +886,11 @@ export class TimerComponent extends HTMLElement {
       case "initial-time": {
         const { hours, minutes, seconds } = getTimeValues(this.initialTime);
 
-        log({ hours }, { minutes }, { seconds });
-
         paragraph.textContent = `${hours}:${minutes}:${seconds}`;
         break;
       }
 
       case "current-time": {
-        log("Current time changed", this.currentTime);
         //@ts-ignore
         const container: HTMLElement = selectQuery(
           ".timer-component__container",
@@ -932,18 +912,14 @@ export class TimerComponent extends HTMLElement {
 
         const { hours, minutes, seconds } = getTimeValues(this.currentTime);
 
-        log({ hours }, { minutes }, { seconds });
-
         paragraph.textContent = `${hours}:${minutes}:${seconds}`;
         break;
       }
       case "timer-title": {
-        log("Timer title changed");
         break;
       }
 
       default: {
-        log("other", name);
         break;
       }
     }

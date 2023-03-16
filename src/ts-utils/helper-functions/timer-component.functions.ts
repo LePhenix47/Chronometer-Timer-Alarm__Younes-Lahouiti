@@ -68,31 +68,39 @@ export function handleButtonEvents(
  * @returns {void}
  */
 
+const intervalCreator: Interval = new Interval();
 export function handlePlayButton(
   buttonElement: any,
   timerState: { state: string; isRunning: boolean }
 ): void {
-  log("Play button");
-
   //We get the svgs inside the play button
   const [playSvg, pauseSvg]: any = getChildren(buttonElement);
 
   //We get the <timer-component> element through the button and get the total amount of seconds
   const timerComponent: Element = getComponentHost(buttonElement);
-  let currentAmountOfSeconds: number = Number(
+
+  let totalAmountOfSeconds: number = Number(
     timerComponent.getAttribute("initial-time")
   );
+
+  let currentAmountOfSeconds: number = Number(
+    timerComponent.getAttribute("current-time")
+  );
+
+  log({ totalAmountOfSeconds }, { currentAmountOfSeconds });
   /**
-   * We check if the timer is running
+   * We check if the timer was paused before cliking the button
    */
-  const timerIsPaused: boolean = getClassListValues(pauseSvg).includes("hide");
+  const timerWasPaused: boolean = getClassListValues(pauseSvg).includes("hide");
 
   //@ts-ignore
   let callback: NodeJS.Timer | null | undefined =
     //@ts-ignore
-    Interval.getArrayOfIds()[0] | null;
+    intervalCreator.getArrayOfIds()[0] | null;
 
-  if (timerIsPaused) {
+  log({ intervalCreator });
+
+  if (timerWasPaused) {
     //The button was clicked, the timer was paused and is now running, we show the paused icon
     log("Is running");
     pauseSvg.classList.remove("hide");
@@ -102,12 +110,12 @@ export function handlePlayButton(
     timerState.isRunning = false;
 
     //We start the timer
-    callback = Interval.set(() => {
+    callback = intervalCreator.set(() => {
       const countdownFinished = currentAmountOfSeconds <= 0;
-      log({ currentAmountOfSeconds });
+      log({ totalAmountOfSeconds, currentAmountOfSeconds });
       if (countdownFinished) {
         //@ts-ignore
-        Interval.clear(callback);
+        intervalCreator.clear(callback);
 
         timerState.state = "finished";
         timerState.isRunning = false;
@@ -132,7 +140,7 @@ export function handlePlayButton(
     //we're supposed to clear the timer here
     //@ts-ignore
     if (callback) {
-      Interval.clear(callback);
+      intervalCreator.clear(callback);
     }
   }
 }
@@ -171,40 +179,46 @@ export function handleRestartButton(
   }
 }
 
-export function handleDialogButtons(buttonElement: any, timerState) {
+/**
+ * Handles the click events for buttons in a timer dialog.
+ * @param buttonElement The button element that was clicked.
+ * @param timerState The current state of the timer.
+ */
+export function handleDialogButtons(buttonElement: any, timerState: any) {
+  // Get an array of classes for the clicked button element
   const buttonClasses: string[] = getClassListValues(buttonElement);
 
+  // Determine which type of button was clicked
   const isDeleteButton: boolean = buttonClasses.includes(
     "timer-dialog__delete"
   );
-
   const isTimerDialogButton: boolean = buttonClasses.includes(
     "timer-dialog__button"
   );
-
   const isRegisterButton: boolean = buttonClasses.includes(
     "timer-dialog__button--register"
   );
   const isCancelButton: boolean = buttonClasses.includes(
     "timer-dialog__button--cancel"
   );
+
+  // Get the parent dialog element that contains the clicked button
   const modalWindow = getAncestor(buttonElement, "dialog");
 
+  // Get the timer component host element associated with the dialog
   //@ts-ignore
   const timerComponent = getComponentHost(modalWindow);
 
+  // Get an array of input elements in the dialog
   //@ts-ignore
   const inputs = selectQueryAll("input", modalWindow);
-  log({ inputs });
 
+  // Handle different button types
   if (isDeleteButton) {
-    log("Delete button");
   } else if (isTimerDialogButton) {
-    log(
-      "Timer button",
-      buttonClasses.includes("timer-dialog__button--increment") ? "Up" : "Down"
-    );
+    // Determine whether an increment or decrement button was clicked
   } else if (isRegisterButton) {
+    // Get the values of the input elements and convert them to numbers
     let inputsValues: any[] = [];
     if (inputs) {
       for (const input of inputs) {
@@ -213,23 +227,24 @@ export function handleDialogButtons(buttonElement: any, timerState) {
         inputsValues.push(valueOfInput);
       }
     }
-    log({ inputsValues });
-    const hoursValue = Number(inputsValues[0]);
-    const minutesValue = Number(inputsValues[1]);
-    const secondsValue = Number(inputsValues[2]);
+    const hoursValue: number = Number(inputsValues[0]);
+    const minutesValue: number = Number(inputsValues[1]);
+    const secondsValue: number = Number(inputsValues[2]);
 
-    log({ hoursValue, minutesValue, secondsValue });
-
-    const totalTimeInSeconds =
+    // Calculate the total time in seconds from the input values
+    const totalTimeInSeconds: number =
       3_600 * hoursValue + 60 * minutesValue + secondsValue;
 
+    // Set the initial and current time attributes of the timer component
     timerComponent.setAttribute("initial-time", totalTimeInSeconds.toString());
+    timerComponent.setAttribute("current-time", totalTimeInSeconds.toString());
+
+    // Close the dialog
     //@ts-ignore
     modalWindow.close();
-    log("Register button", timerComponent.attributes);
   } else if (isCancelButton) {
+    // Close the dialog
     //@ts-ignore
     modalWindow.close();
-    log("Cancel button");
   }
 }

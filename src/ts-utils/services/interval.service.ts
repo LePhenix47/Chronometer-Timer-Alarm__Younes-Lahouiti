@@ -5,6 +5,9 @@ export class Interval {
   private static id: NodeJS.Timer;
   private static arrayOfIds: NodeJS.Timer[] = [];
 
+  id: NodeJS.Timer;
+  arrayOfIds: NodeJS.Timer[] = [];
+
   constructor() {}
 
   /**
@@ -23,6 +26,20 @@ export class Interval {
    *
    */
   static set(
+    callback: (...args: any) => any | void,
+    milliseconds: number
+  ): NodeJS.Timer {
+    this.id = setInterval(() => {
+      callback();
+    }, milliseconds);
+
+    this.arrayOfIds.push(this.id);
+
+    return this.id;
+  }
+
+  //Method but to set an interval that is encapslused
+  set(
     callback: (...args: any) => any | void,
     milliseconds: number
   ): NodeJS.Timer {
@@ -68,7 +85,26 @@ export class Interval {
     });
   }
 
+  //We do the same to encapsulate
+  clear(id: NodeJS.Timer): void {
+    const actualId: NodeJS.Timer = this.arrayOfIds.filter(
+      (idNumber: NodeJS.Timer) => {
+        return idNumber === id;
+      }
+    )[0];
+
+    clearInterval(actualId);
+
+    this.arrayOfIds = this.arrayOfIds.filter((idNumber: NodeJS.Timer) => {
+      return idNumber !== actualId;
+    });
+  }
+
   static getArrayOfIds() {
+    return this.arrayOfIds;
+  }
+
+  getArrayOfIds() {
     return this.arrayOfIds;
   }
 }
