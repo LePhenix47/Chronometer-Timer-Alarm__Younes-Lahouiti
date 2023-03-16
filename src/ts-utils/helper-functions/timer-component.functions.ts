@@ -74,33 +74,24 @@ export function handlePlayButton(
 ): void {
   log("Play button");
 
+  //We get the svgs inside the play button
   const [playSvg, pauseSvg]: any = getChildren(buttonElement);
 
+  //We get the <timer-component> element through the button and get the total amount of seconds
   const timerComponent: Element = getComponentHost(buttonElement);
   let currentAmountOfSeconds: number = Number(
     timerComponent.getAttribute("initial-time")
   );
-  log({ timerComponent, currentAmountOfSeconds });
-
-  log("play-resume/pause button", { buttonElement });
-  const timerHasNotStarted: boolean = timerState.state === "idle";
-
-  if (timerHasNotStarted) {
-    //We make the restart button disabled
-    timerState.state === "idle";
-  }
-
-  const timerHasReachedZero: boolean = timerState.state === "finished";
-  if (timerHasReachedZero) {
-    //We still enable it
-    timerState.state === "finished";
-  }
-
   /**
    * We check if the timer is running
    */
   const timerIsPaused: boolean = getClassListValues(pauseSvg).includes("hide");
-  // const timerIsPaused: boolean = timerState.isRunning;
+
+  //@ts-ignore
+  let callback: NodeJS.Timer | null | undefined =
+    //@ts-ignore
+    Interval.getArrayOfIds()[0] | null;
+
   if (timerIsPaused) {
     //The button was clicked, the timer was paused and is now running, we show the paused icon
     log("Is running");
@@ -109,22 +100,17 @@ export function handlePlayButton(
 
     timerState.state = "started";
     timerState.isRunning = false;
-  } else {
-    //The button was clicked, the timer was running and is now paused, we show the play icon
-    log("Is paused");
 
-    pauseSvg.classList.add("hide");
-    playSvg.classList.remove("hide");
-
-    timerState.state = "started";
-    timerState.isRunning = true;
-    //@ts-ignore
-    const set = Interval.set(() => {
+    //We start the timer
+    callback = Interval.set(() => {
       const countdownFinished = currentAmountOfSeconds <= 0;
       log({ currentAmountOfSeconds });
       if (countdownFinished) {
         //@ts-ignore
-        Interval.clear(set);
+        Interval.clear(callback);
+
+        timerState.state = "finished";
+        timerState.isRunning = false;
         return;
       }
 
@@ -134,6 +120,20 @@ export function handlePlayButton(
         currentAmountOfSeconds.toString()
       );
     }, 1_000);
+  } else {
+    //The button was clicked, the timer was running and is now paused, we show the play icon
+    log("Is paused");
+
+    pauseSvg.classList.add("hide");
+    playSvg.classList.remove("hide");
+
+    timerState.state = "started";
+    timerState.isRunning = true;
+    //we're supposed to clear the timer here
+    //@ts-ignore
+    if (callback) {
+      Interval.clear(callback);
+    }
   }
 }
 

@@ -67,4 +67,8 @@ export class Interval {
       return idNumber !== actualId;
     });
   }
+
+  static getArrayOfIds() {
+    return this.arrayOfIds;
+  }
 }

@@ -165,12 +165,20 @@ const dialogStyle: string = /* css */ `
   border-bottom: 2px solid #e4505c;
 }
 
-.timer-dialog__input[type=number]::-webkit-inner-spin-button {
-  appearance: none;
+.timer-dialog__input[type="number"]{
+  -moz-appearance: textfield;
 }
 
-.timer-dialog__input[type=number]::-webkit-outer-spin-button {
-  appearance: none;
+.timer-dialog__input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+ -moz-appearance:textfield;
+   appearance: none;
+}
+
+.timer-dialog__input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+ -moz-appearance:textfield;
+   appearance: none;
 }
 
 .timer-dialog__input:focus {
@@ -352,12 +360,8 @@ svg{
 .circle{
   scale: -100% 100%;
   fill: rgb(38, 38, 38);
-  
-  /* cx: 50;
-  cy: 50;
-  r: 45; */
-  
-  stroke: grey;
+    
+  stroke: rgb(210, 77, 87);
   stroke-width: 5px;
   stroke-linecap: round;
   stroke-dasharray: var(--svg-dasharray);
@@ -371,12 +375,8 @@ svg{
 
 .circle--bg{
   fill: none;
-  
-  /* cx: 50;
-  cy: 50;
-  r: 45; */
-  
-  stroke: rgb(210, 77, 87);
+    
+  stroke: #3e3e3e;
   stroke-width: 5px;
 
   transform-origin: center;
@@ -628,12 +628,14 @@ export class TimerComponent extends HTMLElement {
    * @property {boolean} isRunning - Whether the timer is currently running or not.
    */
   timerState: { state: "idle" | "started" | "finished"; isRunning: boolean };
+  svgCircle: HTMLElement | null;
 
   constructor() {
     super();
     //
 
     this.timerState = { state: "idle", isRunning: false };
+
     /**
      * Container that holds our web component
      *
@@ -650,8 +652,78 @@ export class TimerComponent extends HTMLElement {
      * We append the template content to the container
      */
     shadowRoot.appendChild(clonedTemplate);
-    //
+  }
 
+  /**
+   * Gets the value of the initial timer
+   */
+  get initialTime() {
+    const attributeValue: string | null = this.getAttribute("initial-time");
+
+    const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
+    if (attributeIsNotANumber) {
+      return 0;
+    }
+    return Number(attributeValue);
+  }
+
+  /**
+   * Sets the value of the initialTime
+   */
+  set initialTime(value) {
+    log("changed!", value);
+  }
+
+  /**
+   * Getter that gets the current time of the timer in seconds
+   *
+   * **ex:**
+   * ```js
+   *  const a = this.currentTime;
+   * ```
+   */
+  get currentTime() {
+    const attributeValue: string | null = this.getAttribute("current-time");
+
+    const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
+    if (attributeIsNotANumber) {
+      return 0;
+    }
+    return Number(attributeValue);
+  }
+
+  /**
+   * Setter that changes the value of the timer
+   *
+   * **ex:**
+   * ```js
+    this.currentTime = 69;
+   * ```
+   */
+  set currentTime(value) {
+    log("Current value changed!", value);
+  }
+
+  get timerTitle() {
+    return this.getAttribute("timer-title");
+  }
+
+  set timerTitle(title: string | null) {
+    log("Timer title changed!", title);
+  }
+
+  /**
+   * Static getter methods that indicates the
+   * list of attributes that the custom element wants to observe for changes.
+   */
+  static get observedAttributes() {
+    return ["initial-time", "current-time", "timer-title"];
+  }
+
+  /**
+   * Method called every time the element is inserted into the DOM
+   */
+  connectedCallback() {
     //@ts-ignore
     const container: HTMLElement = selectQuery(
       ".timer-component__container",
@@ -661,6 +733,18 @@ export class TimerComponent extends HTMLElement {
     /**
      * We get the circle
      */
+
+    //@ts-ignore
+    this.svgCircle = selectQuery(".circle", this.shadowRoot);
+
+    //@ts-ignore
+    const svgCircleLength: number = this.svgCircle?.getTotalLength();
+    log(this.svgCircle);
+    /**
+     * We set the style prop of these variables to equal to the svgLength
+     */
+    setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
+    setStyleProp("--svg-dashoffset", `${svgCircleLength * 2}`, container);
 
     //@ts-ignore
     container?.addEventListener("click", (e: MouseEvent) => {
@@ -680,8 +764,6 @@ export class TimerComponent extends HTMLElement {
           const modalIsAlreadyOpened = modalWindow?.attributes.open;
           log({ modalIsAlreadyOpened });
           if (modalIsAlreadyOpened) {
-            // // @ts-ignore
-            // modalWindow.close();
             return;
           } else {
             //@ts-ignore
@@ -799,62 +881,9 @@ export class TimerComponent extends HTMLElement {
   }
 
   /**
-   * Gets the value of the initial timer
+   * Method called every time the element is removed from the DOM
    */
-  get initialTime() {
-    const attributeValue: string | null = this.getAttribute("initial-time");
-
-    const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
-    if (attributeIsNotANumber) {
-      return 0;
-    }
-    return Number(attributeValue);
-  }
-
-  /**
-   * Sets the value of the initialTime
-   */
-  set initialTime(value) {
-    log("changed!", value);
-  }
-
-  /**
-   * Getter that gets the current time of the timer in seconds
-   *
-   * **ex:**
-   * ```js
-   *  const a = this.currentTime;
-   * ```
-   */
-  get currentTime() {
-    const attributeValue: string | null = this.getAttribute("current-time");
-
-    const attributeIsNotANumber: boolean = isNaN(Number(attributeValue));
-    if (attributeIsNotANumber) {
-      return 0;
-    }
-    return Number(attributeValue);
-  }
-
-  /**
-   * Setter that changes the value of the timer
-   *
-   * **ex:**
-   * ```js
-    this.currentTime = 69;
-   * ```
-   */
-  set currentTime(value) {
-    log("Current value changed!", value);
-  }
-
-  /**
-   * Static getter methods that indicates the
-   * list of attributes that the custom element wants to observe for changes.
-   */
-  static get observedAttributes() {
-    return ["initial-time", "current-time"];
-  }
+  disconnectedCallback() {}
 
   /**
    * Methods as a callback function that is called by the browser's web API
@@ -888,11 +917,9 @@ export class TimerComponent extends HTMLElement {
           //@ts-ignore
           this.shadowRoot
         );
-        //@ts-ignore
-        const svgCircle: HTMLElement = selectQuery(".circle", this.shadowRoot);
 
         //@ts-ignore
-        const svgCircleLength: number = svgCircle?.getTotalLength();
+        const svgCircleLength: number = this.svgCircle?.getTotalLength();
         /**
          * We set the style prop of these variables to equal to the svgLength
          */
@@ -910,6 +937,10 @@ export class TimerComponent extends HTMLElement {
         paragraph.textContent = `${hours}:${minutes}:${seconds}`;
         break;
       }
+      case "timer-title": {
+        log("Timer title changed");
+        break;
+      }
 
       default: {
         log("other", name);
@@ -919,7 +950,19 @@ export class TimerComponent extends HTMLElement {
   }
 }
 
-function getTimeValues(totalSeconds: number) {
+/**
+ * Takes a total number of seconds and returns an object containing the equivalent hours, minutes, and seconds.
+ *
+ *@param {number} totalSeconds - The total number of seconds.
+
+ *@returns {{hours: string, minutes: string, seconds: string}} An object containing the equivalent hours, minutes, and seconds.
+ *
+ */
+function getTimeValues(totalSeconds: number): {
+  hours: string;
+  minutes: string;
+  seconds: string;
+} {
   const hours: string =
     totalSeconds / 3_600 < 10
       ? `0${Math.floor(totalSeconds / 3_600)}`
