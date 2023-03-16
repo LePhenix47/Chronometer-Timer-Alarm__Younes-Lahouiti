@@ -22,6 +22,7 @@ import { sliceString } from "../ts-utils/helper-functions/string.function";
 
 //Component specific functions
 import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component.functions";
+import { log } from "../ts-utils/helper-functions/console-funtions";
 
 //Component specific variables
 
@@ -390,12 +391,18 @@ svg{
 
 .timer-component__container {
     background-color: black;
-    display: block;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 
     width:350px;
 
     position: relative;
 }
+
+.timer-component__title{}
 
 .timer-component__paragraph {
   display: inline-block;
@@ -558,7 +565,7 @@ Cancel</button>
 </dialog>`;
 
 const timerUI: string = /* html */ `
-
+  <h3 class="timer-component__title"></h3>
   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="timer__svg">
     <circle cx="50" cy="50" r="45" class="timer-component__circle--bg circle--bg"></circle>
     <circle cx="50" cy="50" r="45" class="timer-component__circle circle"></circle>
@@ -706,12 +713,22 @@ export class TimerComponent extends HTMLElement {
 
   set timerTitle(title: string | null) {}
 
+  get isRunning() {
+    const attributeValue: string | null = this.getAttribute("is-running");
+    //@ts-ignore
+    return JSON.parse(attributeValue);
+  }
+
+  set isRunning(booleanValue) {
+    log("The timer is running", booleanValue);
+  }
+
   /**
    * Static getter methods that indicates the
    * list of attributes that the custom element wants to observe for changes.
    */
   static get observedAttributes() {
-    return ["initial-time", "current-time", "timer-title"];
+    return ["initial-time", "current-time", "timer-title", "is-running"];
   }
 
   /**
@@ -737,7 +754,7 @@ export class TimerComponent extends HTMLElement {
      * We set the style prop of these variables to equal to the svgLength
      */
     setStyleProp("--svg-dasharray", `${svgCircleLength}`, container);
-    setStyleProp("--svg-dashoffset", `${svgCircleLength * 2}`, container);
+    setStyleProp("--svg-dashoffset", `${svgCircleLength}`, container);
 
     //@ts-ignore
     container?.addEventListener("click", (e: MouseEvent) => {
@@ -875,7 +892,7 @@ export class TimerComponent extends HTMLElement {
    *
    * @param {string} name
    */
-  attributeChangedCallback(name: string) {
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     //@ts-ignore
     const paragraph: HTMLElement = selectQuery(
       ".timer-component__paragraph",
@@ -916,6 +933,14 @@ export class TimerComponent extends HTMLElement {
         break;
       }
       case "timer-title": {
+        //@ts-ignore
+        const title = selectQuery(".timer-component__title", this.shadowRoot);
+
+        //@ts-ignore
+        title?.textContent = newValue;
+        break;
+      }
+      case "is-running": {
         break;
       }
 

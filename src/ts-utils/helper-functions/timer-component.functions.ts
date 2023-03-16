@@ -92,7 +92,6 @@ export function handlePlayButton(
    * We check if the timer was paused before cliking the button
    */
   const timerWasPaused: boolean = getClassListValues(pauseSvg).includes("hide");
-
   //@ts-ignore
   let callback: NodeJS.Timer | null | undefined =
     //@ts-ignore
@@ -100,16 +99,24 @@ export function handlePlayButton(
 
   log({ intervalCreator });
 
-  if (timerWasPaused) {
-    //The button was clicked, the timer was paused and is now running, we show the paused icon
-    log("Is running");
+  //We create closures to make the code more readable
+  function showPlayButton() {
+    pauseSvg.classList.add("hide");
+    playSvg.classList.remove("hide");
+
+    timerState.state = "started";
+    timerState.isRunning = true;
+  }
+
+  function showPauseButton() {
     pauseSvg.classList.remove("hide");
     playSvg.classList.add("hide");
 
     timerState.state = "started";
     timerState.isRunning = false;
+  }
 
-    //We start the timer
+  function startTimer() {
     callback = intervalCreator.set(() => {
       const countdownFinished = currentAmountOfSeconds <= 0;
       log({ totalAmountOfSeconds, currentAmountOfSeconds });
@@ -128,20 +135,31 @@ export function handlePlayButton(
         currentAmountOfSeconds.toString()
       );
     }, 1_000);
-  } else {
-    //The button was clicked, the timer was running and is now paused, we show the play icon
-    log("Is paused");
+  }
 
-    pauseSvg.classList.add("hide");
-    playSvg.classList.remove("hide");
-
-    timerState.state = "started";
-    timerState.isRunning = true;
-    //we're supposed to clear the timer here
-    //@ts-ignore
+  function stopTimer() {
     if (callback) {
+      //we're supposed to clear the timer here
       intervalCreator.clear(callback);
     }
+  }
+
+  if (timerWasPaused) {
+    //The button was clicked, the timer was paused and is now running
+    log("Is running");
+
+    //we show the paused icon
+    showPauseButton();
+    //We start the timer
+    startTimer();
+  } else {
+    //The button was clicked, the timer was running and is now paused,
+    log("Is paused");
+    //we show the play icon
+    showPlayButton();
+
+    //We clear the timer
+    stopTimer();
   }
 }
 
