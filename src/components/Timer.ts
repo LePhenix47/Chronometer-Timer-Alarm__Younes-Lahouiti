@@ -470,7 +470,7 @@ right: 30%;
 /**
  * Style for the component
  */
-const componentStyle: string = `
+const componentStyle: string = /* css */ `
 ${timerStyle}
 ${dialogStyle}
 `;
@@ -636,6 +636,8 @@ export class TimerComponent extends HTMLElement {
    */
   timerState: { state: "idle" | "started" | "finished"; isRunning: boolean };
   svgCircle: HTMLElement | null;
+  callback: any;
+  callbackIdsArray: any[];
 
   constructor() {
     super();
@@ -659,6 +661,9 @@ export class TimerComponent extends HTMLElement {
      * We append the template content to the container
      */
     shadowRoot.appendChild(clonedTemplate);
+
+    this.callback = null;
+    this.callbackIdsArray = [];
   }
 
   /**
@@ -899,6 +904,9 @@ export class TimerComponent extends HTMLElement {
       //@ts-ignore
       this.shadowRoot
     );
+    //We get the <timer-component> element through the button and get the total amount of seconds
+    //@ts-ignore
+    const timerComponent: Element = this.shadowRoot?.host;
     switch (name) {
       case "initial-time": {
         const { hours, minutes, seconds } = getTimeValues(this.initialTime);
