@@ -794,6 +794,10 @@ export class TimerComponent extends HTMLElement {
   /**
    * Static getter methods that indicates the
    * list of attributes that the custom element wants to observe for changes.
+   *
+   * There are currently 5 custom attributes in which 4 need to be observed
+   *
+   * (we're not observing the `interval-id` attribute as it doesn't need to)
    */
   static get observedAttributes() {
     return ["initial-time", "current-time", "timer-title", "is-running"];

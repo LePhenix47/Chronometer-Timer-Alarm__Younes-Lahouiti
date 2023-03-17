@@ -142,14 +142,15 @@ export function handlePlayButton(
         currentAmountOfSeconds
       );
     }, 1_000);
+    addModifyAttribute(timerComponent, "interval-id", callback);
   }
 
   function stopTimer() {
-    if (callback) {
-      //we're supposed to clear the timer here
-      intervalCreator.clear(callback);
-      addModifyAttribute(timerComponent, "is-running", false);
-    }
+    const timerIntervalId = Number(timerComponent.getAttribute("interval-id"));
+    //we're supposed to clear the timer here
+    //@ts-ignore
+    intervalCreator.clear(timerIntervalId);
+    addModifyAttribute(timerComponent, "is-running", false);
   }
 
   if (timerWasPaused) {
