@@ -135,3 +135,34 @@ export function setStyleProp(
   const stringifiedValue = value.toString();
   return element.style.setProperty(property, stringifiedValue);
 }
+
+/**
+ * Adds or modifies an attribute to the given element.
+ *
+ * @param element The element to add the attribute to.
+ * @param property The name of the attribute to add.
+ * @param value The value to set the attribute to.
+ */
+export function addModifyAttribute(
+  element: Element,
+  property: string,
+  value: any
+): void {
+  element.setAttribute(property, value.toString());
+}
+
+/**
+ * Removes an attribute from an element and sets a new attribute in its place.
+ *
+ * @param {Element} element - The element from which to remove the attribute.
+ * @param {string} oldAttribute - The name of the attribute to remove.
+ * @param {string} newAttribute - The name of the new attribute to set.
+ */
+export function replaceAttribute(
+  element: Element,
+  oldAttribute: string,
+  newAttribute: string
+) {
+  element.removeAttribute(oldAttribute);
+  element.setAttribute(newAttribute, "");
+}

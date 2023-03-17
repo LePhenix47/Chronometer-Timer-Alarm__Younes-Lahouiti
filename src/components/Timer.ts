@@ -13,6 +13,8 @@ import {
   getSibling,
   getClassListValues,
   getComponentHost,
+  replaceAttribute,
+  addModifyAttribute,
 } from "../ts-utils/helper-functions/dom.functions";
 
 //Console methods
@@ -383,9 +385,9 @@ svg{
   transform-origin: center;
   rotate: 270deg;
 
-  /* We make them  */
-   stroke-dasharray: var(--svg-dasharray);
-   stroke-dashoffset: calc(2 * var(--svg-dasharray));
+  /* We make them full */
+   /* stroke-dasharray: var(--svg-dasharray);
+   stroke-dashoffset: calc(2 * var(--svg-dasharray)); */
    
 }
 
@@ -405,7 +407,7 @@ svg{
 .timer-component__title{}
 
 .timer-component__paragraph {
-  display: inline-block;
+    display: inline-block;
     margin: 0;
   
     position: absolute;
@@ -415,8 +417,8 @@ svg{
     width: min-content;
     height: min-content;
 
-      font-variant-numeric: tabular-nums;
-      font-size: 44px;
+    font-variant-numeric: tabular-nums;
+    font-size: 44px;
   }
 
 
@@ -463,8 +465,20 @@ svg{
   color: black;
 }
 
+.timer-component__button--play:disabled{
+  background-color: rgb(82, 82, 82);
+  color: rgb(174, 174, 174);
+}
+
 .timer-component__button--restart{
-right: 30%;
+  right: 30%;
+  background-color: rgb(62, 62, 62);
+  color: white;
+}
+
+.timer-component__button--restart:disabled{
+  background-color: rgb(59, 59, 59);
+  color: rgb(125, 125, 125);
 }
 `;
 /**
@@ -590,7 +604,7 @@ const timerUI: string = /* html */ `
     </g>
 </svg>
 </button>
-  <button type="button" class="timer-component__button timer-component__button--restart" disabled>
+  <button type="button" class="timer-component__button timer-component__button--restart" disabled="true">
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
         preserveAspectRatio="xMidYMid meet" 
          class="timer-component__svg timer-component__svg--restart"
@@ -904,6 +918,12 @@ export class TimerComponent extends HTMLElement {
       //@ts-ignore
       this.shadowRoot
     );
+    //@ts-ignore
+    const container: HTMLElement = selectQuery(
+      ".timer-component__container",
+      //@ts-ignore
+      this.shadowRoot
+    );
     //We get the <timer-component> element through the button and get the total amount of seconds
     //@ts-ignore
     const timerComponent: Element = this.shadowRoot?.host;
@@ -916,13 +936,6 @@ export class TimerComponent extends HTMLElement {
       }
 
       case "current-time": {
-        //@ts-ignore
-        const container: HTMLElement = selectQuery(
-          ".timer-component__container",
-          //@ts-ignore
-          this.shadowRoot
-        );
-
         //@ts-ignore
         const svgCircleLength: number = this.svgCircle?.getTotalLength();
         /**
@@ -949,6 +962,50 @@ export class TimerComponent extends HTMLElement {
         break;
       }
       case "is-running": {
+        const timerIsRunning = newValue === "true" ? true : false;
+        log({ timerIsRunning });
+
+        const totalSeconds: number = Number(
+          timerComponent.getAttribute("initial-time")
+        );
+        const currentSeconds: number = Number(
+          timerComponent.getAttribute("current-time")
+        );
+
+        const timerHasNotStarted: boolean = totalSeconds === currentSeconds;
+
+        const timerHasStarted: boolean = totalSeconds !== currentSeconds;
+
+        const timerHasFinished: boolean = currentSeconds === 0;
+
+        //@ts-ignore
+        const restartButton = selectQuery(
+          ".timer-component__button--restart",
+          //@ts-ignore
+          timerComponent
+        );
+
+        const playPauseButton = selectQuery(
+          ".timer-component__button--play",
+          //@ts-ignore
+          timerComponent
+        );
+
+        if (timerHasNotStarted) {
+          //@ts-ignore
+          replaceAttribute(restartButton, "disabled", "enabled");
+        }
+
+        if (timerHasStarted) {
+          //@ts-ignore
+        }
+
+        if (timerHasFinished) {
+          //@ts-ignore
+          addModifyAttribute(playPauseButton, "disabled", "");
+        }
+
+        log({ restartButton });
         break;
       }
 

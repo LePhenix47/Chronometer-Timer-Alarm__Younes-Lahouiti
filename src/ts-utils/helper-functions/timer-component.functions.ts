@@ -7,6 +7,9 @@ import {
   getClassListValues,
   selectQueryAll,
   setStyleProp,
+  addModifyAttribute,
+  replaceAttribute,
+  selectQuery,
 } from "./dom.functions";
 
 import { WebStorageService } from "../services/webstorage.service";
@@ -54,7 +57,7 @@ export function handleButtonEvents(
   if (isPlayButton) {
     handlePlayButton(buttonElement, timerState);
   } else if (isRestartButton) {
-    handleRestartButton(buttonElement, timerState);
+    handleRestartButton(buttonElement);
   } else if (isDialogButton) {
     handleDialogButtons(buttonElement, timerState);
   } else {
@@ -83,11 +86,6 @@ export function handlePlayButton(
     timerComponent.getAttribute("initial-time")
   );
 
-  let currentAmountOfSeconds: number = Number(
-    timerComponent.getAttribute("current-time")
-  );
-
-  log({ totalAmountOfSeconds }, { currentAmountOfSeconds });
   /**
    * We check if the timer was paused before cliking the button
    */
@@ -105,7 +103,8 @@ export function handlePlayButton(
     playSvg.classList.remove("hide");
 
     timerState.state = "started";
-    timerState.isRunning = true;
+    timerState.isRunning = false;
+    addModifyAttribute(timerComponent, "is-running", false);
   }
 
   function showPauseButton() {
@@ -113,26 +112,30 @@ export function handlePlayButton(
     playSvg.classList.add("hide");
 
     timerState.state = "started";
-    timerState.isRunning = false;
+    timerState.isRunning = true;
+    addModifyAttribute(timerComponent, "is-running", true);
   }
 
   function startTimer() {
+    addModifyAttribute(timerComponent, "is-running", true);
     callback = intervalCreator.set(() => {
+      let currentAmountOfSeconds: number = Number(
+        timerComponent.getAttribute("current-time")
+      );
       const countdownFinished = currentAmountOfSeconds <= 0;
-      log({ totalAmountOfSeconds, currentAmountOfSeconds });
       if (countdownFinished) {
         //@ts-ignore
         intervalCreator.clear(callback);
 
-        timerState.state = "finished";
-        timerState.isRunning = false;
+        showPlayButton();
         return;
       }
 
       currentAmountOfSeconds--;
-      timerComponent.setAttribute(
+      addModifyAttribute(
+        timerComponent,
         "current-time",
-        currentAmountOfSeconds.toString()
+        currentAmountOfSeconds
       );
     }, 1_000);
   }
@@ -141,6 +144,7 @@ export function handlePlayButton(
     if (callback) {
       //we're supposed to clear the timer here
       intervalCreator.clear(callback);
+      addModifyAttribute(timerComponent, "is-running", false);
     }
   }
 
@@ -168,32 +172,40 @@ export function handlePlayButton(
  * @param {any} buttonElement - The restart button element
  * @returns {void}
  */
-export function handleRestartButton(
-  buttonElement: any,
-  timerState: { state: string; isRunning: boolean }
-): void {
-  const { state, isRunning } = timerState;
+export function handleRestartButton(buttonElement: any): void {
   log("restart button", { buttonElement });
-  const timerHasNotStarted: boolean = state === "idle";
 
-  if (timerHasNotStarted) {
-    //We make the restart button disabled
-    setStyleProp("disabled", false, buttonElement);
-  }
+  //@ts-ignore
+  const timerComponent: Element = getComponentHost(buttonElement);
 
-  const timerHasStarted: boolean = state === "started";
-  if (timerHasStarted) {
-    //We enable the restart button
-    if (isRunning) {
-      //We just reset the countdown and keep the timer running
-    } else {
-      //We reset the countdown and we
-    }
-  }
+  const totalSeconds: number = Number(
+    timerComponent.getAttribute("initial-time")
+  );
+  // const currentSeconds: number = Number(
+  //   timerComponent.getAttribute("current-time")
+  // );
 
-  const timerHasReachedZero: boolean = state === "finished";
-  if (timerHasReachedZero) {
-    //We still enable it
+  // const timerIsRunning: boolean =
+  //   timerComponent.getAttribute("is-running") === "true" ? true : false;
+
+  // const timerHasNotStarted: boolean = totalSeconds === currentSeconds;
+
+  // const timerHasStarted: boolean = totalSeconds !== currentSeconds;
+
+  // const timerHasFinished: boolean = currentSeconds === 0;
+
+  addModifyAttribute(timerComponent, "current-time", totalSeconds);
+
+  const playPauseButton = selectQuery(
+    ".timer-component__button--play",
+    //@ts-ignore
+    timerComponent
+  );
+
+  //@ts-ignore
+  const playButtonIsDisabled = playPauseButton?.disabled;
+  if (playButtonIsDisabled) {
+    replaceAttribute(playPauseButton, "disabled", "enabled");
   }
 }
 
@@ -227,6 +239,12 @@ export function handleDialogButtons(buttonElement: any, timerState: any) {
   //@ts-ignore
   const timerComponent = getComponentHost(modalWindow);
 
+  const playPauseButton = selectQuery(
+    ".timer-component__button--play",
+    //@ts-ignore
+    timerComponent
+  );
+
   // Get an array of input elements in the dialog
   //@ts-ignore
   const inputs = selectQueryAll("input", modalWindow);
@@ -253,10 +271,16 @@ export function handleDialogButtons(buttonElement: any, timerState: any) {
     const totalTimeInSeconds: number =
       3_600 * hoursValue + 60 * minutesValue + secondsValue;
 
-    // Set the initial and current time attributes of the timer component
-    timerComponent.setAttribute("initial-time", totalTimeInSeconds.toString());
-    timerComponent.setAttribute("current-time", totalTimeInSeconds.toString());
+    const titleValue: string = inputsValues[3];
 
+    // Set the initial and current time attributes of the timer component
+    addModifyAttribute(timerComponent, "initial-time", totalTimeInSeconds);
+    addModifyAttribute(timerComponent, "current-time", totalTimeInSeconds);
+    addModifyAttribute(timerComponent, "timer-title", titleValue);
+
+    //@ts-ignore
+    replaceAttribute(playPauseButton, "disabled", "enabled");
+    replaceAttribute(buttonElement, "enabled", "disabled");
     // Close the dialog
     //@ts-ignore
     modalWindow.close();
