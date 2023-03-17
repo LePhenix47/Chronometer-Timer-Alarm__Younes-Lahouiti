@@ -836,8 +836,15 @@ export class TimerComponent extends HTMLElement {
         const isNotContainer = clickedElement !== modalWindow;
         if (isNotContainer) {
           //@ts-ignore
-          const modalIsAlreadyOpened = modalWindow?.attributes.open;
-          if (modalIsAlreadyOpened) {
+          const modalIsAlreadyOpened: boolean = modalWindow?.attributes?.open;
+          //@ts-ignore
+          const modalShouldBeInctive: boolean = getClassListValues(
+            //@ts-ignore
+            modalWindow
+          )?.includes("inactive")
+            ? true
+            : false;
+          if (modalIsAlreadyOpened || modalShouldBeInctive) {
             return;
           } else {
             //@ts-ignore
@@ -1050,9 +1057,9 @@ export class TimerComponent extends HTMLElement {
             log("Timer started and is running, disabling the dalog", {
               dialog,
             });
-            // dialog?.classList.add("hide");
+            dialog?.classList.add("inactive");
           } else {
-            // dialog?.classList.remove("hide");
+            dialog?.classList.remove("inactive");
           }
         }
 
