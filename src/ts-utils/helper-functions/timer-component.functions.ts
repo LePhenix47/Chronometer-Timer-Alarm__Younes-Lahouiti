@@ -185,15 +185,6 @@ export function handleRestartButton(buttonElement: any): void {
   //   timerComponent.getAttribute("current-time")
   // );
 
-  // const timerIsRunning: boolean =
-  //   timerComponent.getAttribute("is-running") === "true" ? true : false;
-
-  // const timerHasNotStarted: boolean = totalSeconds === currentSeconds;
-
-  // const timerHasStarted: boolean = totalSeconds !== currentSeconds;
-
-  // const timerHasFinished: boolean = currentSeconds === 0;
-
   addModifyAttribute(timerComponent, "current-time", totalSeconds);
 
   const playPauseButton = selectQuery(
@@ -245,6 +236,12 @@ export function handleDialogButtons(buttonElement: any, timerState: any) {
     timerComponent
   );
 
+  const restartPauseButton = selectQuery(
+    ".timer-component__button--restart",
+    //@ts-ignore
+    timerComponent
+  );
+
   // Get an array of input elements in the dialog
   //@ts-ignore
   const inputs = selectQueryAll("input", modalWindow);
@@ -280,7 +277,8 @@ export function handleDialogButtons(buttonElement: any, timerState: any) {
 
     //@ts-ignore
     replaceAttribute(playPauseButton, "disabled", "enabled");
-    replaceAttribute(buttonElement, "enabled", "disabled");
+    //@ts-ignore
+    replaceAttribute(restartPauseButton, "enabled", "disabled");
     // Close the dialog
     //@ts-ignore
     modalWindow.close();

@@ -34,7 +34,6 @@ import { log } from "../ts-utils/helper-functions/console-funtions";
 const timerTemplate: HTMLTemplateElement = document.createElement("template");
 
 const dialogStyle: string = /* css */ `
-
 .timer-dialog{
   overflow-y: hidden;
   border-radius: 10px;
@@ -106,7 +105,11 @@ const dialogStyle: string = /* css */ `
 
 .timer-dialog__label-input{
     margin: 80px 0 70px 0;
+
+    position: relative;
 }
+
+
 
 .timer-dialog__label{
   width: 100%;
@@ -166,6 +169,32 @@ const dialogStyle: string = /* css */ `
   background-color: rgb(31, 31, 31);
 
   border-bottom: 2px solid #e4505c;
+}
+
+ 
+
+.timer-dialog__input--reset{
+  position: absolute;
+  right: 5%;
+  top: 15%;
+
+  color: rgb(177, 177, 177);
+  background-color: transparent;
+  border: transparent;
+  
+  aspect-ratio: 1/1;
+  height: 25px;
+}
+
+.timer-dialog__input--reset:hover{
+  background-color: rgb(44, 44, 44);
+
+}
+
+.timer-dialog__input--reset:active{
+  background-color: rgb(40, 40, 40);
+  color: rgb(141, 141, 141);
+
 }
 
 .timer-dialog__input[type="number"]{
@@ -319,6 +348,7 @@ const dialogStyle: string = /* css */ `
 
   color: white;
 }
+
 `;
 
 const timerStyle: string = /* css */ `
@@ -329,6 +359,20 @@ const timerStyle: string = /* css */ `
     margin: 0;
     padding: 0;
 }
+
+
+*::-moz-selection {
+    background-color: rgb(240, 18, 36);
+    color: white;
+    ;
+}
+
+*::selection {
+    background-color: rgb(240, 18, 36);
+    color: white;
+    ;
+}
+
 
 .hide {
     display: none;
@@ -550,13 +594,16 @@ const dialogUI: string = /* html */ `
 <!--    -->
 <!--    -->
 
-<div class="timer-dialog__label-input">
-  <label class="timer-dialog__label"> <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
+<form class="timer-dialog__label-input">
+  <label class="timer-dialog__label" for="title-input"> 
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
     <path
         d="M21,12a1,1,0,0,0-1,1v6a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V5A1,1,0,0,1,5,4h6a1,1,0,0,0,0-2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V13A1,1,0,0,0,21,12ZM6,12.76V17a1,1,0,0,0,1,1h4.24a1,1,0,0,0,.71-.29l6.92-6.93h0L21.71,8a1,1,0,0,0,0-1.42L17.47,2.29a1,1,0,0,0-1.42,0L13.23,5.12h0L6.29,12.05A1,1,0,0,0,6,12.76ZM16.76,4.41l2.83,2.83L18.17,8.66,15.34,5.83ZM8,13.17l5.93-5.93,2.83,2.83L10.83,16H8Z" />
-    </svg> <input type="text" class="timer-dialog__input--title" placeholder="Name of timer"/>
+    </svg> 
+    <input type="text" class="timer-dialog__input--title" placeholder="Name of timer" id="title-input"/> 
   </label>
-</div>
+  <input type="reset" class="timer-dialog__input--reset" value="×">
+</form>
 
 <div class="timer-dialog__buttons">
   <button class="timer-dialog__button--register">
@@ -998,11 +1045,22 @@ export class TimerComponent extends HTMLElement {
 
         if (timerHasStarted) {
           //@ts-ignore
+          const dialog = selectQuery("dialog", timerComponent);
+          if (timerIsRunning) {
+            log("Timer started and is running, disabling the dalog", {
+              dialog,
+            });
+            // dialog?.classList.add("hide");
+          } else {
+            // dialog?.classList.remove("hide");
+          }
         }
 
         if (timerHasFinished) {
           //@ts-ignore
           addModifyAttribute(playPauseButton, "disabled", "");
+          //@ts-ignore
+          replaceAttribute(restartButton, "disabled", "enabled");
         }
 
         log({ restartButton });

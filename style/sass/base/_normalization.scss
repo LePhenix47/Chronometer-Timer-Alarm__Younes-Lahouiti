@@ -21,9 +21,17 @@
     padding: 0;
 }
 
-*::-moz-selection {}
+*::-moz-selection {
+    background-color: rgb(240, 18, 36);
+    color: white;
+    ;
+}
 
-*::selection {}
+*::selection {
+    background-color: rgb(240, 18, 36);
+    color: white;
+    ;
+}
 
 html {
     scroll-behavior: smooth;
