@@ -96,6 +96,8 @@ export function handlePlayButton(
     intervalCreator.getArrayOfIds()[0] | null;
 
   log({ intervalCreator });
+  //@ts-ignore
+  const dialog = selectQuery("dialog", timerComponent);
 
   //We create closures to make the code more readable
   function showPlayButton() {
@@ -117,6 +119,8 @@ export function handlePlayButton(
   }
 
   function startTimer() {
+    dialog?.classList.add("inactive");
+
     addModifyAttribute(timerComponent, "is-running", true);
     callback = intervalCreator.set(() => {
       let currentAmountOfSeconds: number = Number(

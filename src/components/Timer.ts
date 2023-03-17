@@ -404,6 +404,7 @@ svg{
   pointer-events: none;
 }
 
+
 .circle{
   scale: -100% 100%;
   fill: rgb(38, 38, 38);
@@ -596,10 +597,11 @@ const dialogUI: string = /* html */ `
 
 <form class="timer-dialog__label-input">
   <label class="timer-dialog__label" for="title-input"> 
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20" height="20">
-    <path
-        d="M21,12a1,1,0,0,0-1,1v6a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V5A1,1,0,0,1,5,4h6a1,1,0,0,0,0-2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V13A1,1,0,0,0,21,12ZM6,12.76V17a1,1,0,0,0,1,1h4.24a1,1,0,0,0,.71-.29l6.92-6.93h0L21.71,8a1,1,0,0,0,0-1.42L17.47,2.29a1,1,0,0,0-1.42,0L13.23,5.12h0L6.29,12.05A1,1,0,0,0,6,12.76ZM16.76,4.41l2.83,2.83L18.17,8.66,15.34,5.83ZM8,13.17l5.93-5.93,2.83,2.83L10.83,16H8Z" />
-    </svg> 
+    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke="currentColor"
+    stroke-linejoin="round" height="16px" width="16px" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+</svg>
     <input type="text" class="timer-dialog__input--title" placeholder="Name of timer" id="title-input"/> 
   </label>
   <input type="reset" class="timer-dialog__input--reset" value="×">
@@ -1016,7 +1018,7 @@ export class TimerComponent extends HTMLElement {
         break;
       }
       case "is-running": {
-        const timerIsRunning = newValue === "true" ? true : false;
+        const timerIsRunning: boolean = newValue === "true" ? true : false;
         log({ timerIsRunning });
 
         const totalSeconds: number = Number(
@@ -1033,17 +1035,19 @@ export class TimerComponent extends HTMLElement {
         const timerHasFinished: boolean = currentSeconds === 0;
 
         //@ts-ignore
-        const restartButton = selectQuery(
+        const restartButton: HTMLButtonElement = selectQuery(
           ".timer-component__button--restart",
           //@ts-ignore
           timerComponent
         );
 
-        const playPauseButton = selectQuery(
+        //@ts-ignore
+        const playPauseButton: HTMLButtonElement = selectQuery(
           ".timer-component__button--play",
           //@ts-ignore
           timerComponent
         );
+        log({ timerHasNotStarted, timerHasStarted, timerHasFinished });
 
         if (timerHasNotStarted) {
           //@ts-ignore
@@ -1052,7 +1056,11 @@ export class TimerComponent extends HTMLElement {
 
         if (timerHasStarted) {
           //@ts-ignore
-          const dialog = selectQuery("dialog", timerComponent);
+          const dialog: HTMLDialogElement = selectQuery(
+            "dialog",
+            //@ts-ignore
+            timerComponent
+          );
           if (timerIsRunning) {
             log("Timer started and is running, disabling the dalog", {
               dialog,
