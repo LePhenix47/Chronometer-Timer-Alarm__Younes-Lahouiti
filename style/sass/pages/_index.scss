@@ -1,3 +1,21 @@
 @use "../utils/" as *;
 
-.main-page {}
+.main-page {
+    width: 95%;
+    margin: auto;
+
+
+    @include grid(auto, 3, 20px);
+
+    @include laptop-only {
+        @include grid(auto, 2, 20px);
+    }
+
+    @include tablet-only {
+        @include grid(auto, 2, 20px);
+    }
+
+    @include mobile-only {
+        @include grid(auto, 1, 20px);
+    }
+}

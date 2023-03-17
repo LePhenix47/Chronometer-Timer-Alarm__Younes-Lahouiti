@@ -43,8 +43,8 @@ const dialogStyle: string = /* css */ `
   border: transparent;
   padding: 30px;
 
-  color: white;
   background-color: rgb(35, 35, 35);
+  color: white;
 
   position: fixed;
   inset: 50%;
@@ -57,6 +57,12 @@ const dialogStyle: string = /* css */ `
 
 .timer-dialog::backdrop{
   background-color: #000000ad;
+}
+
+ @media screen and (width <=768px) {
+      .timer-dialog{
+          padding: 30px 15px;
+      }
 }
 
 .timer-dialog__title-delete{
@@ -150,7 +156,7 @@ const dialogStyle: string = /* css */ `
   
   height: 35px;
 
-  padding: 5px 10px;
+  padding: 5px 50px 5px 10px;
 
   font-weight: inherit;
   font-size: 14px;
@@ -404,10 +410,13 @@ svg{
   pointer-events: none;
 }
 
+.timer__svg{
+  width: 75%;
+}
 
 .circle{
   scale: -100% 100%;
-  fill: rgb(38, 38, 38);
+  fill: transparent;
     
   stroke: rgb(210, 77, 87);
   stroke-width: 5px;
@@ -425,38 +434,76 @@ svg{
   fill: none;
     
   stroke: #3e3e3e;
+
+  transition: stroke 150ms ease;
   stroke-width: 5px;
 
   transform-origin: center;
   rotate: 270deg;
-
-  /* We make them full */
-   /* stroke-dasharray: var(--svg-dasharray);
-   stroke-dashoffset: calc(2 * var(--svg-dasharray)); */
-   
 }
 
 .timer-component__container {
-    background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  
+  width:100%;
+  
+  position: relative;
+  
+  background-color: rgb(50, 50, 50);
+  transition: 
+    filter 75ms ease, 
+    scale 150ms ease,
+    box-shadow 150ms ease
+    ;
+    
+  box-shadow: 0px 3px 5px 0px rgb(32, 32, 32);
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  outline: 2px solid rgb(42, 42, 42);
+  border-radius: 8px;
+}
+  
+  .timer-component__container:hover{
+  filter: brightness(93%);
 
-    width:350px;
+  transform-origin: bottom;
+  scale: 101%;
 
-    position: relative;
+  box-shadow: 0px 0px 15px 0px rgb(32, 32, 32);
+  outline: 2px solid rgb(54, 54, 54);
+}
+  
+  .timer-component__container:active{
+  scale: 100%;
+
+  box-shadow: 0px 0px 15px 0px rgb(32, 32, 32);
+  outline: 2px solid rgb(54, 54, 54);
 }
 
-.timer-component__title{}
+.timer-component__title{
+    width: 100%;
+    padding: 10px 20px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.timer-component__title:empty{
+  height: 45px;
+  padding: 0;
+}
 
 .timer-component__paragraph {
     display: inline-block;
     margin: 0;
   
     position: absolute;
-    inset: 50%;
+    left: 50%;
+    right: 50%;
+    top: 47%;
     translate: -50% -50%;
   
     width: min-content;
@@ -464,6 +511,7 @@ svg{
 
     font-variant-numeric: tabular-nums;
     font-size: 44px;
+    font-weight: 500;
   }
 
 
@@ -474,10 +522,19 @@ svg{
 
   border-radius: 50%;
   
-  position: absolute;
-  top: 70%; 
 }
 
+.timer-component__buttons-container{
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+
+  padding-bottom: 25px;
+  padding-top: 20px
+}
 
 .timer-component__svg{
   aspect-ratio: 1/1;
@@ -634,46 +691,50 @@ const timerUI: string = /* html */ `
     <circle cx="50" cy="50" r="45" class="timer-component__circle circle"></circle>
   </svg>
   <p class="timer-component__paragraph">00:00:00</p>
-  <button type="button" class="timer-component__button timer-component__button--play">
-  <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256.000000 256.000000" preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--play">
-      <g transform="translate(0.000000,256.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">
-          <path d="M623 2210 c-18 -10 -42 -39 -55 -62 l-23 -43 0 -820 0 -820 22 -47
-  c29 -62 70 -88 143 -88 33 0 72 8 98 20 24 11 175 108 335 217 161 109 398
-  268 527 354 129 86 247 167 261 181 109 103 115 243 14 344 -46 45 -1071 734
-  -1140 765 -54 25 -140 25 -182 -1z" />
+  <section class="timer-component__buttons-container">
+
+    <button type="button" class="timer-component__button timer-component__button--play">
+    <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 256.000000 256.000000" preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--play">
+        <g transform="translate(0.000000,256.000000) scale(0.100000,-0.100000)" fill="currentColor" stroke="none">
+            <path d="M623 2210 c-18 -10 -42 -39 -55 -62 l-23 -43 0 -820 0 -820 22 -47
+    c29 -62 70 -88 143 -88 33 0 72 8 98 20 24 11 175 108 335 217 161 109 398
+    268 527 354 129 86 247 167 261 181 109 103 115 243 14 344 -46 45 -1071 734
+    -1140 765 -54 25 -140 25 -182 -1z" />
+        </g>
+    </svg>
+    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
+      preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--pause hide">
+  
+      <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
+          <path d="M610 1280 l0 -840 165 0 165 0 0 840 0 840 -165 0 -165 0 0 -840z" />
+          <path d="M1620 1280 l0 -840 165 0 165 0 0 840 0 840 -165 0 -165 0 0 -840z" />
       </g>
   </svg>
-  <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
-    preserveAspectRatio="xMidYMid meet" class="timer-component__svg timer-component__svg--pause hide">
-
-    <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
-        <path d="M610 1280 l0 -840 165 0 165 0 0 840 0 840 -165 0 -165 0 0 -840z" />
-        <path d="M1620 1280 l0 -840 165 0 165 0 0 840 0 840 -165 0 -165 0 0 -840z" />
-    </g>
-</svg>
-</button>
-  <button type="button" class="timer-component__button timer-component__button--restart" disabled="true">
-    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
-        preserveAspectRatio="xMidYMid meet" 
-         class="timer-component__svg timer-component__svg--restart"
-        >
-
-            <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
-                <path d="M1200 2336 c-279 -58 -528 -222 -681 -447 -49 -73 -123 -225 -140
-        -291 -7 -27 -16 -48 -20 -48 -4 0 -37 58 -74 130 -36 71 -74 134 -85 140 -47
-        25 -104 1 -115 -50 -6 -25 14 -69 130 -289 127 -243 138 -261 171 -271 33 -11
-        42 -7 291 123 268 141 291 158 277 211 -8 34 -37 57 -71 58 -19 1 -92 -32
-        -202 -91 -96 -50 -175 -91 -177 -91 -20 0 33 175 83 275 93 187 273 355 463
-        431 161 65 342 87 497 60 358 -62 633 -304 739 -651 25 -82 28 -105 28 -250 1
-        -137 -3 -171 -22 -239 -105 -365 -387 -616 -756 -672 -212 -33 -447 17 -621
-        132 -87 56 -112 62 -148 34 -21 -17 -27 -30 -27 -60 0 -32 6 -44 38 -70 49
-        -40 195 -116 285 -146 147 -50 352 -68 507 -44 101 16 246 66 342 118 281 152
-        475 412 544 728 23 107 23 321 0 428 -89 408 -381 716 -786 827 -97 27 -371
-        35 -470 15z" />
-            </g>
-    </svg>
-</button>`;
+  </button>
+    <button type="button" class="timer-component__button timer-component__button--restart" disabled="true">
+      <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"
+          preserveAspectRatio="xMidYMid meet" 
+           class="timer-component__svg timer-component__svg--restart"
+          >
+  
+              <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
+                  <path d="M1200 2336 c-279 -58 -528 -222 -681 -447 -49 -73 -123 -225 -140
+          -291 -7 -27 -16 -48 -20 -48 -4 0 -37 58 -74 130 -36 71 -74 134 -85 140 -47
+          25 -104 1 -115 -50 -6 -25 14 -69 130 -289 127 -243 138 -261 171 -271 33 -11
+          42 -7 291 123 268 141 291 158 277 211 -8 34 -37 57 -71 58 -19 1 -92 -32
+          -202 -91 -96 -50 -175 -91 -177 -91 -20 0 33 175 83 275 93 187 273 355 463
+          431 161 65 342 87 497 60 358 -62 633 -304 739 -651 25 -82 28 -105 28 -250 1
+          -137 -3 -171 -22 -239 -105 -365 -387 -616 -756 -672 -212 -33 -447 17 -621
+          132 -87 56 -112 62 -148 34 -21 -17 -27 -30 -27 -60 0 -32 6 -44 38 -70 49
+          -40 195 -116 285 -146 147 -50 352 -68 507 -44 101 16 246 66 342 118 281 152
+          475 412 544 728 23 107 23 321 0 428 -89 408 -381 716 -786 827 -97 27 -371
+          35 -470 15z" />
+              </g>
+      </svg>
+  </button>
+  </section>
+`;
 
 /**
  * Content of the component
