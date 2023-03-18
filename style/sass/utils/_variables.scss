@@ -1,15 +1,17 @@
 //SASS
-$bg-primary: rgb(39, 39, 39);
-$bg-secondary: white;
+$bg-primary: #272727;
+$bg-secondary: #2e2e2e;
 
-$backdrop-bg-color: rgba(255, 255, 255, 0.5);
+$backdrop-bg-color: #000000ad;
 
 $color-primary: #cdcdcd;
 $color-primary--hover: lighten($color-primary, 10%);
 $color-primary--active: lighten($color-primary, 20%);
 $color-secondary: #757575;
 
-$border-color: #DBDBDB;
+$button-bg--hover: rgb(58, 58, 58);
+
+$border-color: #404040;
 
 $selection-bg: #c6c6c6;
 $selection-color: black;
@@ -28,7 +30,10 @@ $scrollbar-thumb-bg-color--active: #9d9d9d;
     --color-primary--hover: #{$color-primary--hover};
     --color-primary--active: #{$color-primary--active};
     --color-secondary: #{$color-secondary};
+
     --border-color: #{$border-color};
+
+    --button-bg--hover: #{$button-bg--hover};
 
 
     --scrollbar-track-bg-color:#{$scrollbar-track-bg-color};

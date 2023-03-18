@@ -18,4 +18,45 @@
     @include mobile-only {
         @include grid(auto, 1, 20px);
     }
+
+
+    &__buttons-container {
+        --offset: 30px;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 5px;
+
+        position: fixed;
+        bottom: var(--offset);
+        right: var(--offset);
+
+        min-width: 65px;
+
+        background-color: var(--bg-secondary);
+        padding: 5px;
+
+        border-radius: 10px;
+        border: 2px solid var(--border-color);
+    }
+
+    &__button {
+        border-radius: 8px;
+        padding: 5px;
+
+        &:hover {
+            background-color: var(--button-bg--hover);
+        }
+
+        &:active {
+            filter: brightness(93%);
+        }
+
+        &--delete {}
+
+        &--add {}
+    }
+
+    &__ {}
 }

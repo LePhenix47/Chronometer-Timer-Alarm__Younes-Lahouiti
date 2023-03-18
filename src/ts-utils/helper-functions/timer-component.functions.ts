@@ -22,10 +22,7 @@ import { Interval } from "../services/interval.service";
  * @param {any} buttonElement - The timer button element
  * @returns {void}
  */
-export function handleButtonEvents(
-  buttonElement: any,
-  timerState: { state: string; isRunning: boolean }
-): void {
+export function handleButtonEvents(buttonElement: any): void {
   const buttonClasses: string[] = getClassListValues(buttonElement);
 
   log(buttonClasses);
@@ -55,11 +52,11 @@ export function handleButtonEvents(
     isDeleteButton || isTimerDialogButton || isRegisterButton || isCancelButton;
 
   if (isPlayButton) {
-    handlePlayButton(buttonElement, timerState);
+    handlePlayButton(buttonElement);
   } else if (isRestartButton) {
     handleRestartButton(buttonElement);
   } else if (isDialogButton) {
-    handleDialogButtons(buttonElement, timerState);
+    handleDialogButtons(buttonElement);
   } else {
     log("Unknown button pressed");
   }
@@ -71,31 +68,20 @@ export function handleButtonEvents(
  * @returns {void}
  */
 
-const intervalCreator: Interval = new Interval();
-export function handlePlayButton(
-  buttonElement: any,
-  timerState: { state: string; isRunning: boolean }
-): void {
+export function handlePlayButton(buttonElement: any): void {
   //We get the svgs inside the play button
   const [playSvg, pauseSvg]: any = getChildren(buttonElement);
 
   //We get the <timer-component> element through the button and get the total amount of seconds
   const timerComponent: Element = getComponentHost(buttonElement);
 
-  let totalAmountOfSeconds: number = Number(
-    timerComponent.getAttribute("initial-time")
-  );
-
   /**
    * We check if the timer was paused before cliking the button
    */
   const timerWasPaused: boolean = getClassListValues(pauseSvg).includes("hide");
   //@ts-ignore
-  let callback: NodeJS.Timer | null | undefined =
-    //@ts-ignore
-    intervalCreator.getArrayOfIds()[0] | null;
+  let callback: NodeJS.Timer | null = null;
 
-  log({ intervalCreator });
   //@ts-ignore
   const dialog = selectQuery("dialog", timerComponent);
 
@@ -104,8 +90,6 @@ export function handlePlayButton(
     pauseSvg.classList.add("hide");
     playSvg.classList.remove("hide");
 
-    timerState.state = "started";
-    timerState.isRunning = false;
     addModifyAttribute(timerComponent, "is-running", false);
   }
 
@@ -113,8 +97,6 @@ export function handlePlayButton(
     pauseSvg.classList.remove("hide");
     playSvg.classList.add("hide");
 
-    timerState.state = "started";
-    timerState.isRunning = true;
     addModifyAttribute(timerComponent, "is-running", true);
   }
 
@@ -122,20 +104,22 @@ export function handlePlayButton(
     dialog?.classList.add("inactive");
 
     addModifyAttribute(timerComponent, "is-running", true);
-    callback = intervalCreator.set(() => {
+    callback = Interval.set(() => {
       let currentAmountOfSeconds: number = Number(
         timerComponent.getAttribute("current-time")
       );
       const countdownFinished = currentAmountOfSeconds <= 0;
       if (countdownFinished) {
         //@ts-ignore
-        intervalCreator.clear(callback);
+        Interval.clear(callback);
 
         showPlayButton();
         return;
       }
-
+      //We decrease the amount of seconds
       currentAmountOfSeconds--;
+
+      //We modify the amount of seconds in the current-time attribute that will update the web component
       addModifyAttribute(
         timerComponent,
         "current-time",
@@ -149,7 +133,7 @@ export function handlePlayButton(
     const timerIntervalId = Number(timerComponent.getAttribute("interval-id"));
     //we're supposed to clear the timer here
     //@ts-ignore
-    intervalCreator.clear(timerIntervalId);
+    Interval.clear(timerIntervalId);
     addModifyAttribute(timerComponent, "is-running", false);
   }
 
@@ -186,9 +170,6 @@ export function handleRestartButton(buttonElement: any): void {
   const totalSeconds: number = Number(
     timerComponent.getAttribute("initial-time")
   );
-  // const currentSeconds: number = Number(
-  //   timerComponent.getAttribute("current-time")
-  // );
 
   addModifyAttribute(timerComponent, "current-time", totalSeconds);
 
@@ -208,9 +189,8 @@ export function handleRestartButton(buttonElement: any): void {
 /**
  * Handles the click events for buttons in a timer dialog.
  * @param buttonElement The button element that was clicked.
- * @param timerState The current state of the timer.
  */
-export function handleDialogButtons(buttonElement: any, timerState: any) {
+export function handleDialogButtons(buttonElement: any) {
   // Get an array of classes for the clicked button element
   const buttonClasses: string[] = getClassListValues(buttonElement);
 

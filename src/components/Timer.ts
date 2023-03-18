@@ -484,7 +484,7 @@ svg{
 
 .timer-component__title{
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 40px 10px 20px;
 
     white-space: nowrap;
     overflow: hidden;
@@ -594,59 +594,52 @@ ${dialogStyle}
 const dialogUI: string = /* html */ `
 <dialog class="timer-dialog">
   <div class="timer-dialog__title-delete">
-    <h2 class="timer-dialog__title">Modify the timer</h2>
-    <button type="button" class="timer-dialog__delete">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92" width="20" height="20" fill="currentColor">
-    <path
-        d="m78.4 30.4-3.1 57.8c-.1 2.1-1.9 3.8-4 3.8H20.7c-2.1 0-3.9-1.7-4-3.8l-3.1-57.8c-.1-2.2 1.6-4.1 3.8-4.2 2.2-.1 4.1 1.6 4.2 3.8l2.9 54h43.1l2.9-54c.1-2.2 2-3.9 4.2-3.8 2.1.1 3.8 2 3.7 4.2zM89 17c0 2.2-1.8 4-4 4H7c-2.2 0-4-1.8-4-4s1.8-4 4-4h22V4c0-1.9 1.3-3 3.2-3h27.6C61.7 1 63 2.1 63 4v9h22c2.2 0 4 1.8 4 4zm-53-4h20V8H36v5zm1.7 65c2 0 3.5-1.9 3.5-3.8l-1-43.2c0-1.9-1.6-3.5-3.6-3.5-1.9 0-3.5 1.6-3.4 3.6l1 43.3c0 1.9 1.6 3.6 3.5 3.6zm16.5 0c1.9 0 3.5-1.6 3.5-3.5l1-43.2c0-1.9-1.5-3.6-3.4-3.6-2 0-3.5 1.5-3.6 3.4l-1 43.2c-.1 2 1.5 3.7 3.5 3.7-.1 0-.1 0 0 0z" />
-</svg>  
-
-    </button>
+    <h2 class="timer-dialog__title">Add a new timer</h2>
   </div>
 <!--    -->
 <!--    -->
   <!-- Timer begin -->
 
 
-<p class="timer-dialog__container">
-  <span class="timer-dialog__slot timer-dialog__slot--hours"> 
+<form class="timer-dialog__container">
+  <section class="timer-dialog__slot timer-dialog__slot--hours"> 
   <input type="number" value="00" min="0" max="99" class="timer-dialog__input timer-dialog__input--hours">
-  <button class="timer-dialog__button timer-dialog__button--increment">
+  <button type="button" class="timer-dialog__button timer-dialog__button--increment">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg>
 </button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+  <button type="button" class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg></button>
-</span>
-  <span class="timer-dialog__slot-separator">:</span>
-  <span class="timer-dialog__slot timer-dialog__slot--minutes"> 
+</section>
+  <div class="timer-dialog__slot-separator">:</div>
+  <section class="timer-dialog__slot timer-dialog__slot--minutes"> 
   <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--minutes">
-  <button class="timer-dialog__button timer-dialog__button--increment"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+  <button type="button" class="timer-dialog__button timer-dialog__button--increment"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg></button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+  <button type="button" class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg></button>
-  </span>
-  <span class="timer-dialog__slot-separator">:</span>
-  <span class="timer-dialog__slot timer-dialog__slot--seconds"> 
+  </section>
+  <div class="timer-dialog__slot-separator">:</div>
+  <section class="timer-dialog__slot timer-dialog__slot--seconds"> 
   <input type="number" value="00" min="0" max="59" class="timer-dialog__input timer-dialog__input--seconds">
-  <button class="timer-dialog__button timer-dialog__button--increment"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+  <button type="button" class="timer-dialog__button timer-dialog__button--increment"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg></button>
-  <button class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
+  <button type="button" class="timer-dialog__button timer-dialog__button--decrement">  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="10" height="10" fill="white">
     <path
         d="M102.299 58.5c-3.955 4.046-9.458 4.363-14.291 0L52.579 24.525 17.141 58.5c-4.834 4.363-10.347 4.046-14.269 0a10.77 10.77 0 0 1 0-14.643C6.555 40.066 45.44 3.04 45.44 3.04a9.917 9.917 0 0 1 14.286 0s38.868 37.026 42.568 40.817a10.764 10.764 0 0 1 0 14.643Z" />
 </svg></button>
-  </span>
-</p>
+  </section>
+</form>
 
 <!-- Timer end -->
 <!--    -->
@@ -682,7 +675,8 @@ const dialogUI: string = /* html */ `
 </svg>
 Cancel</button>
 </div>
-</dialog>`;
+</dialog>
+`;
 
 const timerUI: string = /* html */ `
   <h3 class="timer-component__title"></h3>
@@ -758,7 +752,6 @@ export class TimerComponent extends HTMLElement {
    * @property {"idle" | "started" | "finished"} state - The current state of the timer.
    * @property {boolean} isRunning - Whether the timer is currently running or not.
    */
-  timerState: { state: "idle" | "started" | "finished"; isRunning: boolean };
   svgCircle: HTMLElement | null;
   callback: any;
   callbackIdsArray: any[];
@@ -766,8 +759,6 @@ export class TimerComponent extends HTMLElement {
   constructor() {
     super();
     //
-
-    this.timerState = { state: "idle", isRunning: false };
 
     /**
      * Container that holds our web component
@@ -898,7 +889,7 @@ export class TimerComponent extends HTMLElement {
       const isButton: boolean = clickedElement.tagName.includes("BUTTON");
 
       if (isButton) {
-        handleButtonEvents(clickedElement, this.timerState);
+        handleButtonEvents(clickedElement);
       } else {
         const isNotContainer = clickedElement !== modalWindow;
         if (isNotContainer) {
@@ -1155,11 +1146,11 @@ export class TimerComponent extends HTMLElement {
 }
 
 /**
- * Takes a total number of seconds and returns an object containing the equivalent hours, minutes, and seconds.
+ * Takes a total number of seconds and returns an object containing the equivalent in hours, minutes, and seconds.
  *
- *@param {number} totalSeconds - The total number of seconds.
-
- *@returns {{hours: string, minutes: string, seconds: string}} An object containing the equivalent hours, minutes, and seconds.
+ * @param {number} totalSeconds - The total number of seconds.
+ *
+ * @returns {{hours: string, minutes: string, seconds: string}} An object containing the equivalent hours, minutes, and seconds.
  *
  */
 function getTimeValues(totalSeconds: number): {
