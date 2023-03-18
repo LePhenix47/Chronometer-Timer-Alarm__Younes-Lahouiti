@@ -16,15 +16,26 @@ import {
  * Opens or closes a dialog box.
  * @param dialog The HTMLDialogElement to open or close.
  */
-export function changeDialogBoxState(dialog: HTMLDialogElement): void {
-  const modalIsAlreadyOpened: boolean | undefined =
-    dialog?.hasAttribute("open");
+export function changeDialogBoxState(
+  dialog: HTMLDialogElement,
+  forcedState?: boolean
+): void {
+  const modalIsAlreadyOpened: boolean = dialog?.hasAttribute("open") ?? false;
 
-  if (modalIsAlreadyOpened) {
-    dialog.close();
-    return;
+  const developerWantsToForceState = forcedState !== undefined;
+  if (!developerWantsToForceState) {
+    if (modalIsAlreadyOpened) {
+      return dialog.close();
+    } else {
+      return dialog.showModal();
+    }
+  }
+
+  const devWantsToOpenBox = forcedState === true;
+  if (devWantsToOpenBox) {
+    return dialog.showModal();
   } else {
-    dialog.showModal();
+    return dialog.close();
   }
 }
 
@@ -34,6 +45,8 @@ export function changeDialogBoxState(dialog: HTMLDialogElement): void {
  * @returns void
  */
 export function addDialogBoxEventListeners() {
+  //@ts-ignore
+  const dialog: HTMLDialogElement = selectQuery(".main-page__dialog");
   //@ts-ignore
   const hoursSlot: HTMLInputElement = selectQuery(
     ".main-page__dialog-slot--hours"
@@ -57,6 +70,54 @@ export function addDialogBoxEventListeners() {
     incrementButton?.addEventListener("click", handleButton);
     decrementButton?.addEventListener("click", handleButton);
   }
+
+  //@ts-ignore
+  const registerButton: HTMLButtonElement = selectQuery(
+    ".main-page__dialog-button--register"
+  );
+
+  const componentsContainer = selectQuery(".main-page");
+
+  function getDialogBoxInputValues(
+    event: MouseEvent,
+    dialog: HTMLDialogElement
+  ) {
+    const inputs = selectQueryAll("input", dialog);
+    let inputsValues: any[] = [];
+
+    if (inputs) {
+      for (const input of inputs) {
+        //@ts-ignore
+        const valueOfInput = input.value;
+        inputsValues.push(valueOfInput);
+      }
+    }
+    const hoursValue: number = Number(inputsValues[0]);
+    const minutesValue: number = Number(inputsValues[1]);
+    const secondsValue: number = Number(inputsValues[2]);
+
+    // Calculate the total time in seconds from the input values
+    const totalTimeInSeconds: number =
+      3_600 * hoursValue + 60 * minutesValue + secondsValue;
+
+    const titleValue: string = inputsValues[3];
+
+    log({ totalTimeInSeconds, titleValue });
+    changeDialogBoxState(dialog);
+  }
+
+  registerButton?.addEventListener("click", (e: MouseEvent) => {
+    getDialogBoxInputValues(e, dialog);
+  });
+
+  //@ts-ignore
+  const cancelButton: HTMLButtonElement = selectQuery(
+    ".main-page__dialog-button--cancel"
+  );
+
+  cancelButton?.addEventListener("click", (e) => {
+    changeDialogBoxState(dialog);
+  });
 }
 
 /**
