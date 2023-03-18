@@ -5,12 +5,13 @@ module.exports = {
     timer: "./src/index.ts",
     chrono: "./src/chrono.ts",
   },
-  // entry: "./src/index.ts",
   mode: "development",
   output: {
-    // filename: "main.js",
-    filename: "[name].[chunkhash].js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "./dist"),
+    // Cleans the output directory before each build
+    //to avoid having the same files
+    clean: true,
   },
   module: {
     rules: [

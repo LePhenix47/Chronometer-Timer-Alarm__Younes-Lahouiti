@@ -765,8 +765,6 @@ export class TimerComponent extends HTMLElement {
 
   constructor() {
     super();
-    //
-
     /**
      * Container that holds our web component
      *
