@@ -1,4 +1,5 @@
 import {
+  addModifyAttribute,
   selectQuery,
   selectQueryAll,
 } from "./ts-utils/helper-functions/dom.functions";
@@ -12,6 +13,7 @@ import {
   handleInput,
   verifyInputValue,
 } from "./ts-utils/helper-functions/dialog.functions";
+import { WebStorageService } from "./ts-utils/services/webstorage.service";
 
 const container = selectQuery(".main-page");
 
@@ -53,3 +55,21 @@ function addEventListeners() {
 }
 
 addEventListeners();
+
+function addTimersFromWebStorageInContainer() {
+  const timers = WebStorageService.getKey("timers") || [];
+
+  for (const timer of timers) {
+    log({ timer });
+    const { initialTime, title, index } = timer;
+    const newTimerComponent = document.createElement("timer-component");
+    addModifyAttribute(newTimerComponent, "initial-time", initialTime);
+    addModifyAttribute(newTimerComponent, "current-time", initialTime);
+    addModifyAttribute(newTimerComponent, "timer-title", title);
+    addModifyAttribute(newTimerComponent, "is-running", false);
+    addModifyAttribute(newTimerComponent, "index", index);
+
+    container.appendChild(newTimerComponent);
+  }
+}
+addTimersFromWebStorageInContainer();

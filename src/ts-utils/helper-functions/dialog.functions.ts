@@ -12,6 +12,8 @@ import {
   selectQueryAll,
 } from "./dom.functions";
 
+import { WebStorageService } from "../services/webstorage.service";
+
 /**
  * Opens or closes a dialog box.
  * @param dialog The HTMLDialogElement to open or close.
@@ -107,20 +109,33 @@ export function addDialogBoxEventListeners() {
   }
 
   registerButton?.addEventListener("click", (e: MouseEvent) => {
+    const allTimerComponents = selectQueryAll("timer-component");
+    const index = allTimerComponents.length;
+    log({ index });
+
+    /**
+     * We create the timer componnet with the necessary attributes
+     */
     const { initialTime, title } = getDialogBoxInputValues(e, dialog);
     const newTimerComponent = document.createElement("timer-component");
-
-    const allTimerComponents = selectQueryAll("timer-component");
-    const amountOfTimers = allTimerComponents.length;
-    log({ amountOfTimers });
-
     addModifyAttribute(newTimerComponent, "initial-time", initialTime);
     addModifyAttribute(newTimerComponent, "current-time", initialTime);
     addModifyAttribute(newTimerComponent, "timer-title", title);
     addModifyAttribute(newTimerComponent, "is-running", false);
-    addModifyAttribute(newTimerComponent, "index", amountOfTimers);
+    addModifyAttribute(newTimerComponent, "index", index);
 
     container.appendChild(newTimerComponent);
+
+    let newTimersArray = WebStorageService.getKey("timers") || [];
+    newTimersArray.push({ initialTime, title, index });
+
+    log({ newTimersArray });
+    /**
+     * We set the new timers in the localStorage
+     *
+     * ⚠ We must destructure the array as the `.push()` methods returns the length of the array
+     */
+    WebStorageService.setKey("timers", [...newTimersArray]);
     changeDialogBoxState(dialog);
   });
 

@@ -14,7 +14,8 @@ export class WebStorageService {
   constructor() {}
 
   /**
-   * Stores a key-value pair in the WebStorage.
+   * Stores a key-value pair in the WebStorage
+   * **WITHOUT** the need to stringify or parse
    *
    * @param {string} key - The key to be used for storing the value.
    * @param {*} value - The value to be stored.
@@ -49,7 +50,8 @@ export class WebStorageService {
   }
 
   /**
-   * Deletes a settled key-value pair in either the WebStorage.
+   * Deletes a settled key-value pair in either the WebStorage
+   *
    *
    * @param {string} key - The key used for storing the value.
    * @param {boolean} [inSession=false] - A flag indicating whether to remove the value from the session storage or not.

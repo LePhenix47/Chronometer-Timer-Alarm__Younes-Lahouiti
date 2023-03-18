@@ -514,6 +514,13 @@ svg{
     font-weight: 500;
   }
 
+   @media screen and (width <=768px) {
+      .timer-component__paragraph{
+          padding: 30px 15px;
+          top: 46%;
+          font-size: 42px;
+      }
+}
 
 .timer-component__button{
   border: 2px solid rgb(64, 64, 64);
