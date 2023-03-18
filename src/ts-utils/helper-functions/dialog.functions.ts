@@ -13,6 +13,7 @@ import {
 } from "./dom.functions";
 
 import { WebStorageService } from "../services/webstorage.service";
+import { setEventDelegationToContainer } from "./timer-component.functions";
 
 /**
  * Opens or closes a dialog box.
@@ -117,25 +118,8 @@ export function addDialogBoxEventListeners() {
      * We create the timer componnet with the necessary attributes
      */
     const { initialTime, title } = getDialogBoxInputValues(e, dialog);
-    const newTimerComponent = document.createElement("timer-component");
-    addModifyAttribute(newTimerComponent, "initial-time", initialTime);
-    addModifyAttribute(newTimerComponent, "current-time", initialTime);
-    addModifyAttribute(newTimerComponent, "timer-title", title);
-    addModifyAttribute(newTimerComponent, "is-running", false);
-    addModifyAttribute(newTimerComponent, "index", index);
+    createTimerComponent(initialTime, title, index, true);
 
-    container.appendChild(newTimerComponent);
-
-    let newTimersArray = WebStorageService.getKey("timers") || [];
-    newTimersArray.push({ initialTime, title, index });
-
-    log({ newTimersArray });
-    /**
-     * We set the new timers in the localStorage
-     *
-     * ⚠ We must destructure the array as the `.push()` methods returns the length of the array
-     */
-    WebStorageService.setKey("timers", [...newTimersArray]);
     changeDialogBoxState(dialog);
   });
 
@@ -234,5 +218,149 @@ export function verifyInputValue(
   const valueIsOverThreeDigits: boolean = inputElement.value.length > 2;
   if (valueIsOverThreeDigits) {
     inputElement.value = `${inputElement.value.slice(1, 3)}`;
+  }
+}
+
+/**
+ * Creates a new timer component and adds it to the container element.
+ * If `isCreating` is set to `true`, it will save the new timer to the local storage.
+ *
+ * @param {number} initialTime - The initial time value for the timer.
+ * @param {string} title - The title of the timer.
+ * @param {number} index - The index of the timer in the timers array.
+ * @param {boolean} [isCreating=false] - Whether the timer should created in the `localStorage` or not.
+ *
+ * @returns {void}
+ */
+export function createTimerComponent(
+  initialTime: number,
+  title: string,
+  index: number,
+  isCreating?: boolean
+): void {
+  const container = selectQuery(".main-page");
+
+  const newTimerComponent = document.createElement("timer-component");
+
+  addModifyAttribute(newTimerComponent, "initial-time", initialTime);
+  addModifyAttribute(newTimerComponent, "current-time", initialTime);
+  addModifyAttribute(newTimerComponent, "timer-title", title);
+  addModifyAttribute(newTimerComponent, "is-running", false);
+  addModifyAttribute(newTimerComponent, "index", index);
+
+  container.appendChild(newTimerComponent);
+
+  const devWantsToSaveTimers = isCreating === true;
+
+  if (devWantsToSaveTimers) {
+    /**
+     * We get the value of the timers in the local storage with our utility class
+     */
+    let newTimersArray = WebStorageService.getKey("timers") || [];
+    newTimersArray.push({ initialTime, title, index });
+
+    log({ newTimersArray });
+    /**
+     * We set the new timers in the localStorage
+     *
+     * ⚠ We must destructure the array as the `.push()` methods returns the length of the array
+     */
+    WebStorageService.setKey("timers", [...newTimersArray]);
+  }
+}
+
+/**
+ * Removes a timer component from the DOM and localStorage based on its index.
+ *
+ * @param {number} indexOfTimer - The index of the timer to remove.
+ * @returns {void}
+ */
+export function removeTimerComponent(indexOfTimer: number): void {
+  /**
+   * We get all the `<timer-component>` elements
+   */
+  const timersObjectsArray: {
+    initialTime: number;
+    title: string;
+    index: number;
+  }[] = WebStorageService.getKey("timers") || [];
+  const hasTimers: boolean = !!timersObjectsArray.length;
+
+  const timerComponentsArray: HTMLElement[] = selectQueryAll("timer-component");
+
+  const container: HTMLElement = selectQuery(".main-page");
+
+  /**
+   * If there are timers then we remove it by...
+   */
+  if (hasTimers) {
+    let timerToRemove: HTMLElementTagNameMap["timer-component"] | null = null;
+
+    for (const timer of timerComponentsArray) {
+      let index = Number(timer.getAttribute("index"));
+
+      const indexMatches = index === indexOfTimer;
+      if (indexMatches) {
+        //@ts-ignore
+        timerToRemove = timer;
+        break;
+      }
+    }
+
+    const hasFoundElement: boolean = !!timerToRemove;
+    if (hasFoundElement) {
+      //We get the new array without the removed timer
+      let newArrayOfTimers = timersObjectsArray.filter(
+        (timerObject: {
+          initialTime: number;
+          title: string;
+          index: number;
+        }) => {
+          const { initialTime, title, index } = timerObject;
+          return index !== indexOfTimer;
+        }
+      );
+
+      //We remove the deleted timer from the localStorage
+      WebStorageService.setKey("timers", newArrayOfTimers);
+
+      const timerComponentContainer = selectQuery(
+        ".timer-component__container",
+        timerToRemove
+      );
+
+      //We clean up the DOM by removing any event listener on the component
+      timerComponentContainer.removeEventListener(
+        "click",
+        setEventDelegationToContainer
+      );
+
+      const hoursSlot = selectQuery(
+        ".timer-dialog__slot--hours",
+        timerToRemove
+      );
+      const minutesSlot = selectQuery(
+        ".timer-dialog__slot--minutes",
+        timerToRemove
+      );
+      const secondsSlot = selectQuery(
+        ".timer-dialog__slot--seconds",
+        timerToRemove
+      );
+
+      const allSlots = [hoursSlot, minutesSlot, secondsSlot];
+
+      for (const slot of allSlots) {
+        const [input, incrementButton, decrementButton] = getChildren(slot);
+
+        input.removeEventListener("input", handleInput);
+
+        incrementButton.removeEventListener("click", handleButton);
+        decrementButton.removeEventListener("click", handleButton);
+      }
+
+      //We remove the deleted timer from the DOM
+      container.removeChild(timerToRemove);
+    }
   }
 }

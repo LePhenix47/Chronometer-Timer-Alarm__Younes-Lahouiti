@@ -12,6 +12,7 @@ import {
   handleButton,
   handleInput,
   verifyInputValue,
+  createTimerComponent,
 } from "./ts-utils/helper-functions/dialog.functions";
 import { WebStorageService } from "./ts-utils/services/webstorage.service";
 
@@ -43,6 +44,9 @@ const dialog: HTMLDialogElement = selectQuery(".main-page__dialog");
 addDialogBoxEventListeners();
 
 log({ removeTimersButton, addNewTimerButton });
+/**
+ * Function that add event listeners to the page
+ */
 function addEventListeners() {
   removeTimersButton.addEventListener("click", (e) => {
     log("Del", e);
@@ -60,16 +64,8 @@ function addTimersFromWebStorageInContainer() {
   const timers = WebStorageService.getKey("timers") || [];
 
   for (const timer of timers) {
-    log({ timer });
     const { initialTime, title, index } = timer;
-    const newTimerComponent = document.createElement("timer-component");
-    addModifyAttribute(newTimerComponent, "initial-time", initialTime);
-    addModifyAttribute(newTimerComponent, "current-time", initialTime);
-    addModifyAttribute(newTimerComponent, "timer-title", title);
-    addModifyAttribute(newTimerComponent, "is-running", false);
-    addModifyAttribute(newTimerComponent, "index", index);
-
-    container.appendChild(newTimerComponent);
+    createTimerComponent(initialTime, title, index);
   }
 }
 addTimersFromWebStorageInContainer();

@@ -14,7 +14,43 @@ import {
 
 import { WebStorageService } from "../services/webstorage.service";
 import { Interval } from "../services/interval.service";
+import { removeTimerComponent } from "./dialog.functions";
 //
+
+export function setEventDelegationToContainer(e: MouseEvent) {
+  const clickedElement: EventTarget | null = e.target;
+
+  const container = this;
+
+  const modalWindow = selectQuery(".timer-dialog", container);
+  //@ts-ignore
+  const isButton: boolean = clickedElement.tagName.includes("BUTTON");
+
+  if (isButton) {
+    handleButtonEvents(clickedElement);
+  } else {
+    const isNotContainer = clickedElement !== modalWindow;
+    if (isNotContainer) {
+      //@ts-ignore
+      const modalIsAlreadyOpened: boolean = modalWindow?.attributes?.open;
+      //@ts-ignore
+      const modalShouldBeInctive: boolean = getClassListValues(
+        //@ts-ignore
+        modalWindow
+      )?.includes("inactive")
+        ? true
+        : false;
+      if (modalIsAlreadyOpened || modalShouldBeInctive) {
+        return;
+      } else {
+        //@ts-ignore
+        modalWindow.showModal();
+      }
+    } else {
+      return;
+    }
+  }
+}
 
 /**
  * Handles click events on the timer button elements
@@ -215,6 +251,8 @@ export function handleDialogButtons(buttonElement: any) {
   //@ts-ignore
   const timerComponent = getComponentHost(modalWindow);
 
+  const indexOfTimer = Number(timerComponent.getAttribute("index"));
+
   const playPauseButton = selectQuery(
     ".timer-component__button--play",
     //@ts-ignore
@@ -233,6 +271,7 @@ export function handleDialogButtons(buttonElement: any) {
 
   // Handle different button types
   if (isDeleteButton) {
+    removeTimerComponent(indexOfTimer);
   } else if (isTimerDialogButton) {
     // Determine whether an increment or decrement button was clicked
   } else if (isRegisterButton) {

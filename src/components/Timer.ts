@@ -23,7 +23,10 @@ import {
 import { sliceString } from "../ts-utils/helper-functions/string.function";
 
 //Component specific functions
-import { handleButtonEvents } from "../ts-utils/helper-functions/timer-component.functions";
+import {
+  handleButtonEvents,
+  setEventDelegationToContainer,
+} from "../ts-utils/helper-functions/timer-component.functions";
 import { log } from "../ts-utils/helper-functions/console-funtions";
 
 //Component specific variables
@@ -857,9 +860,9 @@ export class TimerComponent extends HTMLElement {
    * Static getter methods that indicates the
    * list of attributes that the custom element wants to observe for changes.
    *
-   * There are currently 5 custom attributes in which 4 need to be observed
+   * There are currently 6 custom attributes in which 4 need to be observed
    *
-   * (we're not observing the `interval-id` attribute as it doesn't need to)
+   * (we're not observing the `interval-id` nor the `index` attributes as they doesn't need to)
    */
   static get observedAttributes() {
     return ["initial-time", "current-time", "timer-title", "is-running"];
@@ -891,38 +894,7 @@ export class TimerComponent extends HTMLElement {
     setStyleProp("--svg-dashoffset", `${svgCircleLength}`, container);
 
     //@ts-ignore
-    container?.addEventListener("click", (e: MouseEvent) => {
-      const clickedElement: EventTarget | null = e.target;
-
-      const modalWindow = selectQuery(".timer-dialog", container);
-      //@ts-ignore
-      const isButton: boolean = clickedElement.tagName.includes("BUTTON");
-
-      if (isButton) {
-        handleButtonEvents(clickedElement);
-      } else {
-        const isNotContainer = clickedElement !== modalWindow;
-        if (isNotContainer) {
-          //@ts-ignore
-          const modalIsAlreadyOpened: boolean = modalWindow?.attributes?.open;
-          //@ts-ignore
-          const modalShouldBeInctive: boolean = getClassListValues(
-            //@ts-ignore
-            modalWindow
-          )?.includes("inactive")
-            ? true
-            : false;
-          if (modalIsAlreadyOpened || modalShouldBeInctive) {
-            return;
-          } else {
-            //@ts-ignore
-            modalWindow.showModal();
-          }
-        } else {
-          return;
-        }
-      }
-    });
+    container?.addEventListener("click", setEventDelegationToContainer);
     const hoursSlot = selectQuery(
       ".timer-dialog__slot--hours",
       //@ts-ignore
@@ -941,83 +913,13 @@ export class TimerComponent extends HTMLElement {
 
     const allSlots = [hoursSlot, minutesSlot, secondsSlot];
 
-    function addEventListeners() {
-      for (const slot of allSlots) {
-        const [input, incrementButton, decrementButton] = getChildren(slot);
+    for (const slot of allSlots) {
+      const [input, incrementButton, decrementButton] = getChildren(slot);
 
-        input.addEventListener("input", handleInput);
+      input.addEventListener("input", handleInput);
 
-        incrementButton.addEventListener("click", handleButton);
-        decrementButton.addEventListener("click", handleButton);
-      }
-    }
-
-    addEventListeners();
-
-    function handleInput(event: InputEvent) {
-      //@ts-ignore
-      verifyInputValue(event.target, false);
-    }
-
-    function handleButton(event: MouseEvent) {
-      //@ts-ignore
-      const isIncrementButton: boolean = getClassListValues(
-        //@ts-ignore
-        event.target
-      ).includes("timer-dialog__button--increment");
-
-      const valueToSum: number = isIncrementButton ? 1 : -1;
-
-      //@ts-ignore
-      const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
-
-      //@ts-ignore
-      const input: HTMLInputElement = getChildren(slotContainer)[0];
-
-      const newValue: number = Number(input.value) + Number(valueToSum);
-
-      input.value = newValue.toString();
-
-      verifyInputValue(input, true);
-    }
-
-    function verifyInputValue(
-      inputElement: HTMLInputElement,
-      isButtonEvent: boolean
-    ) {
-      const classes: string[] = getClassListValues(inputElement);
-
-      const isHoursInput: boolean = classes.includes(
-        "timer-dialog__input--hours"
-      );
-
-      const inputLimit: number = isHoursInput ? 99 : 59;
-
-      if (isButtonEvent) {
-        const valueOfInputUnderflows: boolean = Number(inputElement.value) < 0;
-
-        if (valueOfInputUnderflows) {
-          inputElement.value = inputLimit.toString().slice(-2);
-        }
-      }
-      const valueIsUnderTen: boolean = Number(inputElement.value) < 10;
-      if (valueIsUnderTen) {
-        inputElement.value = `0${inputElement.value.slice(-1)}`;
-      }
-
-      const valueOverflows: boolean = isHoursInput
-        ? Number(inputElement.value.slice(1, 3)) > 99
-        : Number(inputElement.value.slice(-2)) > 59;
-
-      if (valueOverflows) {
-        let currentValue: string = inputElement.value.slice(1, 3);
-        inputElement.value = `0${currentValue.slice(-1)}`;
-      }
-
-      const valueIsOverThreeDigits: boolean = inputElement.value.length > 2;
-      if (valueIsOverThreeDigits) {
-        inputElement.value = `${inputElement.value.slice(1, 3)}`;
-      }
+      incrementButton.addEventListener("click", handleButton);
+      decrementButton.addEventListener("click", handleButton);
     }
   }
 
@@ -1179,8 +1081,78 @@ function getTimeValues(totalSeconds: number): {
   return { hours, minutes, seconds };
 }
 
+export function handleInput(event: InputEvent) {
+  //@ts-ignore
+  verifyInputValue(event.target, false);
+}
+
+export function handleButton(event: MouseEvent) {
+  //@ts-ignore
+  const isIncrementButton: boolean = getClassListValues(
+    //@ts-ignore
+    event.target
+  ).includes("timer-dialog__button--increment");
+
+  const valueToSum: number = isIncrementButton ? 1 : -1;
+
+  //@ts-ignore
+  const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
+
+  //@ts-ignore
+  const input: HTMLInputElement = getChildren(slotContainer)[0];
+
+  const newValue: number = Number(input.value) + Number(valueToSum);
+
+  input.value = newValue.toString();
+
+  verifyInputValue(input, true);
+}
+
+export function verifyInputValue(
+  inputElement: HTMLInputElement,
+  isButtonEvent: boolean
+) {
+  const classes: string[] = getClassListValues(inputElement);
+
+  const isHoursInput: boolean = classes.includes("timer-dialog__input--hours");
+
+  const inputLimit: number = isHoursInput ? 99 : 59;
+
+  if (isButtonEvent) {
+    const valueOfInputUnderflows: boolean = Number(inputElement.value) < 0;
+
+    if (valueOfInputUnderflows) {
+      inputElement.value = inputLimit.toString().slice(-2);
+    }
+  }
+  const valueIsUnderTen: boolean = Number(inputElement.value) < 10;
+  if (valueIsUnderTen) {
+    inputElement.value = `0${inputElement.value.slice(-1)}`;
+  }
+
+  const valueOverflows: boolean = isHoursInput
+    ? Number(inputElement.value.slice(1, 3)) > 99
+    : Number(inputElement.value.slice(-2)) > 59;
+
+  if (valueOverflows) {
+    let currentValue: string = inputElement.value.slice(1, 3);
+    inputElement.value = `0${currentValue.slice(-1)}`;
+  }
+
+  const valueIsOverThreeDigits: boolean = inputElement.value.length > 2;
+  if (valueIsOverThreeDigits) {
+    inputElement.value = `${inputElement.value.slice(1, 3)}`;
+  }
+}
+
 /**
  * We defined it so that we can use it
  */
 customElements.define("timer-component", TimerComponent);
 // <timer-component></timer-component>
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "timer-component": TimerComponent;
+  }
+}

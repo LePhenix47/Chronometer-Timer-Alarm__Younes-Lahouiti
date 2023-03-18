@@ -31,11 +31,11 @@ export class WebStorageService {
   }
 
   /**
-   * Retrieves a key-value pair, if the key isn't found in the WebStorage, it returns null.
+   * Retrieves a key-value pair, if the key isn't found in the WebStorage, it returns `null`.
    *
    * @param {string} key - The key used for storing the value.
    * @param {boolean} [inSession=false] - A flag indicating whether to look for the value in the session storage or not.
-   * @returns {* | null} The value retrieved from the storage, or null if the key is not found.
+   * @returns {* | null} The value retrieved from the storage, or `null` if the key is not found.
    */
   static getKey(key: string, inSession: boolean = false): any {
     // If the user stored the pair inside the session storage
