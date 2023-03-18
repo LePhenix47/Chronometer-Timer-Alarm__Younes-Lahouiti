@@ -5,12 +5,51 @@ import {
 
 import "./components/Timer";
 import { log } from "./ts-utils/helper-functions/console-funtions";
+import {
+  addDialogBoxEventListeners,
+  changeDialogBoxState,
+  handleButton,
+  handleInput,
+  verifyInputValue,
+} from "./ts-utils/helper-functions/dialog.functions";
 
 const component = selectQuery("timer-component");
 
-const removeTimersButton = selectQuery(".main-page__button--delete");
+/**
+ * Button to delete the timer component
+ * from the UI + local storage
+ */
+//@ts-ignore
+const removeTimersButton: HTMLButtonElement = selectQuery(
+  ".main-page__button--delete"
+);
 
-const addNewTimerButton = selectQuery(".main-page__button--add");
+/**
+ * Button to add the timer component
+ * from the UI + local storage
+ */
+//@ts-ignore
+const addNewTimerButton: HTMLButtonElement = selectQuery(
+  ".main-page__button--add"
+);
+
+/**
+ * `<dialog>` element opened whenever the user clicks on the `+` button
+ */
+//@ts-ignore
+const dialog: HTMLDialogElement = selectQuery(".main-page__dialog");
+addDialogBoxEventListeners();
 
 log({ removeTimersButton, addNewTimerButton });
-function addEventListeners() {}
+function addEventListeners() {
+  removeTimersButton.addEventListener("click", (e) => {
+    log("Del", e);
+  });
+
+  addNewTimerButton.addEventListener("click", (e) => {
+    log("Add", e);
+    changeDialogBoxState(dialog);
+  });
+}
+
+addEventListeners();

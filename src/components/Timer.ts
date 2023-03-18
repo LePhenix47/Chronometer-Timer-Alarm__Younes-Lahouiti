@@ -954,11 +954,12 @@ export class TimerComponent extends HTMLElement {
 
     function handleButton(event: MouseEvent) {
       //@ts-ignore
-      const isIncrementButton = getClassListValues(event.target).includes(
-        "timer-dialog__button--increment"
-      );
+      const isIncrementButton: boolean = getClassListValues(
+        //@ts-ignore
+        event.target
+      ).includes("timer-dialog__button--increment");
 
-      const valueToSum = isIncrementButton ? 1 : -1;
+      const valueToSum: number = isIncrementButton ? 1 : -1;
 
       //@ts-ignore
       const slotContainer = getAncestor(event.target, ".timer-dialog__slot");
@@ -1010,8 +1011,6 @@ export class TimerComponent extends HTMLElement {
       if (valueIsOverThreeDigits) {
         inputElement.value = `${inputElement.value.slice(1, 3)}`;
       }
-
-      const currentValue = inputElement.value;
     }
   }
 

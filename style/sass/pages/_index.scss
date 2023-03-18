@@ -157,6 +157,12 @@
 
             color: rgb(165, 165, 165);
 
+            &:focus {
+                background-color: rgb(44, 44, 44);
+                outline: transparent;
+                color: white;
+            }
+
             &--title {
                 flex: 10;
 
