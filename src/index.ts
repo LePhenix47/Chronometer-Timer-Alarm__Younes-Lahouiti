@@ -13,7 +13,7 @@ import {
   verifyInputValue,
 } from "./ts-utils/helper-functions/dialog.functions";
 
-const component = selectQuery("timer-component");
+const container = selectQuery(".main-page");
 
 /**
  * Button to delete the timer component

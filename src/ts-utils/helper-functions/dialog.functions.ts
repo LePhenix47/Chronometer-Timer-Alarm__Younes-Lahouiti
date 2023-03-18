@@ -76,7 +76,7 @@ export function addDialogBoxEventListeners() {
     ".main-page__dialog-button--register"
   );
 
-  const componentsContainer = selectQuery(".main-page");
+  const container = selectQuery(".main-page");
 
   function getDialogBoxInputValues(
     event: MouseEvent,
@@ -103,11 +103,25 @@ export function addDialogBoxEventListeners() {
     const titleValue: string = inputsValues[3];
 
     log({ totalTimeInSeconds, titleValue });
-    changeDialogBoxState(dialog);
+    return { initialTime: totalTimeInSeconds, title: titleValue };
   }
 
   registerButton?.addEventListener("click", (e: MouseEvent) => {
-    getDialogBoxInputValues(e, dialog);
+    const { initialTime, title } = getDialogBoxInputValues(e, dialog);
+    const newTimerComponent = document.createElement("timer-component");
+
+    const allTimerComponents = selectQueryAll("timer-component");
+    const amountOfTimers = allTimerComponents.length;
+    log({ amountOfTimers });
+
+    addModifyAttribute(newTimerComponent, "initial-time", initialTime);
+    addModifyAttribute(newTimerComponent, "current-time", initialTime);
+    addModifyAttribute(newTimerComponent, "timer-title", title);
+    addModifyAttribute(newTimerComponent, "is-running", false);
+    addModifyAttribute(newTimerComponent, "index", amountOfTimers);
+
+    container.appendChild(newTimerComponent);
+    changeDialogBoxState(dialog);
   });
 
   //@ts-ignore
