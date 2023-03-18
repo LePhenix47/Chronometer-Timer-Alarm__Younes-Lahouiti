@@ -846,9 +846,7 @@ export class TimerComponent extends HTMLElement {
     return JSON.parse(attributeValue);
   }
 
-  set isRunning(booleanValue) {
-    log("The timer is running", booleanValue);
-  }
+  set isRunning(booleanValue) {}
 
   /**
    * Static getter methods that indicates the
@@ -1082,7 +1080,6 @@ export class TimerComponent extends HTMLElement {
       }
       case "is-running": {
         const timerIsRunning: boolean = newValue === "true" ? true : false;
-        log({ timerIsRunning });
 
         const totalSeconds: number = Number(
           timerComponent.getAttribute("initial-time")
@@ -1110,7 +1107,6 @@ export class TimerComponent extends HTMLElement {
           //@ts-ignore
           timerComponent
         );
-        log({ timerHasNotStarted, timerHasStarted, timerHasFinished });
 
         if (timerHasNotStarted) {
           //@ts-ignore
@@ -1125,9 +1121,6 @@ export class TimerComponent extends HTMLElement {
             timerComponent
           );
           if (timerIsRunning) {
-            log("Timer started and is running, disabling the dalog", {
-              dialog,
-            });
             dialog?.classList.add("inactive");
           } else {
             dialog?.classList.remove("inactive");
@@ -1141,7 +1134,6 @@ export class TimerComponent extends HTMLElement {
           replaceAttribute(restartButton, "disabled", "enabled");
         }
 
-        log({ restartButton });
         break;
       }
 
