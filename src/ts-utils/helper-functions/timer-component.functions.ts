@@ -17,7 +17,14 @@ import { Interval } from "../services/interval.service";
 import { removeTimerComponent } from "./dialog.functions";
 //
 
-export function setEventDelegationToContainer(e: MouseEvent) {
+/**
+ * Adds event delegation to a container element for handling button events and opening/closing dialog modal
+ *
+ * @param {MouseEvent} e - The click event triggered by user
+ *
+ * @returns {void}
+ */
+export function setEventDelegationToContainer(e: MouseEvent): void {
   const clickedElement: EventTarget | null = e.target;
 
   const container = this;
@@ -137,9 +144,8 @@ export function handlePlayButton(buttonElement: any): void {
   }
 
   function startTimer() {
-    dialog?.classList.add("inactive");
-
     addModifyAttribute(timerComponent, "is-running", true);
+    dialog?.classList.add("inactive");
     callback = Interval.set(() => {
       let currentAmountOfSeconds: number = Number(
         timerComponent.getAttribute("current-time")
@@ -148,7 +154,7 @@ export function handlePlayButton(buttonElement: any): void {
       if (countdownFinished) {
         //@ts-ignore
         Interval.clear(callback);
-
+        dialog?.classList.remove("inactive");
         showPlayButton();
         return;
       }

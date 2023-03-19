@@ -1014,19 +1014,22 @@ export class TimerComponent extends HTMLElement {
           timerComponent
         );
 
+        //@ts-ignore
+        const dialog: HTMLDialogElement = selectQuery(
+          "dialog",
+          //@ts-ignore
+          timerComponent
+        );
+
         if (timerHasNotStarted) {
           //@ts-ignore
           replaceAttribute(restartButton, "disabled", "enabled");
+          dialog?.classList.remove("inactive");
         }
 
         if (timerHasStarted) {
-          //@ts-ignore
-          const dialog: HTMLDialogElement = selectQuery(
-            "dialog",
-            //@ts-ignore
-            timerComponent
-          );
           if (timerIsRunning) {
+            log({ timerIsRunning });
             dialog?.classList.add("inactive");
           } else {
             dialog?.classList.remove("inactive");
@@ -1038,6 +1041,7 @@ export class TimerComponent extends HTMLElement {
           addModifyAttribute(playPauseButton, "disabled", "");
           //@ts-ignore
           replaceAttribute(restartButton, "disabled", "enabled");
+          dialog?.classList.remove("inactive");
         }
 
         break;

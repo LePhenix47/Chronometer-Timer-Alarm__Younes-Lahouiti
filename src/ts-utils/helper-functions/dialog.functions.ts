@@ -255,11 +255,19 @@ export function createTimerComponent(
    *
    * And we loop through the entire array and add the attributes
    */
-  addModifyAttribute(newTimerComponent, "initial-time", initialTime);
-  addModifyAttribute(newTimerComponent, "current-time", initialTime);
-  addModifyAttribute(newTimerComponent, "timer-title", title);
-  addModifyAttribute(newTimerComponent, "is-running", false);
-  addModifyAttribute(newTimerComponent, "index", index);
+
+  const arrayOfAttrbiutesToAdd: { attribute: string; value: any }[] = [
+    { attribute: "initial-time", value: initialTime },
+    { attribute: "current-time", value: initialTime },
+    { attribute: "timer-title", value: title },
+    { attribute: "is-running", value: false },
+    { attribute: "index", value: index },
+  ];
+
+  for (const attributeKeyPair of arrayOfAttrbiutesToAdd) {
+    const { attribute, value } = attributeKeyPair;
+    addModifyAttribute(newTimerComponent, attribute, value);
+  }
 
   const modalWindow = selectQuery("dialog", newTimerComponent);
   const { hours, minutes, seconds } = getTimeValues(initialTime);
