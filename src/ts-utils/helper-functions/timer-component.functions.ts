@@ -145,7 +145,10 @@ export function handlePlayButton(buttonElement: any): void {
 
   function startTimer() {
     addModifyAttribute(timerComponent, "is-running", true);
+
+    //We prevent the dialog from being opened
     dialog?.classList.add("inactive");
+
     callback = Interval.set(() => {
       let currentAmountOfSeconds: number = Number(
         timerComponent.getAttribute("current-time")
@@ -154,7 +157,9 @@ export function handlePlayButton(buttonElement: any): void {
       if (countdownFinished) {
         //@ts-ignore
         Interval.clear(callback);
+        //We allow the user to open the dialog box
         dialog?.classList.remove("inactive");
+
         showPlayButton();
         return;
       }

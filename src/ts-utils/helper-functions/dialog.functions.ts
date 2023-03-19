@@ -14,6 +14,7 @@ import {
 
 import { WebStorageService } from "../services/webstorage.service";
 import { setEventDelegationToContainer } from "./timer-component.functions";
+import { getRandomInt } from "./number.functions";
 import {
   getTimeValues,
   handleDialogButton,
@@ -115,8 +116,41 @@ export function addDialogBoxEventListeners() {
   }
 
   registerButton?.addEventListener("click", (e: MouseEvent) => {
-    const allTimerComponents = selectQueryAll("timer-component");
-    const index = allTimerComponents.length;
+    function generateRandomTimerIndex() {
+      //We get all the indicies of all the timers from the `localStorage`
+      const arrayOfTimerIndices: {
+        initialTime: number;
+        title: string;
+        index: number;
+      }[] = WebStorageService.getKey("timers")?.map(
+        (timer: { initialTime: number; title: string; index: number }) => {
+          return timer.index;
+        }
+      );
+
+      //We verify if timers are added or not, if not we return a number between 0 and 2³⁰
+      const noTimersAreAdded: boolean = !arrayOfTimerIndices?.length;
+
+      if (noTimersAreAdded) {
+        return getRandomInt(0, 2 ** 30);
+      }
+
+      let randomIndex: number = getRandomInt(0, 2 ** 30);
+
+      //We check if the already had added that index to a timer
+      const indexAlreadyExists: boolean = arrayOfTimerIndices.some((timer) => {
+        return timer.index === randomIndex;
+      });
+
+      //If it did we re-run the function using recursion
+      if (indexAlreadyExists) {
+        generateRandomTimerIndex();
+      }
+
+      //If it didn't we simply return the index
+      return randomIndex;
+    }
+    const index = generateRandomTimerIndex();
     log({ index });
 
     /**
