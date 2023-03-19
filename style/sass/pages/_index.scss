@@ -269,6 +269,10 @@
 
             }
 
+            &>svg {
+                pointer-events: none;
+            }
+
             &--increment {
                 bottom: 130%;
             }

@@ -180,6 +180,7 @@ export function addDialogBoxEventListeners() {
  * @returns void
  */
 export function handleInput(event: InputEvent) {
+  log({ event });
   //@ts-ignore
   verifyInputValue(event.target, false);
 }
@@ -192,6 +193,7 @@ export function handleInput(event: InputEvent) {
  * @returns void
  */
 export function handleButton(event: MouseEvent) {
+  log(event.target);
   //@ts-ignore
   const isIncrementButton: boolean = getClassListValues(
     //@ts-ignore
@@ -199,6 +201,7 @@ export function handleButton(event: MouseEvent) {
   ).includes("main-page__dialog-button--increment");
 
   const valueToSum: number = isIncrementButton ? 1 : -1;
+  log(valueToSum);
 
   //@ts-ignore
   const slotContainer = getAncestor(event.target, ".main-page__dialog-slot");
