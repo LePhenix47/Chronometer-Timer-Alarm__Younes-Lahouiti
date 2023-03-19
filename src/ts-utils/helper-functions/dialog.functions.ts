@@ -87,20 +87,19 @@ export function addDialogBoxEventListeners() {
 
   const container = selectQuery(".main-page");
 
+  //@ts-ignore
+  const inputsArray: HTMLInputElement[] = selectQueryAll("input", dialog);
+
+  let inputsValues: any[] = [];
   function getDialogBoxInputValues(
     event: MouseEvent,
     dialog: HTMLDialogElement
   ) {
-    const inputs = selectQueryAll("input", dialog);
-    let inputsValues: any[] = [];
-
-    if (inputs) {
-      for (const input of inputs) {
-        //@ts-ignore
-        const valueOfInput = input.value;
-        inputsValues.push(valueOfInput);
-      }
+    for (const input of inputsArray) {
+      const valueOfInput = input.value;
+      inputsValues.push(valueOfInput);
     }
+
     const hoursValue: number = Number(inputsValues[0]);
     const minutesValue: number = Number(inputsValues[1]);
     const secondsValue: number = Number(inputsValues[2]);
@@ -158,6 +157,11 @@ export function addDialogBoxEventListeners() {
      */
     const { initialTime, title } = getDialogBoxInputValues(e, dialog);
     createTimerComponent(initialTime, title, index, true);
+
+    for (const input of inputsArray) {
+      input.value = input.getAttribute("value");
+    }
+    log({ inputsArray });
 
     changeDialogBoxState(dialog);
   });
@@ -284,6 +288,14 @@ export function createTimerComponent(
 
   const newTimerComponent = document.createElement("timer-component");
 
+  //@ts-ignore
+  const quickDeleteButton: HTMLButtonElement = selectQuery(
+    ".main-page__button--delete"
+  );
+
+  //We re-enble it
+  replaceAttribute(quickDeleteButton, "disabled", "enabled");
+
   /**
    * Idea to refactor this part:
    *
@@ -384,6 +396,11 @@ export function removeTimerComponent(indexOfTimer: number): void {
 
   const timerComponentsArray: HTMLElement[] = selectQueryAll("timer-component");
 
+  //@ts-ignore
+  const quickDeleteButton: HTMLButtonElement = selectQuery(
+    ".main-page__button--delete"
+  );
+
   const container: HTMLElement = selectQuery(".main-page");
 
   /**
@@ -404,60 +421,61 @@ export function removeTimerComponent(indexOfTimer: number): void {
     }
 
     const hasFoundElement: boolean = !!timerToRemove;
-    if (hasFoundElement) {
-      //We get the new array without the removed timer
-      let newArrayOfTimers = timersObjectsArray.filter(
-        (timerObject: {
-          initialTime: number;
-          title: string;
-          index: number;
-        }) => {
-          const { initialTime, title, index } = timerObject;
-          return index !== indexOfTimer;
-        }
-      );
-
-      //We remove the deleted timer from the localStorage
-      WebStorageService.setKey("timers", newArrayOfTimers);
-
-      const timerComponentContainer = selectQuery(
-        ".timer-component__container",
-        timerToRemove
-      );
-
-      //We clean up the DOM by removing any event listener on the component
-      timerComponentContainer.removeEventListener(
-        "click",
-        setEventDelegationToContainer
-      );
-
-      const hoursSlot = selectQuery(
-        ".timer-dialog__slot--hours",
-        timerToRemove
-      );
-      const minutesSlot = selectQuery(
-        ".timer-dialog__slot--minutes",
-        timerToRemove
-      );
-      const secondsSlot = selectQuery(
-        ".timer-dialog__slot--seconds",
-        timerToRemove
-      );
-
-      const allSlots = [hoursSlot, minutesSlot, secondsSlot];
-
-      for (const slot of allSlots) {
-        const [input, incrementButton, decrementButton] = getChildren(slot);
-
-        //We clean up any event listner on the timer to avoid performance issues
-        input.removeEventListener("input", handleDialogInput);
-
-        incrementButton.removeEventListener("click", handleDialogButton);
-        decrementButton.removeEventListener("click", handleDialogButton);
+    if (!hasFoundElement) {
+      return;
+    }
+    //We get the new array without the removed timer
+    let newArrayOfTimers = timersObjectsArray.filter(
+      (timerObject: { initialTime: number; title: string; index: number }) => {
+        const { initialTime, title, index } = timerObject;
+        return index !== indexOfTimer;
       }
+    );
 
-      //We remove the deleted timer from the DOM
-      container.removeChild(timerToRemove);
+    //We remove the deleted timer from the localStorage
+    WebStorageService.setKey("timers", newArrayOfTimers);
+
+    const timerComponentContainer = selectQuery(
+      ".timer-component__container",
+      timerToRemove
+    );
+
+    //We clean up the DOM by removing any event listener on the component
+    timerComponentContainer.removeEventListener(
+      "click",
+      setEventDelegationToContainer
+    );
+
+    const hoursSlot = selectQuery(".timer-dialog__slot--hours", timerToRemove);
+    const minutesSlot = selectQuery(
+      ".timer-dialog__slot--minutes",
+      timerToRemove
+    );
+    const secondsSlot = selectQuery(
+      ".timer-dialog__slot--seconds",
+      timerToRemove
+    );
+
+    const allSlots = [hoursSlot, minutesSlot, secondsSlot];
+
+    for (const slot of allSlots) {
+      const [input, incrementButton, decrementButton] = getChildren(slot);
+
+      //We clean up any event listner on the timer to avoid performance issues
+      input.removeEventListener("input", handleDialogInput);
+
+      incrementButton.removeEventListener("click", handleDialogButton);
+      decrementButton.removeEventListener("click", handleDialogButton);
+    }
+
+    //We remove the deleted timer from the DOM
+    container.removeChild(timerToRemove);
+
+    const allTimersAreRemoved = !selectQueryAll("timer-component").length;
+
+    log({ allTimersAreRemoved });
+    if (allTimersAreRemoved) {
+      replaceAttribute(quickDeleteButton, "enabled", "disabled");
     }
   }
 }

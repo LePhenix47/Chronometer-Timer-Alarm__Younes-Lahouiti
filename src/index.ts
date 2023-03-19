@@ -47,7 +47,7 @@ log({ removeTimersButton, addNewTimerButton });
 /**
  * Function that add event listeners to the page
  */
-function addEventListeners() {
+function addEventListenersForMainPage() {
   removeTimersButton.addEventListener("click", (e) => {
     log("Del", e);
   });
@@ -58,7 +58,7 @@ function addEventListeners() {
   });
 }
 
-addEventListeners();
+addEventListenersForMainPage();
 
 function addTimersFromWebStorageInContainer() {
   const timers = WebStorageService.getKey("timers") || [];
