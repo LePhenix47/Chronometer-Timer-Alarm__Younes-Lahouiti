@@ -146,7 +146,7 @@ export function spliceArray(
   startIndex: number,
   deleteCount: number,
   ...items: any[]
-): object {
+): { removedItems: any[]; newArray: any[] } {
   const argumentInArrayIsNotValid: boolean = !Array.isArray(array);
   if (argumentInArrayIsNotValid) {
     throw new TypeError("The 'array' parameter must be an array");
@@ -166,12 +166,15 @@ export function spliceArray(
     throw new Error("The 'startIndex' parameter is out of bounds of the array");
   }
 
-  let newArray: any[] = structuredClone(array);
+  //We make a deep copy of the array to avoid mutating
+  //the array passed in argument with the `splice()` method
+  let newArray: any[] = [...array];
 
   let removedItems: any[] = [];
 
   const hasItems: boolean = !!items.length;
   if (hasItems) {
+    //The `.splice()` method returns
     removedItems = newArray.splice(startIndex, deleteCount, ...items);
   } else {
     removedItems = newArray.splice(startIndex, deleteCount);

@@ -287,6 +287,15 @@ export function handleDialogButtons(buttonElement: any) {
     // Determine whether an increment or decrement button was clicked
   } else if (isRegisterButton) {
     // Get the values of the input elements and convert them to numbers
+    const indexOfTimer = Number(timerComponent.getAttribute("index"));
+    //We get all the indicies of all the timers from the `localStorage`
+    const arrayOfTimersInStorage: {
+      initialTime: number;
+      title: string;
+      index: number;
+    }[] = WebStorageService.getKey("timers");
+
+    log({ indexOfTimer });
     let inputsValues: any[] = [];
     if (inputs) {
       for (const input of inputs) {
