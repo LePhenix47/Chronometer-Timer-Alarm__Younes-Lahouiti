@@ -66,6 +66,12 @@ function addEventListenersForMainPage() {
     checkmarkSvg.classList.remove("hide");
 
     replaceAttribute(addNewTimerButton, "enabled", "disabled");
+
+    const arrayOfTimerComponents = selectQueryAll("timer-component");
+
+    for (const timerComponent of arrayOfTimerComponents) {
+      addModifyAttribute(timerComponent, "quick-delete", true);
+    }
   }
 
   /**
@@ -78,6 +84,12 @@ function addEventListenersForMainPage() {
     checkmarkSvg.classList.add("hide");
 
     replaceAttribute(addNewTimerButton, "disabled", "enabled");
+
+    const arrayOfTimerComponents = selectQueryAll("timer-component");
+
+    for (const timerComponent of arrayOfTimerComponents) {
+      addModifyAttribute(timerComponent, "quick-delete", false);
+    }
   }
 
   removeTimersButton.addEventListener("click", (e) => {

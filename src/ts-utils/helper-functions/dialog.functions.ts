@@ -311,6 +311,7 @@ export function createTimerComponent(
     { attribute: "timer-title", value: title },
     { attribute: "is-running", value: false },
     { attribute: "index", value: index },
+    { attribute: "quick-delete", value: false },
   ];
 
   for (const attributeKeyPair of arrayOfAttrbiutesToAdd) {
