@@ -916,10 +916,10 @@ export class TimerComponent extends HTMLElement {
     for (const slot of allSlots) {
       const [input, incrementButton, decrementButton] = getChildren(slot);
 
-      input.addEventListener("input", handleInput);
+      input.addEventListener("input", handleDialogInput);
 
-      incrementButton.addEventListener("click", handleButton);
-      decrementButton.addEventListener("click", handleButton);
+      incrementButton.addEventListener("click", handleDialogButton);
+      decrementButton.addEventListener("click", handleDialogButton);
     }
   }
 
@@ -1058,7 +1058,7 @@ export class TimerComponent extends HTMLElement {
  * @returns {{hours: string, minutes: string, seconds: string}} An object containing the equivalent hours, minutes, and seconds.
  *
  */
-function getTimeValues(totalSeconds: number): {
+export function getTimeValues(totalSeconds: number): {
   hours: string;
   minutes: string;
   seconds: string;
@@ -1081,12 +1081,12 @@ function getTimeValues(totalSeconds: number): {
   return { hours, minutes, seconds };
 }
 
-export function handleInput(event: InputEvent) {
+export function handleDialogInput(event: InputEvent) {
   //@ts-ignore
   verifyInputValue(event.target, false);
 }
 
-export function handleButton(event: MouseEvent) {
+export function handleDialogButton(event: MouseEvent) {
   //@ts-ignore
   const isIncrementButton: boolean = getClassListValues(
     //@ts-ignore

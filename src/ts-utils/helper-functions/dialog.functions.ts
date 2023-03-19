@@ -14,6 +14,11 @@ import {
 
 import { WebStorageService } from "../services/webstorage.service";
 import { setEventDelegationToContainer } from "./timer-component.functions";
+import {
+  getTimeValues,
+  handleDialogButton,
+  handleDialogInput,
+} from "../../components/Timer";
 
 /**
  * Opens or closes a dialog box.
@@ -242,11 +247,57 @@ export function createTimerComponent(
 
   const newTimerComponent = document.createElement("timer-component");
 
+  /**
+   * Idea to refactor this part:
+   *
+   * Get an array of atributes and their values like this:
+   * {attribute: string, value: any}[]
+   *
+   * And we loop through the entire array and add the attributes
+   */
   addModifyAttribute(newTimerComponent, "initial-time", initialTime);
   addModifyAttribute(newTimerComponent, "current-time", initialTime);
   addModifyAttribute(newTimerComponent, "timer-title", title);
   addModifyAttribute(newTimerComponent, "is-running", false);
   addModifyAttribute(newTimerComponent, "index", index);
+
+  const modalWindow = selectQuery("dialog", newTimerComponent);
+  const { hours, minutes, seconds } = getTimeValues(initialTime);
+
+  //@ts-ignore
+  const hoursInput: HTMLInputElement = selectQuery(
+    ".timer-dialog__input--hours",
+    modalWindow
+  );
+  //@ts-ignore
+  const minutesInput: HTMLInputElement = selectQuery(
+    ".timer-dialog__input--minutes",
+    modalWindow
+  );
+  //@ts-ignore
+  const secondsInput: HTMLInputElement = selectQuery(
+    ".timer-dialog__input--seconds",
+    modalWindow
+  );
+
+  hoursInput.value = hours;
+  addModifyAttribute(hoursInput, "value", hours);
+
+  minutesInput.value = minutes;
+  addModifyAttribute(minutesInput, "value", minutes);
+
+  secondsInput.value = seconds;
+  addModifyAttribute(secondsInput, "value", seconds);
+
+  //@ts-ignore
+  const titleInput: HTMLInputElement = selectQuery(
+    ".timer-dialog__input--title",
+    modalWindow
+  );
+
+  titleInput.value = title;
+
+  log({ modalWindow, titleInput });
 
   container.appendChild(newTimerComponent);
 
@@ -353,10 +404,11 @@ export function removeTimerComponent(indexOfTimer: number): void {
       for (const slot of allSlots) {
         const [input, incrementButton, decrementButton] = getChildren(slot);
 
-        input.removeEventListener("input", handleInput);
+        //We clean up any event listner on the timer to avoid performance issues
+        input.removeEventListener("input", handleDialogInput);
 
-        incrementButton.removeEventListener("click", handleButton);
-        decrementButton.removeEventListener("click", handleButton);
+        incrementButton.removeEventListener("click", handleDialogButton);
+        decrementButton.removeEventListener("click", handleDialogButton);
       }
 
       //We remove the deleted timer from the DOM
