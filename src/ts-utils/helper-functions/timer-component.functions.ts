@@ -72,34 +72,46 @@ export function handleButtonEvents(buttonElement: any): void {
 
   log(buttonClasses);
 
+  //Timer buttons
   const isPlayButton: boolean = buttonClasses.includes(
     "timer-component__button--play"
   );
   const isRestartButton: boolean = buttonClasses.includes(
     "timer-component__button--restart"
   );
+
   const isDeleteButton: boolean = buttonClasses.includes(
+    "timer-component__delete"
+  );
+
+  //Dialog buttons
+  const isDialogDeleteButton: boolean = buttonClasses.includes(
     "timer-dialog__delete"
   );
 
-  const isTimerDialogButton: boolean = buttonClasses.includes(
+  const isDialogTimerButton: boolean = buttonClasses.includes(
     "timer-dialog__button"
   );
 
-  const isRegisterButton: boolean = buttonClasses.includes(
+  const isDialogRegisterButton: boolean = buttonClasses.includes(
     "timer-dialog__button--register"
   );
-  const isCancelButton: boolean = buttonClasses.includes(
+  const isDialogCancelButton: boolean = buttonClasses.includes(
     "timer-dialog__button--cancel"
   );
 
   const isDialogButton: boolean =
-    isDeleteButton || isTimerDialogButton || isRegisterButton || isCancelButton;
+    isDialogDeleteButton ||
+    isDialogTimerButton ||
+    isDialogRegisterButton ||
+    isDialogCancelButton;
 
   if (isPlayButton) {
     handlePlayButton(buttonElement);
   } else if (isRestartButton) {
     handleRestartButton(buttonElement);
+  } else if (isDeleteButton) {
+    handleDeleteButton(buttonElement);
   } else if (isDialogButton) {
     handleDialogButtons(buttonElement);
   } else {
@@ -235,6 +247,14 @@ export function handleRestartButton(buttonElement: any): void {
   }
 }
 
+export function handleDeleteButton(buttonElement: HTMLButtonElement): void {
+  log("deleting button");
+  const timerComponent = getComponentHost(buttonElement);
+
+  const indexOfTimer = Number(timerComponent.getAttribute("index"));
+
+  removeTimerComponent(indexOfTimer);
+}
 /**
  * Handles the click events for buttons in a timer dialog.
  * @param buttonElement The button element that was clicked.

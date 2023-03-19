@@ -499,6 +499,25 @@ svg{
   padding: 0;
 }
 
+.timer-component__delete{
+  position: absolute;
+  top: 2%;
+  right: 5%;
+
+  color: rgb(213, 130, 139);
+  padding: 8px;
+  border-radius: 5px;
+  outline: transparent;
+}
+
+.timer-component__delete:hover {
+    background-color: rgb(47, 47, 47);
+}
+
+.timer-component__delete:active {
+    background-color: rgb(42, 42, 42);
+}
+
 .timer-component__paragraph {
     display: inline-block;
     margin: 0;
@@ -703,6 +722,13 @@ const timerUI: string = /* html */ `
   </svg>
   <p class="timer-component__paragraph">00:00:00</p>
   <section class="timer-component__buttons-container">
+
+  <button type="button" class="timer-component__delete">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 92 92" width="20" height="20" fill="currentColor">
+        <path
+          d="m78.4 30.4-3.1 57.8c-.1 2.1-1.9 3.8-4 3.8H20.7c-2.1 0-3.9-1.7-4-3.8l-3.1-57.8c-.1-2.2 1.6-4.1 3.8-4.2 2.2-.1 4.1 1.6 4.2 3.8l2.9 54h43.1l2.9-54c.1-2.2 2-3.9 4.2-3.8 2.1.1 3.8 2 3.7 4.2zM89 17c0 2.2-1.8 4-4 4H7c-2.2 0-4-1.8-4-4s1.8-4 4-4h22V4c0-1.9 1.3-3 3.2-3h27.6C61.7 1 63 2.1 63 4v9h22c2.2 0 4 1.8 4 4zm-53-4h20V8H36v5zm1.7 65c2 0 3.5-1.9 3.5-3.8l-1-43.2c0-1.9-1.6-3.5-3.6-3.5-1.9 0-3.5 1.6-3.4 3.6l1 43.3c0 1.9 1.6 3.6 3.5 3.6zm16.5 0c1.9 0 3.5-1.6 3.5-3.5l1-43.2c0-1.9-1.5-3.6-3.4-3.6-2 0-3.5 1.5-3.6 3.4l-1 43.2c-.1 2 1.5 3.7 3.5 3.7-.1 0-.1 0 0 0z" />
+      </svg>  
+  </button>
 
     <button type="button" class="timer-component__button timer-component__button--play">
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
