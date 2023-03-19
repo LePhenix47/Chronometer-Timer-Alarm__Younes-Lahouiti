@@ -1,6 +1,57 @@
 import { spliceArray } from "./string.function";
 
 /**
+ * Retrieves the values of an object inside an array.
+ *
+ * @param {object} object The object to retrieve values from.
+ *
+ * @returns {any[]} An array containing the property values of the object.
+ */
+export function getObjectValues(object: object): any[] {
+  const objectIsDefined: boolean = !!object;
+
+  if (objectIsDefined) {
+    //Returns the property values of the object in an array
+    return Object.values(object);
+  }
+  return [];
+}
+
+/**
+ * Retrieves the properties themselves of an object inside an array.
+ *
+ * @param {object} object The object to retrieve properties from.
+ *
+ * @returns An array containing the property names of the object.
+ */
+export function getObjectProperties(object: object): any[] {
+  const objectIsDefined: boolean = !!object;
+
+  if (objectIsDefined) {
+    //Returns the property names of the object in an array
+    return Object.keys(object);
+  }
+  return [];
+}
+
+/**
+ * Retrieves the property names and values of an object inside an array.
+ *
+ * @param {object} object The object to retrieve property names and values from.
+ *
+ * @returns An array containing pairs of property names and values of the object.
+ */
+export function getObjectEntries(object: object): any[] {
+  const objectIsDefined: boolean = !!object;
+
+  if (objectIsDefined) {
+    //Returns the property names and its values in pair inside an array
+    return Object.entries(object);
+  }
+  return [];
+}
+
+/**
  * Update an array of objects by a specific property value while preserving the order of objects inside.
  *
  * @param {Array} arrayOfObjects - The array of objects to update.

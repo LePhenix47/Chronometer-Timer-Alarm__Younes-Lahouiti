@@ -15,6 +15,8 @@ import {
 import { WebStorageService } from "../services/webstorage.service";
 import { Interval } from "../services/interval.service";
 import { removeTimerComponent } from "./dialog.functions";
+
+import { updateArrayOfObjectByProp } from "./object.functions";
 //
 
 /**
@@ -286,16 +288,6 @@ export function handleDialogButtons(buttonElement: any) {
   } else if (isTimerDialogButton) {
     // Determine whether an increment or decrement button was clicked
   } else if (isRegisterButton) {
-    // Get the values of the input elements and convert them to numbers
-    const indexOfTimer = Number(timerComponent.getAttribute("index"));
-    //We get all the indicies of all the timers from the `localStorage`
-    const arrayOfTimersInStorage: {
-      initialTime: number;
-      title: string;
-      index: number;
-    }[] = WebStorageService.getKey("timers");
-
-    log({ indexOfTimer });
     let inputsValues: any[] = [];
     if (inputs) {
       for (const input of inputs) {
@@ -323,6 +315,29 @@ export function handleDialogButtons(buttonElement: any) {
     replaceAttribute(playPauseButton, "disabled", "enabled");
     //@ts-ignore
     replaceAttribute(restartPauseButton, "enabled", "disabled");
+
+    // Get the values of the input elements and convert them to numbers
+    const indexOfTimer = Number(timerComponent.getAttribute("index"));
+    //We get all the indicies of all the timers from the `localStorage`
+    const arrayOfTimersInStorage: {
+      initialTime: number;
+      title: string;
+      index: number;
+    }[] = WebStorageService.getKey("timers") || [];
+
+    const updatedTimerObject = {
+      initialTime: totalTimeInSeconds,
+      title: titleValue,
+      index: indexOfTimer,
+    };
+
+    const updatedArrayOfTimerInStorage = updateArrayOfObjectByProp(
+      arrayOfTimersInStorage,
+      "index",
+      updatedTimerObject
+    );
+
+    WebStorageService.setKey("timers", updatedArrayOfTimerInStorage);
     // Close the dialog
     //@ts-ignore
     modalWindow.close();

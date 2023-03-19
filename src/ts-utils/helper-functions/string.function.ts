@@ -1,5 +1,4 @@
-import { log } from "./console-funtions.js";
-
+import { log } from "./console-funtions";
 /**
  *Function that formats a given string in 3 cases: lowercase, uppercase and titlecase
  *
