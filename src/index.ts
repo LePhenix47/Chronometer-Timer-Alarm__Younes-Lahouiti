@@ -1,5 +1,7 @@
 import {
   addModifyAttribute,
+  getClassListValues,
+  replaceAttribute,
   selectQuery,
   selectQueryAll,
 } from "./ts-utils/helper-functions/dom.functions";
@@ -43,13 +45,54 @@ const addNewTimerButton: HTMLButtonElement = selectQuery(
 const dialog: HTMLDialogElement = selectQuery(".main-page__dialog");
 addDialogBoxEventListeners();
 
-log({ removeTimersButton, addNewTimerButton });
 /**
  * Function that add event listeners to the page
  */
 function addEventListenersForMainPage() {
+  //@ts-ignore
+  const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");
+  //@ts-ignore
+  const checkmarkSvg: SVGSVGElement = selectQuery(
+    ".main-page__button-checkmark"
+  );
+
+  /**
+   * Function that enables the quick delete mode
+   */
+  function enableQuickDelete() {
+    log("enabling");
+
+    pencilSvg.classList.add("hide");
+    checkmarkSvg.classList.remove("hide");
+
+    replaceAttribute(addNewTimerButton, "enabled", "disabled");
+  }
+
+  /**
+   * Function that disables the quick delete mode
+   */
+  function disableQuickDelete() {
+    log("disabling");
+
+    pencilSvg.classList.remove("hide");
+    checkmarkSvg.classList.add("hide");
+
+    replaceAttribute(addNewTimerButton, "disabled", "enabled");
+  }
+
   removeTimersButton.addEventListener("click", (e) => {
-    log("Del", e);
+    log("Enable quick del", e);
+    //@ts-ignore
+    const quickDeleteIsEnabled =
+      //@ts-ignore
+      getClassListValues(pencilSvg).includes("hide");
+    log({ quickDeleteIsEnabled });
+
+    if (quickDeleteIsEnabled) {
+      disableQuickDelete();
+    } else {
+      enableQuickDelete();
+    }
   });
 
   addNewTimerButton.addEventListener("click", (e) => {

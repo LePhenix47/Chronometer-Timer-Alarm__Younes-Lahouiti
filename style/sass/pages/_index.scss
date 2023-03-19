@@ -46,12 +46,16 @@
         border-radius: 8px;
         padding: 5px;
 
-        &:hover {
+        &:not(:disabled):hover {
             background-color: var(--button-bg--hover);
         }
 
         &:active {
             filter: brightness(93%);
+        }
+
+        &:disabled {
+            color: rgb(119, 119, 119);
         }
 
         &--delete {}
