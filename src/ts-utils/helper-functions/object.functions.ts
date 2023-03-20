@@ -8,7 +8,8 @@ import { spliceArray } from "./string.function";
  * @returns {any[]} An array containing the property values of the object.
  */
 export function getObjectValues(object: object): any[] {
-  const objectIsDefined: boolean = !!object;
+  //We check that the object passed is indeed an object
+  const objectIsDefined: boolean = !Array.isArray(object);
 
   if (objectIsDefined) {
     //Returns the property values of the object in an array
@@ -25,7 +26,8 @@ export function getObjectValues(object: object): any[] {
  * @returns An array containing the property names of the object.
  */
 export function getObjectProperties(object: object): any[] {
-  const objectIsDefined: boolean = !!object;
+  //We check that the object passed is indeed an object
+  const objectIsDefined: boolean = !Array.isArray(object);
 
   if (objectIsDefined) {
     //Returns the property names of the object in an array
@@ -39,10 +41,19 @@ export function getObjectProperties(object: object): any[] {
  *
  * @param {object} object The object to retrieve property names and values from.
  *
- * @returns An array containing pairs of property names and values of the object.
+ * @returns An array containing pairs of property names and values of the object, example:
+ *
+ * ```js
+ * const obj = {foo: "hello", bar: "salve"}
+ *
+ * let objectKeyValuePair = getObjectEntries(obj);
+ *
+ * console.log(objectKeyValuePair) → [["foo", "hello"], ["bar", "salve"]]
+ * ```
  */
 export function getObjectEntries(object: object): any[] {
-  const objectIsDefined: boolean = !!object;
+  //We check that the object passed is indeed an object
+  const objectIsDefined: boolean = !Array.isArray(object);
 
   if (objectIsDefined) {
     //Returns the property names and its values in pair inside an array

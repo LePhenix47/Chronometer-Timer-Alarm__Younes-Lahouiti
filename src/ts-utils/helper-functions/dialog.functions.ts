@@ -85,16 +85,30 @@ export function addDialogBoxEventListeners() {
     ".main-page__dialog-button--register"
   );
 
-  const container = selectQuery(".main-page");
+  registerButton?.addEventListener("click", (e: MouseEvent) => {
+    const index = generateRandomTimerIndex();
+
+    /**
+     * We create the timer componnet with the necessary attributes
+     */
+    const { initialTime, title } = getDialogBoxInputValues(e, dialog);
+    createTimerComponent(initialTime, title, index, true);
+
+    for (const input of inputsArray) {
+      input.value = input.getAttribute("value");
+    }
+
+    changeDialogBoxState(dialog);
+  });
 
   //@ts-ignore
   const inputsArray: HTMLInputElement[] = selectQueryAll("input", dialog);
 
-  let inputsValues: any[] = [];
   function getDialogBoxInputValues(
     event: MouseEvent,
     dialog: HTMLDialogElement
   ) {
+    let inputsValues: any[] = [];
     for (const input of inputsArray) {
       const valueOfInput = input.value;
       inputsValues.push(valueOfInput);
@@ -110,61 +124,8 @@ export function addDialogBoxEventListeners() {
 
     const titleValue: string = inputsValues[3];
 
-    log({ totalTimeInSeconds, titleValue });
     return { initialTime: totalTimeInSeconds, title: titleValue };
   }
-
-  registerButton?.addEventListener("click", (e: MouseEvent) => {
-    function generateRandomTimerIndex() {
-      //We get all the indicies of all the timers from the `localStorage`
-      const arrayOfTimerIndices: {
-        initialTime: number;
-        title: string;
-        index: number;
-      }[] = WebStorageService.getKey("timers")?.map(
-        (timer: { initialTime: number; title: string; index: number }) => {
-          return timer.index;
-        }
-      );
-
-      //We verify if timers are added or not, if not we return a number between 0 and 2³⁰
-      const noTimersAreAdded: boolean = !arrayOfTimerIndices?.length;
-
-      if (noTimersAreAdded) {
-        return getRandomInt(0, 2 ** 30);
-      }
-
-      let randomIndex: number = getRandomInt(0, 2 ** 30);
-
-      //We check if the already had added that index to a timer
-      const indexAlreadyExists: boolean = arrayOfTimerIndices.some((timer) => {
-        return timer.index === randomIndex;
-      });
-
-      //If it did we re-run the function using recursion
-      if (indexAlreadyExists) {
-        generateRandomTimerIndex();
-      }
-
-      //If it didn't we simply return the index
-      return randomIndex;
-    }
-    const index = generateRandomTimerIndex();
-    log({ index });
-
-    /**
-     * We create the timer componnet with the necessary attributes
-     */
-    const { initialTime, title } = getDialogBoxInputValues(e, dialog);
-    createTimerComponent(initialTime, title, index, true);
-
-    for (const input of inputsArray) {
-      input.value = input.getAttribute("value");
-    }
-    log({ inputsArray });
-
-    changeDialogBoxState(dialog);
-  });
 
   //@ts-ignore
   const cancelButton: HTMLButtonElement = selectQuery(
@@ -176,6 +137,41 @@ export function addDialogBoxEventListeners() {
   });
 }
 
+export function generateRandomTimerIndex() {
+  //We get all the indicies of all the timers from the `localStorage`
+  const arrayOfTimerIndices: {
+    initialTime: number;
+    title: string;
+    index: number;
+  }[] = WebStorageService.getKey("timers")?.map(
+    (timer: { initialTime: number; title: string; index: number }) => {
+      return timer.index;
+    }
+  );
+
+  //We verify if timers are added or not, if not we return a number between 0 and 2³⁰
+  const noTimersAreAdded: boolean = !arrayOfTimerIndices?.length;
+
+  if (noTimersAreAdded) {
+    return getRandomInt(0, 2 ** 30);
+  }
+
+  let randomIndex: number = getRandomInt(0, 2 ** 30);
+
+  //We check if the already had added that index to a timer
+  const indexAlreadyExists: boolean = arrayOfTimerIndices.some((timer) => {
+    return timer.index === randomIndex;
+  });
+
+  //If it did we re-run the function using recursion
+  if (indexAlreadyExists) {
+    generateRandomTimerIndex();
+  }
+
+  //If it didn't we simply return the index
+  return randomIndex;
+}
+
 /**
  * Handles the input event for dialog box slots for time input
  *
@@ -184,7 +180,6 @@ export function addDialogBoxEventListeners() {
  * @returns void
  */
 export function handleInput(event: InputEvent) {
-  log({ event });
   //@ts-ignore
   verifyInputValue(event.target, false);
 }
@@ -197,7 +192,6 @@ export function handleInput(event: InputEvent) {
  * @returns void
  */
 export function handleButton(event: MouseEvent) {
-  log(event.target);
   //@ts-ignore
   const isIncrementButton: boolean = getClassListValues(
     //@ts-ignore
@@ -205,7 +199,6 @@ export function handleButton(event: MouseEvent) {
   ).includes("main-page__dialog-button--increment");
 
   const valueToSum: number = isIncrementButton ? 1 : -1;
-  log(valueToSum);
 
   //@ts-ignore
   const slotContainer = getAncestor(event.target, ".main-page__dialog-slot");
@@ -355,8 +348,6 @@ export function createTimerComponent(
 
   titleInput.value = title;
 
-  log({ modalWindow, titleInput });
-
   container.appendChild(newTimerComponent);
 
   const devWantsToSaveTimers = isCreating === true;
@@ -368,7 +359,6 @@ export function createTimerComponent(
     let newTimersArray = WebStorageService.getKey("timers") || [];
     newTimersArray.push({ initialTime, title, index });
 
-    log({ newTimersArray });
     /**
      * We set the new timers in the localStorage
      *
@@ -441,7 +431,6 @@ export function removeTimerComponent(indexOfTimer: number): void {
 
     const allTimersAreRemoved = !selectQueryAll("timer-component").length;
 
-    log({ allTimersAreRemoved });
     if (allTimersAreRemoved) {
       //@ts-ignore
       const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");

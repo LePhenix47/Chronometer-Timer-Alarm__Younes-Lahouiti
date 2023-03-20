@@ -7,7 +7,6 @@ import {
 } from "./ts-utils/helper-functions/dom.functions";
 
 import "./components/Timer";
-import { log } from "./ts-utils/helper-functions/console-funtions";
 import {
   addDialogBoxEventListeners,
   changeDialogBoxState,
@@ -17,8 +16,6 @@ import {
   createTimerComponent,
 } from "./ts-utils/helper-functions/dialog.functions";
 import { WebStorageService } from "./ts-utils/services/webstorage.service";
-
-const container = selectQuery(".main-page");
 
 /**
  * Button to delete the timer component
@@ -53,12 +50,10 @@ function addEventListenersForMainPage() {
   const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");
 
   removeTimersButton.addEventListener("click", (e) => {
-    log("Enable quick del", e);
     //@ts-ignore
     const quickDeleteIsEnabled =
       //@ts-ignore
       getClassListValues(pencilSvg).includes("hide");
-    log({ quickDeleteIsEnabled });
 
     if (quickDeleteIsEnabled) {
       disableQuickDelete();
@@ -68,7 +63,6 @@ function addEventListenersForMainPage() {
   });
 
   addNewTimerButton.addEventListener("click", (e) => {
-    log("Add", e);
     changeDialogBoxState(dialog);
   });
 }
@@ -85,7 +79,6 @@ function addTimersFromWebStorageInContainer() {
 
   const noTimersWereAdded = !timers.length;
 
-  log({ noTimersWereAdded });
   if (noTimersWereAdded) {
     replaceAttribute(removeTimersButton, "enabled", "disabled");
   }
@@ -108,8 +101,6 @@ export function disableQuickDelete() {
     ".main-page__button-checkmark"
   );
 
-  log("disabling");
-
   pencilSvg.classList.remove("hide");
   checkmarkSvg.classList.add("hide");
 
@@ -126,7 +117,6 @@ export function disableQuickDelete() {
  * Function that disables the quick delete mode
  */
 export function enableQuickDelete() {
-  log("enabling");
   //@ts-ignore
   const addNewTimerButton: HTMLButtonElement = selectQuery(
     ".main-page__button--add"

@@ -967,6 +967,12 @@ export class TimerComponent extends HTMLElement {
    * Method called every time the element is removed from the DOM
    */
   disconnectedCallback() {
+    //@ts-ignore
+    const intervalIdOfTimer: number = Number(this?.getAttribute("interval-id"));
+
+    //@ts-ignore
+    Interval.clear(intervalIdOfTimer);
+
     const timerComponentContainer = selectQuery(
       ".timer-component__container",
       //@ts-ignore
@@ -1109,7 +1115,6 @@ export class TimerComponent extends HTMLElement {
 
         if (timerHasStarted) {
           if (timerIsRunning) {
-            log({ timerIsRunning });
             dialog?.classList.add("inactive");
           } else {
             dialog?.classList.remove("inactive");
@@ -1135,10 +1140,8 @@ export class TimerComponent extends HTMLElement {
           this.shadowRoot
         );
         if (isEnabled) {
-          log("quick delete should be enabled");
           quickDeleteButton.classList.remove("hide");
         } else {
-          log("quick delete should be disabled");
           quickDeleteButton.classList.add("hide");
         }
 

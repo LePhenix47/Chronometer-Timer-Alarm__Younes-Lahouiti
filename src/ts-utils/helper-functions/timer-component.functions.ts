@@ -70,8 +70,6 @@ export function setEventDelegationToContainer(e: MouseEvent): void {
 export function handleButtonEvents(buttonElement: any): void {
   const buttonClasses: string[] = getClassListValues(buttonElement);
 
-  log(buttonClasses);
-
   //Timer buttons
   const isPlayButton: boolean = buttonClasses.includes(
     "timer-component__button--play"
@@ -115,7 +113,6 @@ export function handleButtonEvents(buttonElement: any): void {
   } else if (isDialogButton) {
     handleDialogButtons(buttonElement);
   } else {
-    log("Unknown button pressed");
   }
 }
 
@@ -200,7 +197,6 @@ export function handlePlayButton(buttonElement: any): void {
 
   if (timerWasPaused) {
     //The button was clicked, the timer was paused and is now running
-    log("Is running");
 
     //we show the paused icon
     showPauseButton();
@@ -208,7 +204,6 @@ export function handlePlayButton(buttonElement: any): void {
     startTimer();
   } else {
     //The button was clicked, the timer was running and is now paused,
-    log("Is paused");
     //we show the play icon
     showPlayButton();
 
@@ -223,8 +218,6 @@ export function handlePlayButton(buttonElement: any): void {
  * @returns {void}
  */
 export function handleRestartButton(buttonElement: any): void {
-  log("restart button", { buttonElement });
-
   //@ts-ignore
   const timerComponent: Element = getComponentHost(buttonElement);
 
@@ -248,7 +241,6 @@ export function handleRestartButton(buttonElement: any): void {
 }
 
 export function handleDeleteButton(buttonElement: HTMLButtonElement): void {
-  log("deleting button");
   const timerComponent = getComponentHost(buttonElement);
 
   const indexOfTimer = Number(timerComponent.getAttribute("index"));
