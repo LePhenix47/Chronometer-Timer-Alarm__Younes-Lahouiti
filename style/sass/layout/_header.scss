@@ -81,28 +81,27 @@
 
         &:nth-child(n) {
             &::before {
-
-                width: 20px;
-                line-height: 20px;
-
                 position: absolute;
 
-                top: 25%;
-                left: 10%;
+                position: absolute;
+                top: 31%;
+                left: 10px;
 
                 @include mobile-only {
                     bottom: 25%;
                     left: 2%;
                 }
+
+                width: 20px;
+                line-height: 16px;
+
             }
         }
     }
 
     &__link {
-        margin-left: 20px;
-
         display: inline-block;
-        padding: 10px 15px;
+        padding: 10px 15px 10px 40px;
 
         @include mobile-only {
             width: 100%;

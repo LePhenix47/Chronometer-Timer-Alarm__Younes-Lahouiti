@@ -779,7 +779,7 @@ timerTemplate.innerHTML = /* html */ `
 </div>
 `;
 
-export class TimerComponent extends HTMLElement {
+class TimerComponent extends HTMLElement {
   /**
    * Object representing the current state of a timer.
    *

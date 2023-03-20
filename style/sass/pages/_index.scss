@@ -1,9 +1,5 @@
 @use "../utils/" as *;
 
-timer-component h3 {
-    max-width: 350px;
-}
-
 .main-page {
     width: 95%;
     margin: auto;
@@ -23,9 +19,6 @@ timer-component h3 {
     @include mobile-only {
         @include grid(auto, 1, 20px);
     }
-
-    &:has(:not(timer-component)) {}
-
 
     &__buttons-container {
         --offset: 30px;
