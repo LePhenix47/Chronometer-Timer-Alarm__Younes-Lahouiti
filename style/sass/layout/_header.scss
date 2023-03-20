@@ -31,14 +31,31 @@
     }
 
     &__item {
-        padding: 10px 15px;
         border-radius: 5px;
 
+        background-color: var(--header-button-bg);
+
         &.active {
-            background-color: var(--header-button-bg);
+            &::after {
+                content: "";
+
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+
+                translate: -50% 0%;
+
+                background-color: var(--bg-tertiary);
+
+                border-radius: 100vmax;
+
+                width: 100%;
+                height: 3px;
+            }
         }
 
         @include mobile-only {
+            display: inline-flex;
             width: 100%;
         }
 
@@ -64,11 +81,31 @@
 
         &:nth-child(n) {
             &::before {
-                margin-right: 5px;
-                line-height: 5px;
+
+                width: 20px;
+                line-height: 20px;
+
+                position: absolute;
+
+                top: 25%;
+                left: 10%;
+
+                @include mobile-only {
+                    bottom: 25%;
+                    left: 2%;
+                }
             }
         }
+    }
 
+    &__link {
+        margin-left: 20px;
 
+        display: inline-block;
+        padding: 10px 15px;
+
+        @include mobile-only {
+            width: 100%;
+        }
     }
 }
