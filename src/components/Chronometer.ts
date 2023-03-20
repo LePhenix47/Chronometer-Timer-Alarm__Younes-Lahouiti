@@ -109,6 +109,27 @@ class Chronometer extends HTMLElement {
     return ["current-time", "is-running", "interval-id"];
   }
 
+  get currentTime() {
+    const attributeValue = this.getAttribute("current-time");
+    return attributeValue;
+  }
+
+  set currentTime(value) {}
+
+  get isRunning() {
+    const attributeValue = this.getAttribute("is-running");
+
+    return attributeValue;
+  }
+  set isRunning(value) {}
+
+  get intervalId() {
+    const attributeValue = this.getAttribute("interval-id");
+
+    return attributeValue;
+  }
+  set intervalId(value) {}
+
   /**
    * Method called every time the element is inserted into the DOM
    * Used to add event listeners
