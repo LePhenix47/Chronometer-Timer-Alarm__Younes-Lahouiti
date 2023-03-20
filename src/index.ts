@@ -51,46 +51,6 @@ addDialogBoxEventListeners();
 function addEventListenersForMainPage() {
   //@ts-ignore
   const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");
-  //@ts-ignore
-  const checkmarkSvg: SVGSVGElement = selectQuery(
-    ".main-page__button-checkmark"
-  );
-
-  /**
-   * Function that enables the quick delete mode
-   */
-  function enableQuickDelete() {
-    log("enabling");
-
-    pencilSvg.classList.add("hide");
-    checkmarkSvg.classList.remove("hide");
-
-    replaceAttribute(addNewTimerButton, "enabled", "disabled");
-
-    const arrayOfTimerComponents = selectQueryAll("timer-component");
-
-    for (const timerComponent of arrayOfTimerComponents) {
-      addModifyAttribute(timerComponent, "quick-delete", true);
-    }
-  }
-
-  /**
-   * Function that disables the quick delete mode
-   */
-  function disableQuickDelete() {
-    log("disabling");
-
-    pencilSvg.classList.remove("hide");
-    checkmarkSvg.classList.add("hide");
-
-    replaceAttribute(addNewTimerButton, "disabled", "enabled");
-
-    const arrayOfTimerComponents = selectQueryAll("timer-component");
-
-    for (const timerComponent of arrayOfTimerComponents) {
-      addModifyAttribute(timerComponent, "quick-delete", false);
-    }
-  }
 
   removeTimersButton.addEventListener("click", (e) => {
     log("Enable quick del", e);
@@ -122,5 +82,71 @@ function addTimersFromWebStorageInContainer() {
     const { initialTime, title, index } = timer;
     createTimerComponent(initialTime, title, index);
   }
+
+  const noTimersWereAdded = !timers.length;
+
+  log({ noTimersWereAdded });
+  if (noTimersWereAdded) {
+    replaceAttribute(removeTimersButton, "enabled", "disabled");
+  }
 }
 addTimersFromWebStorageInContainer();
+
+/**
+ * Function that enables the quick delete mode
+ */
+export function disableQuickDelete() {
+  //@ts-ignore
+  const addNewTimerButton: HTMLButtonElement = selectQuery(
+    ".main-page__button--add"
+  );
+
+  //@ts-ignore
+  const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");
+  //@ts-ignore
+  const checkmarkSvg: SVGSVGElement = selectQuery(
+    ".main-page__button-checkmark"
+  );
+
+  log("disabling");
+
+  pencilSvg.classList.remove("hide");
+  checkmarkSvg.classList.add("hide");
+
+  replaceAttribute(addNewTimerButton, "disabled", "enabled");
+
+  const arrayOfTimerComponents = selectQueryAll("timer-component");
+
+  for (const timerComponent of arrayOfTimerComponents) {
+    addModifyAttribute(timerComponent, "quick-delete", false);
+  }
+}
+
+/**
+ * Function that disables the quick delete mode
+ */
+export function enableQuickDelete() {
+  log("enabling");
+  //@ts-ignore
+  const addNewTimerButton: HTMLButtonElement = selectQuery(
+    ".main-page__button--add"
+  );
+
+  //@ts-ignore
+  const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");
+  //@ts-ignore
+  const checkmarkSvg: SVGSVGElement = selectQuery(
+    ".main-page__button-checkmark"
+  );
+
+  pencilSvg.classList.add("hide");
+  checkmarkSvg.classList.remove("hide");
+
+  replaceAttribute(addNewTimerButton, "enabled", "disabled");
+
+  const arrayOfTimerComponents = selectQueryAll("timer-component");
+
+  for (const timerComponent of arrayOfTimerComponents) {
+    addModifyAttribute(timerComponent, "quick-delete", true);
+  }
+}

@@ -966,7 +966,47 @@ export class TimerComponent extends HTMLElement {
   /**
    * Method called every time the element is removed from the DOM
    */
-  disconnectedCallback() {}
+  disconnectedCallback() {
+    const timerComponentContainer = selectQuery(
+      ".timer-component__container",
+      //@ts-ignore
+      this.shadowRoot
+    );
+
+    //We clean up the DOM by removing any event listener on the component
+    timerComponentContainer.removeEventListener(
+      "click",
+      setEventDelegationToContainer
+    );
+
+    const hoursSlot = selectQuery(
+      ".timer-dialog__slot--hours",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    const minutesSlot = selectQuery(
+      ".timer-dialog__slot--minutes",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    const secondsSlot = selectQuery(
+      ".timer-dialog__slot--seconds",
+      //@ts-ignore
+      this.shadowRoot
+    );
+
+    const allSlots = [hoursSlot, minutesSlot, secondsSlot];
+
+    for (const slot of allSlots) {
+      const [input, incrementButton, decrementButton] = getChildren(slot);
+
+      //We clean up any event listner on the timer to avoid performance issues
+      input.removeEventListener("input", handleDialogInput);
+
+      incrementButton.removeEventListener("click", handleDialogButton);
+      decrementButton.removeEventListener("click", handleDialogButton);
+    }
+  }
 
   /**
    * Methods as a callback function that is called by the browser's web API

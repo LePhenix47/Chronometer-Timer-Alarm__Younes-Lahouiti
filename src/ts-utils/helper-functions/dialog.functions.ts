@@ -436,39 +436,6 @@ export function removeTimerComponent(indexOfTimer: number): void {
     //We remove the deleted timer from the localStorage
     WebStorageService.setKey("timers", newArrayOfTimers);
 
-    const timerComponentContainer = selectQuery(
-      ".timer-component__container",
-      timerToRemove
-    );
-
-    //We clean up the DOM by removing any event listener on the component
-    timerComponentContainer.removeEventListener(
-      "click",
-      setEventDelegationToContainer
-    );
-
-    const hoursSlot = selectQuery(".timer-dialog__slot--hours", timerToRemove);
-    const minutesSlot = selectQuery(
-      ".timer-dialog__slot--minutes",
-      timerToRemove
-    );
-    const secondsSlot = selectQuery(
-      ".timer-dialog__slot--seconds",
-      timerToRemove
-    );
-
-    const allSlots = [hoursSlot, minutesSlot, secondsSlot];
-
-    for (const slot of allSlots) {
-      const [input, incrementButton, decrementButton] = getChildren(slot);
-
-      //We clean up any event listner on the timer to avoid performance issues
-      input.removeEventListener("input", handleDialogInput);
-
-      incrementButton.removeEventListener("click", handleDialogButton);
-      decrementButton.removeEventListener("click", handleDialogButton);
-    }
-
     //We remove the deleted timer from the DOM
     container.removeChild(timerToRemove);
 
@@ -476,7 +443,23 @@ export function removeTimerComponent(indexOfTimer: number): void {
 
     log({ allTimersAreRemoved });
     if (allTimersAreRemoved) {
+      //@ts-ignore
+      const pencilSvg: SVGSVGElement = selectQuery(".main-page__button-pencil");
+      //@ts-ignore
+      const checkmarkSvg: SVGSVGElement = selectQuery(
+        ".main-page__button-checkmark"
+      );
+
+      pencilSvg.classList.remove("hide");
+      checkmarkSvg.classList.add("hide");
+
+      //@ts-ignore
+      const addNewTimerButton: HTMLButtonElement = selectQuery(
+        ".main-page__button--add"
+      );
+
       replaceAttribute(quickDeleteButton, "enabled", "disabled");
+      replaceAttribute(addNewTimerButton, "disabled", "enabled");
     }
   }
 }
