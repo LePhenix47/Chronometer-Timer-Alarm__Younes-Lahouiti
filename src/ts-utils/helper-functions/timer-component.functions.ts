@@ -6,7 +6,6 @@ import {
   getChildren,
   getClassListValues,
   selectQueryAll,
-  setStyleProp,
   addModifyAttribute,
   replaceAttribute,
   selectQuery,

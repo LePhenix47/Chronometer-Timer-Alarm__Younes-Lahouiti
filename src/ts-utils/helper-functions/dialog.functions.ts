@@ -1,25 +1,17 @@
-import { log } from "./console-funtions";
+//Utils
 import {
   getChildren,
   selectQuery,
   getAncestor,
   getClassListValues,
-  getComponentHost,
-  setStyleProp,
   addModifyAttribute,
-  getSibling,
   replaceAttribute,
   selectQueryAll,
 } from "./dom.functions";
 
 import { WebStorageService } from "../services/webstorage.service";
-import { setEventDelegationToContainer } from "./timer-component.functions";
 import { getRandomInt } from "./number.functions";
-import {
-  getTimeValues,
-  handleDialogButton,
-  handleDialogInput,
-} from "../../components/Timer";
+import { getTimeValues } from "../../components/Timer";
 
 /**
  * Opens or closes a dialog box.

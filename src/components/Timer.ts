@@ -1,18 +1,14 @@
 //Services
 import { Interval } from "../ts-utils/services/interval.service";
-import { Timeout } from "../ts-utils/services/timeout.service";
 
 //Utils
 //DOM helper functions
 import {
   selectQuery,
-  selectQueryAll,
   setStyleProp,
   getChildren,
   getAncestor,
-  getSibling,
   getClassListValues,
-  getComponentHost,
   replaceAttribute,
   addModifyAttribute,
 } from "../ts-utils/helper-functions/dom.functions";
@@ -20,14 +16,9 @@ import {
 //Console methods
 
 //String methods
-import { sliceString } from "../ts-utils/helper-functions/string.function";
 
 //Component specific functions
-import {
-  handleButtonEvents,
-  setEventDelegationToContainer,
-} from "../ts-utils/helper-functions/timer-component.functions";
-import { log } from "../ts-utils/helper-functions/console-funtions";
+import { setEventDelegationToContainer } from "../ts-utils/helper-functions/timer-component.functions";
 
 //Component specific variables
 

@@ -1,3 +1,4 @@
+//Utils
 import {
   addModifyAttribute,
   getClassListValues,
@@ -6,17 +7,15 @@ import {
   selectQueryAll,
 } from "./ts-utils/helper-functions/dom.functions";
 
-import "./components/Timer";
 import {
   addDialogBoxEventListeners,
   changeDialogBoxState,
-  handleButton,
-  handleInput,
-  verifyInputValue,
   createTimerComponent,
 } from "./ts-utils/helper-functions/dialog.functions";
 import { WebStorageService } from "./ts-utils/services/webstorage.service";
 
+//Components
+import "./components/Timer";
 /**
  * Button to delete the timer component
  * from the UI + local storage
