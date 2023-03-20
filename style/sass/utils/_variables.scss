@@ -6,6 +6,11 @@ $bg-quaternary: rgb(35, 35, 35);
 
 $backdrop-bg-color: #000000ad;
 
+$header-bg-color: rgb(32, 32, 32);
+$header-button-bg: rgb(41, 41, 41);
+
+$footer-bg-color: rgb(25, 25, 25);
+
 $color-primary: rgb(205, 205, 205);
 $color-primary--hover: lighten($color-primary, 10%);
 $color-primary--active: lighten($color-primary, 20%);
@@ -36,6 +41,11 @@ $scrollbar-thumb-bg-color--active: #9d9d9d;
     --color-primary--hover: #{$color-primary--hover};
     --color-primary--active: #{$color-primary--active};
     --color-secondary: #{$color-secondary};
+
+    --header-bg-color: #{$header-bg-color};
+    --header-button-bg: #{$header-button-bg};
+
+    --footer-bg-color: #{$footer-bg-color};
 
     --dialog-color: #{$dialog-color};
 

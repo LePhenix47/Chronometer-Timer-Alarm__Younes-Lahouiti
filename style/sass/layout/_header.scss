@@ -1,5 +1,74 @@
 @use "../utils/" as *;
 
 .header {
+    z-index: 420;
+
+    box-shadow: 0 0 20px 0 var(--header-bg-color);
+
+    position: sticky;
+    top: 0;
+
     padding: 20px;
+    background-color: var(--header-bg-color);
+
+    margin-bottom: 25px;
+
+    border-radius: 0 0 10px 10px;
+
+    &__nav {
+        width: 100%;
+    }
+
+    &__list {
+        width: inherit;
+
+        @include center-flex(10px);
+
+        @include mobile-only {
+            @include center-flex-column(10px);
+        }
+
+    }
+
+    &__item {
+        padding: 10px 15px;
+        border-radius: 5px;
+
+        &.active {
+            background-color: var(--header-button-bg);
+        }
+
+        @include mobile-only {
+            width: 100%;
+        }
+
+        position: relative;
+
+        &:nth-child(1) {
+            &::before {
+                content: "⌛";
+            }
+        }
+
+        &:nth-child(2) {
+            &::before {
+                content: "⏱️";
+            }
+        }
+
+        &:nth-child(3) {
+            &::before {
+                content: "🔔";
+            }
+        }
+
+        &:nth-child(n) {
+            &::before {
+                margin-right: 5px;
+                line-height: 5px;
+            }
+        }
+
+
+    }
 }
