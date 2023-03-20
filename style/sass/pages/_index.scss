@@ -1,5 +1,9 @@
 @use "../utils/" as *;
 
+timer-component h3 {
+    max-width: 350px;
+}
+
 .main-page {
     width: 95%;
     margin: auto;

@@ -477,6 +477,7 @@ svg{
 }
 
 .timer-component__title{
+    max-width: 350px;
     width: 100%;
     padding: 10px 40px 10px 20px;
 
