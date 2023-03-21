@@ -4,6 +4,8 @@
 
     &__main-page {
         min-height: 75.5dvh;
+
+        @include center-flex-column(5px);
     }
 
 }

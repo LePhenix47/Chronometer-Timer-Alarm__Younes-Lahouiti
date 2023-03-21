@@ -166,3 +166,21 @@ export function replaceAttribute(
   element.removeAttribute(oldAttribute);
   element.setAttribute(newAttribute, "");
 }
+
+/**
+ * Enables the specified element by removing the "disabled" attribute and setting the "enabled" attribute.
+ *
+ * @param element - The element to enable.
+ */
+export function enableElement(element: any): void {
+  replaceAttribute(element, "disabled", "enabled");
+}
+
+/**
+ * Disables the specified element by removing the "enabled" attribute and setting the "disabled" attribute.
+ *
+ * @param element - The element to disable.
+ */
+export function disableElement(element: any): void {
+  replaceAttribute(element, "enabled", "disabled");
+}

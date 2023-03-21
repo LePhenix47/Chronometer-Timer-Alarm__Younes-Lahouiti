@@ -1,3 +1,17 @@
+import { log } from "../ts-utils/helper-functions/console-funtions";
+import {
+  addModifyAttribute,
+  disableElement,
+  enableElement,
+  getClassListValues,
+  getComponentHost,
+  getSibling,
+  replaceAttribute,
+  selectQuery,
+  selectQueryAll,
+} from "../ts-utils/helper-functions/dom.functions";
+import { Interval } from "../ts-utils/services/interval.service";
+
 /**
  * We set the elements of our Web Component inside a `<template>`
  */
@@ -50,7 +64,7 @@ button:hover:disabled {
 const chronometerCSS = /* css */ `
 
 .hide {
-  display: none;
+  display: none !important;
 }
 
 .chronometer__container {
@@ -118,14 +132,14 @@ const chronometerCSS = /* css */ `
   width: 100%;
 }
 .chronometer__table-body {
-  max-height: 200px;
+  max-height: 450px; /* Max height for the table before having a scrollbar */
   width: 100%;
   display: block;
   overflow-y: auto;
 }
 .chronometer__table-body::-webkit-scrollbar {
   background-color: #303030;
-  width: 9px;
+  width: 7px;
   border-radius: 100vmax;
 }
 .chronometer__table-body::-webkit-scrollbar-thumb {
@@ -196,7 +210,7 @@ const chronometerHTML = /* html */ `
             d="M509 2211 l-29 -29 0 -902 0 -902 29 -29 c37 -37 65 -37 102 0 l29 29 0 291 0 291 608 0 c693 0 681 -1 757 75 32 32 49 59 61 101 24 82 10 129 -86 297 -48 83 -80 150 -80 167 0 17 32 83 80 166 95 165 110 216 85 299 -11 38 -29 69 -58 99 -74 78 -58 76 -810 76 l-659 0 -29 -29z m1386 -156 c15 -14 25 -36 25 -51 0 -16 -34 -88 -80 -170 -133 -233 -133 -238 4 -476 42 -74 76 -145 76 -159 0 -15 -9 -38 -21 -53 l-20 -26 -620 0 -619 0 0 480 0 480 615 0 616 0 24 -25z" />
     </g>
 </svg></button>
-    <button class="chronometer__button chronometer__button--reset">
+    <button class="chronometer__button chronometer__button--reset" disabled>
     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" preserveAspectRatio="xMidYMid meet" class="chronometer__icon chronometer__icon--restart" width="26" height="26">
   
               <g transform="translate(0,256) scale(0.10,-0.10)" fill="currentColor" stroke="none">
@@ -216,7 +230,7 @@ const chronometerHTML = /* html */ `
     </button>
   </section>
 
-  <table class="chronometer__table">
+  <table class="chronometer__table hide">
     <thead class="chronometer__table-head">
       <tr class="chronometer__table-row chronometer__table-row--head">
         <th class="chronometer__table-cell chronometer__table-cell--head">Passing order</th>
@@ -228,17 +242,6 @@ const chronometerHTML = /* html */ `
     <tbody class="chronometer__table-body">
        <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-current-time="0">
         <td class="chronometer__table-cell chronometer__table-cell--body">1</td>
-        <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
-        <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
-      </tr>
-      
-      <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-current-time="0">
-        <td class="chronometer__table-cell chronometer__table-cell--body">2</td>
-        <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
-        <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
-      </tr>
-      <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-current-time="0">
-        <td class="chronometer__table-cell chronometer__table-cell--body">3</td>
         <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
         <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
       </tr>
@@ -292,25 +295,25 @@ class Chronometer extends HTMLElement {
    * ⚠ **Important**: The custom attributes must have a getter and setter in order to be observed
    */
   static get observedAttributes() {
-    return ["current-time", "is-running", "interval-id"];
+    return ["current-time", "is-running"];
   }
 
   get currentTime() {
-    const attributeValue = this.getAttribute("current-time");
+    const attributeValue: string = this.getAttribute("current-time");
     return attributeValue;
   }
 
   set currentTime(value) {}
 
   get isRunning() {
-    const attributeValue = this.getAttribute("is-running");
+    const attributeValue: string = this.getAttribute("is-running");
 
     return attributeValue;
   }
   set isRunning(value) {}
 
   get intervalId() {
-    const attributeValue = this.getAttribute("interval-id");
+    const attributeValue: string = this.getAttribute("interval-id");
 
     return attributeValue;
   }
@@ -320,13 +323,71 @@ class Chronometer extends HTMLElement {
    * Method called every time the element is inserted into the DOM
    * Used to add event listeners
    */
-  connectedCallback() {}
+  connectedCallback() {
+    //@ts-ignore
+    const playButton: HTMLButtonElement = selectQuery(
+      ".chronometer__button--play",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    //@ts-ignore
+    const partialButton: HTMLButtonElement = selectQuery(
+      ".chronometer__button--partial",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    //@ts-ignore
+    const restartButton: HTMLButtonElement = selectQuery(
+      ".chronometer__button--reset",
+      //@ts-ignore
+      this.shadowRoot
+    );
+
+    playButton?.addEventListener("click", startResumeChronometer);
+
+    partialButton?.addEventListener("click", (e: MouseEvent) => {
+      log(e.currentTarget, "click!");
+    });
+
+    restartButton?.addEventListener("click", (e: MouseEvent) => {
+      log(e.currentTarget, "click!");
+    });
+  }
 
   /**
    * Method called every time the element is removed from the DOM
    * Used to remove event listeners
    */
-  disconnectedCallback() {}
+  disconnectedCallback() {
+    //@ts-ignore
+    const playButton: HTMLButtonElement = selectQuery(
+      ".chronometer__button--play",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    //@ts-ignore
+    const partialButton: HTMLButtonElement = selectQuery(
+      ".chronometer__button--partial",
+      //@ts-ignore
+      this.shadowRoot
+    );
+    //@ts-ignore
+    const restartButton: HTMLButtonElement = selectQuery(
+      ".chronometer__button--reset",
+      //@ts-ignore
+      this.shadowRoot
+    );
+
+    playButton?.removeEventListener("click", startResumeChronometer);
+
+    partialButton?.removeEventListener("click", (e: MouseEvent) => {
+      log(e.currentTarget, "click!");
+    });
+
+    restartButton?.removeEventListener("click", (e: MouseEvent) => {
+      log(e.currentTarget, "click!");
+    });
+  }
 
   /**
    * Methods as a callback function that is called by the browser's web API
@@ -334,8 +395,140 @@ class Chronometer extends HTMLElement {
    *
    * @param {string} name
    */
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {}
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
+    const chronometerComponent = this;
+
+    switch (name) {
+      case "current-time": {
+        const chronometerValue = selectQuery(
+          ".chronometer__value",
+          chronometerComponent
+        );
+        break;
+      }
+
+      case "is-running": {
+        const isRunning: boolean = newValue === "true";
+        log(isRunning ? "Playing ⏸" : "Paused ▶");
+        if (isRunning) {
+          function incrementChronometer() {
+            let chronometerComponentLocal = selectQuery("chrono-meter");
+            let value: number = Number(
+              chronometerComponentLocal.getAttribute("current-time")
+            );
+
+            addModifyAttribute(
+              chronometerComponentLocal,
+              "current-time",
+              value + 1
+            );
+          }
+          const intervalId = Interval.set(incrementChronometer, 10);
+
+          addModifyAttribute(chronometerComponent, "interval-id", intervalId);
+        } else {
+          const intervalId: number = Number(
+            chronometerComponent.getAttribute("interval-id")
+          );
+          //@ts-ignore
+          Interval.clear(intervalId);
+        }
+        break;
+      }
+
+      default: {
+        log("unknown modif");
+        break;
+      }
+    }
+  }
 }
+
+function startResumeChronometer(event: MouseEvent): void {
+  //@ts-ignore
+  const chronometerComponent = getComponentHost(event.currentTarget);
+
+  //@ts-ignore
+  const pauseSvg: SVGSVGElement = selectQuery(
+    ".chronometer__icon--pause",
+    //@ts-ignore
+    chronometerComponent
+  );
+
+  //@ts-ignore
+  const playSvg: SVGSVGElement = selectQuery(
+    ".chronometer__icon--play",
+    //@ts-ignore
+    chronometerComponent
+  );
+
+  function showPauseButton(): void {
+    pauseSvg.classList.remove("hide");
+    playSvg.classList.add("hide");
+  }
+
+  function showPlayButton(): void {
+    pauseSvg.classList.add("hide");
+    playSvg.classList.remove("hide");
+  }
+
+  //@ts-ignore
+  const partialButton: HTMLButtonElement = getSibling(event.currentTarget);
+  //@ts-ignore
+  const restartButton: HTMLButtonElement = getSibling(partialButton);
+
+  /**
+   * Constant to know if the chronometer was paused
+   */
+  const chronometerWasPlaying: boolean =
+    //@ts-ignore
+    getClassListValues(playSvg).includes("hide");
+
+  switch (chronometerWasPlaying) {
+    case true: {
+      //Is currently paused
+      showPlayButton();
+      disableElement(partialButton);
+
+      log("Paused ▶");
+      addModifyAttribute(chronometerComponent, "is-running", false);
+      break;
+    }
+
+    case false: {
+      //Is currently playing
+      showPauseButton();
+
+      enableElement(partialButton);
+      enableElement(restartButton);
+
+      log("Playing ⏸");
+      addModifyAttribute(chronometerComponent, "is-running", true);
+      break;
+    }
+  }
+}
+
+function addPartial(event: MouseEvent): void {
+  //@ts-ignore
+  const chronometerComponent = getComponentHost(event.currentTarget);
+
+  //@ts-ignore
+  const table = selectQuery(".chronometer__table", chronometerComponent);
+
+  function showTable() {
+    table.classList.remove("hide");
+  }
+
+  const chronometerJustStarted =
+    Number(chronometerComponent.getAttribute("current-time")) === 0;
+
+  if (chronometerJustStarted) {
+    showTable();
+  }
+}
+
+function restartChronometer(event: MouseEvent): void {}
 
 /**
  * We defined it so that we can use it
