@@ -80,13 +80,22 @@ const chronometerCSS = /* css */ `
 
   display: inline-flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: baseline;
   font-size: 84px;
   font-weight: normal;
 }
 .chronometer__value--centiseconds {
   font-size: 58px;
 }
+@media screen and (width <=768px) {
+  .chronometer__value {
+    font-size: 58px;
+  }
+  .chronometer__value--centiseconds {
+    font-size: 32px;
+  }
+}
+
 .chronometer__buttons-container {
   display: flex;
   justify-content: center;
