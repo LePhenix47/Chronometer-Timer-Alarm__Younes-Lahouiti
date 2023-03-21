@@ -135,7 +135,7 @@ const chronometerCSS = /* css */ `
 }
 .chronometer__table-body {
   resize: vertical;
-  max-height: 450px; /* Max height for the table before having a scrollbar */
+  max-height: 750px; /* Max height for the table before having a scrollbar */
   min-height: 71px;
   width: 100%;
   display: block;
@@ -632,7 +632,75 @@ function addPartial(event: MouseEvent): void {
   addTableRow();
 }
 
-function restartChronometer(event: MouseEvent): void {}
+function restartChronometer(event: MouseEvent): void {
+  // Get the chronometer component
+  //@ts-ignore
+  const chronometerComponent: HTMLElement = getComponentHost(
+    //@ts-ignore
+    event.currentTarget
+  );
+
+  // Get the pause and play SVG icons
+  //@ts-ignore
+  const pauseSvg: SVGSVGElement = selectQuery(
+    ".chronometer__icon--pause",
+    chronometerComponent
+  );
+  //@ts-ignore
+  const playSvg: SVGSVGElement = selectQuery(
+    ".chronometer__icon--play",
+    chronometerComponent
+  );
+
+  /**
+   * Shows the play button and hides the pause button
+   *
+   * @returns {void}
+   */
+  function showPlayButton(): void {
+    pauseSvg.classList.add("hide");
+    playSvg.classList.remove("hide");
+  }
+
+  showPlayButton();
+
+  function resetChronometer() {
+    addModifyAttribute(chronometerComponent, "current-time", 0);
+    addModifyAttribute(chronometerComponent, "is-running", false);
+  }
+  resetChronometer();
+
+  // Get the partial and restart buttons
+  //@ts-ignore
+  const partialButton: HTMLButtonElement = selectQuery(
+    ".chronometer__button--partial",
+    chronometerComponent
+  );
+  //@ts-ignore
+  const restartButton: HTMLButtonElement = selectQuery(
+    ".chronometer__button--reset",
+    chronometerComponent
+  );
+  function resetButtons() {
+    disableElement(partialButton);
+    disableElement(restartButton);
+  }
+  resetButtons();
+
+  //@ts-ignore
+  const table: HTMLTableElement = selectQuery(
+    ".chronometer__table",
+    //@ts-ignore
+    chronometerComponent
+  );
+
+  const tableBody = selectQuery("tbody", table);
+  function resetTable() {
+    tableBody.innerHTML = "";
+    table.classList.add("hide");
+  }
+  resetTable();
+}
 
 /**
  * We defined it so that we can use it
