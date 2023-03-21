@@ -11,6 +11,7 @@ import {
   selectQueryAll,
 } from "../ts-utils/helper-functions/dom.functions";
 import { Interval } from "../ts-utils/services/interval.service";
+import { getTimeValues } from "./Timer";
 
 /**
  * We set the elements of our Web Component inside a `<template>`
@@ -400,10 +401,34 @@ class Chronometer extends HTMLElement {
 
     switch (name) {
       case "current-time": {
-        const chronometerValue = selectQuery(
+        const amountOfSeconds = Math.floor(Number(newValue) / 100);
+
+        //@ts-ignore
+        const chronometerValueElement: HTMLTitleElement = selectQuery(
           ".chronometer__value",
           chronometerComponent
         );
+        //@ts-ignore
+        const hourMinutesSecondsPart: HTMLSpanElement = selectQuery(
+          ".chronometer__value--main",
+          chronometerComponent
+        );
+
+        const { hours, minutes, seconds } = getTimeValues(amountOfSeconds);
+        hourMinutesSecondsPart.textContent = `${hours}:${minutes}:${seconds},`;
+
+        const centisecondsRemaining = Number(newValue) % 100;
+        log({ centisecondsRemaining });
+        const amountOfCentiseconds =
+          centisecondsRemaining < 10
+            ? `0${centisecondsRemaining}`
+            : centisecondsRemaining;
+        //@ts-ignore
+        const centisecondsPart: HTMLSpanElement = selectQuery(
+          ".chronometer__value--centiseconds",
+          chronometerComponent
+        );
+        centisecondsPart.textContent = `${amountOfCentiseconds}`;
         break;
       }
 

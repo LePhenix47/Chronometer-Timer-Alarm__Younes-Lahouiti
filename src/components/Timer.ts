@@ -1149,6 +1149,7 @@ class TimerComponent extends HTMLElement {
 
 /**
  * Takes a total number of seconds and returns an object containing the equivalent in hours, minutes, and seconds.
+ * If the hours, minutes or seconds are under 10, a "0" is added in front of that value
  *
  * @param {number} totalSeconds - The total number of seconds.
  *
