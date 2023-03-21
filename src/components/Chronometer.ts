@@ -1,3 +1,4 @@
+import { getCentisecondsValue } from "../ts-utils/helper-functions/chronometer-component.functions";
 import { log } from "../ts-utils/helper-functions/console-funtions";
 import {
   addModifyAttribute,
@@ -133,7 +134,9 @@ const chronometerCSS = /* css */ `
   width: 100%;
 }
 .chronometer__table-body {
+  resize: vertical;
   max-height: 450px; /* Max height for the table before having a scrollbar */
+  min-height: 71px;
   width: 100%;
   display: block;
   overflow-y: auto;
@@ -241,11 +244,13 @@ const chronometerHTML = /* html */ `
     </thead>
     
     <tbody class="chronometer__table-body">
-       <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-current-time="0">
-        <td class="chronometer__table-cell chronometer__table-cell--body">1</td>
-        <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
-        <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
-      </tr>
+    <!--
+        <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-total-time="69420">
+          <td class="chronometer__table-cell chronometer__table-cell--body">1</td>
+          <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
+          <td class="chronometer__table-cell chronometer__table-cell--body">00:00:00,69</td>
+        </tr> 
+    -->
     </tbody>
   </table>
 
@@ -346,13 +351,9 @@ class Chronometer extends HTMLElement {
 
     playButton?.addEventListener("click", startResumeChronometer);
 
-    partialButton?.addEventListener("click", (e: MouseEvent) => {
-      log(e.currentTarget, "click!");
-    });
+    partialButton?.addEventListener("click", addPartial);
 
-    restartButton?.addEventListener("click", (e: MouseEvent) => {
-      log(e.currentTarget, "click!");
-    });
+    restartButton?.addEventListener("click", restartChronometer);
   }
 
   /**
@@ -381,13 +382,9 @@ class Chronometer extends HTMLElement {
 
     playButton?.removeEventListener("click", startResumeChronometer);
 
-    partialButton?.removeEventListener("click", (e: MouseEvent) => {
-      log(e.currentTarget, "click!");
-    });
+    partialButton?.removeEventListener("click", addPartial);
 
-    restartButton?.removeEventListener("click", (e: MouseEvent) => {
-      log(e.currentTarget, "click!");
-    });
+    restartButton?.removeEventListener("click", restartChronometer);
   }
 
   /**
@@ -401,13 +398,8 @@ class Chronometer extends HTMLElement {
 
     switch (name) {
       case "current-time": {
-        const amountOfSeconds = Math.floor(Number(newValue) / 100);
+        const amountOfSeconds: number = Math.floor(Number(newValue) / 100);
 
-        //@ts-ignore
-        const chronometerValueElement: HTMLTitleElement = selectQuery(
-          ".chronometer__value",
-          chronometerComponent
-        );
         //@ts-ignore
         const hourMinutesSecondsPart: HTMLSpanElement = selectQuery(
           ".chronometer__value--main",
@@ -417,18 +409,15 @@ class Chronometer extends HTMLElement {
         const { hours, minutes, seconds } = getTimeValues(amountOfSeconds);
         hourMinutesSecondsPart.textContent = `${hours}:${minutes}:${seconds},`;
 
-        const centisecondsRemaining = Number(newValue) % 100;
-        log({ centisecondsRemaining });
-        const amountOfCentiseconds =
-          centisecondsRemaining < 10
-            ? `0${centisecondsRemaining}`
-            : centisecondsRemaining;
+        const centisecondsRemaining: string = getCentisecondsValue(
+          Number(newValue)
+        );
         //@ts-ignore
         const centisecondsPart: HTMLSpanElement = selectQuery(
           ".chronometer__value--centiseconds",
           chronometerComponent
         );
-        centisecondsPart.textContent = `${amountOfCentiseconds}`;
+        centisecondsPart.textContent = centisecondsRemaining;
         break;
       }
 
@@ -468,35 +457,53 @@ class Chronometer extends HTMLElement {
     }
   }
 }
-
+/**
+ * Toggles the start/pause button and enables/disables partial and restart buttons
+ *
+ * @param {MouseEvent} event - The click event on the start/pause button
+ * @returns {void}
+ */
 function startResumeChronometer(event: MouseEvent): void {
+  // Get the chronometer component
   //@ts-ignore
-  const chronometerComponent = getComponentHost(event.currentTarget);
+  const chronometerComponent: HTMLElement = getComponentHost(
+    //@ts-ignore
+    event.currentTarget
+  );
 
+  // Get the pause and play SVG icons
   //@ts-ignore
   const pauseSvg: SVGSVGElement = selectQuery(
     ".chronometer__icon--pause",
-    //@ts-ignore
     chronometerComponent
   );
-
   //@ts-ignore
   const playSvg: SVGSVGElement = selectQuery(
     ".chronometer__icon--play",
-    //@ts-ignore
     chronometerComponent
   );
 
+  /**
+   * Shows the pause button and hides the play button
+   *
+   * @returns {void}
+   */
   function showPauseButton(): void {
     pauseSvg.classList.remove("hide");
     playSvg.classList.add("hide");
   }
 
+  /**
+   * Shows the play button and hides the pause button
+   *
+   * @returns {void}
+   */
   function showPlayButton(): void {
     pauseSvg.classList.add("hide");
     playSvg.classList.remove("hide");
   }
 
+  // Get the partial and restart buttons
   //@ts-ignore
   const partialButton: HTMLButtonElement = getSibling(event.currentTarget);
   //@ts-ignore
@@ -504,6 +511,7 @@ function startResumeChronometer(event: MouseEvent): void {
 
   /**
    * Constant to know if the chronometer was paused
+   * @type {boolean}
    */
   const chronometerWasPlaying: boolean =
     //@ts-ignore
@@ -511,7 +519,7 @@ function startResumeChronometer(event: MouseEvent): void {
 
   switch (chronometerWasPlaying) {
     case true: {
-      //Is currently paused
+      // Is currently paused
       showPlayButton();
       disableElement(partialButton);
 
@@ -521,7 +529,7 @@ function startResumeChronometer(event: MouseEvent): void {
     }
 
     case false: {
-      //Is currently playing
+      // Is currently playing
       showPauseButton();
 
       enableElement(partialButton);
@@ -534,23 +542,94 @@ function startResumeChronometer(event: MouseEvent): void {
   }
 }
 
+/**
+ * Adds a new table row containing partial time data to the chronometer table body.
+ *
+ * @param {MouseEvent} event - The event triggered by the user clicking the "Add Partial" button.
+ * @returns {void}
+ */
 function addPartial(event: MouseEvent): void {
   //@ts-ignore
-  const chronometerComponent = getComponentHost(event.currentTarget);
+  const chronometerComponent: Element = getComponentHost(event.currentTarget);
 
   //@ts-ignore
-  const table = selectQuery(".chronometer__table", chronometerComponent);
+  const table: HTMLTableElement = selectQuery(
+    ".chronometer__table",
+    //@ts-ignore
+    chronometerComponent
+  );
 
-  function showTable() {
+  //@ts-ignore
+  const tableBody: HTMLTableSectionElement = selectQuery("tbody", table);
+
+  //@ts-ignore
+  const allTableBodyRows: HTMLTableRowElement[] = selectQueryAll(
+    ".chronometer__table-row--body",
+    tableBody
+  );
+
+  const passingOrderCurrent: number = allTableBodyRows?.length + 1;
+
+  // Because of the drag and drop feature, we cannot rely on the table row on the top to later compute the total time
+  const previousTableRow: HTMLTableRowElement | null = allTableBodyRows.find(
+    (tableRow) => {
+      //@ts-ignore
+      const passingOrderCell: HTMLTableCellElement = selectQuery(
+        ".chronometer__table-cell--body",
+        tableRow
+      );
+      const passingOrderValue: number = Number(passingOrderCell.innerText);
+
+      return passingOrderValue === passingOrderCurrent - 1;
+    }
+  );
+
+  /**
+   * Previous total amount of centiseconds from the data attribute
+   */
+  const previousTotal: number =
+    Number(previousTableRow?.getAttribute("data-total-time")) || 0;
+
+  /**
+   * Current total in centiseconds displayed on the screen
+   */
+  const currentTotal: number = Number(
+    chronometerComponent.getAttribute("current-time")
+  );
+
+  /**
+   * Time for that partial in **centiseconds**
+   */
+  const unformattedTimeForPartial: number = currentTotal - previousTotal;
+
+  const timeForPartialMain = getTimeValues(
+    Math.floor(unformattedTimeForPartial / 100)
+  );
+
+  const timeForPartialCenti = getCentisecondsValue(unformattedTimeForPartial);
+
+  function showTable(): void {
     table.classList.remove("hide");
   }
 
-  const chronometerJustStarted =
-    Number(chronometerComponent.getAttribute("current-time")) === 0;
+  showTable();
 
-  if (chronometerJustStarted) {
-    showTable();
+  function addTableRow(): void {
+    const amountOfTime = getTimeValues(Math.floor(currentTotal / 100));
+    let totalCenti: string = getCentisecondsValue(currentTotal);
+    const tableRowHTML: string = /* html */ `
+      <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-total-time="${currentTotal}">
+          <td class="chronometer__table-cell chronometer__table-cell--body">${passingOrderCurrent}</td>
+          <td class="chronometer__table-cell chronometer__table-cell--body">${timeForPartialMain.hours}:${timeForPartialMain.minutes}:${timeForPartialMain.seconds},${timeForPartialCenti} </td>
+          <td class="chronometer__table-cell chronometer__table-cell--body">${amountOfTime.hours}:${amountOfTime.minutes}:${amountOfTime.seconds},${totalCenti} </td>
+        </tr> 
+    `;
+
+    // We insert the element just inside the element, before its first child.
+    tableBody.insertAdjacentHTML("afterbegin", tableRowHTML);
   }
+
+  addTableRow();
 }
 
 function restartChronometer(event: MouseEvent): void {}
