@@ -9,13 +9,13 @@
 @forward "./components/scrollbar";
 
 
-
 //Layout
 @forward "./layout/header";
 @forward "./layout/footer";
 
 //Pages
 @forward "./pages/index";
+@forward "./pages/chronometer";
 
 //Themes
 @forward "./themes/dark-theme";
