@@ -176,6 +176,11 @@ const chronometerCSS = /* css */ `
   table-layout: fixed;
   width: 100%;
 }
+
+.chronometer__table-row--body.dragging{
+  opacity: 50%;
+}
+
 .chronometer__table-cell--head {
   text-align: left;
   padding-bottom: 15px;
@@ -363,6 +368,15 @@ class Chronometer extends HTMLElement {
     partialButton?.addEventListener("click", addPartial);
 
     restartButton?.addEventListener("click", restartChronometer);
+
+    //@ts-ignore
+    const tableBody: HTMLTableSectionElement = selectQuery(
+      "tbody",
+      //@ts-ignore
+      this.shadowRoot
+    );
+
+    tableBody?.addEventListener("dragover", dragOverContainerElement);
   }
 
   /**
@@ -626,19 +640,53 @@ function addPartial(event: MouseEvent): void {
   function addTableRow(): void {
     const amountOfTime = getTimeValues(Math.floor(currentTotal / 100));
     let totalCenti: string = getCentisecondsValue(currentTotal);
+
     const tableRowHTML: string = /* html */ `
       <tr class="chronometer__table-row chronometer__table-row--body" draggable="true" data-total-time="${currentTotal}">
           <td class="chronometer__table-cell chronometer__table-cell--body">${passingOrderCurrent}</td>
-          <td class="chronometer__table-cell chronometer__table-cell--body">${timeForPartialMain.hours}:${timeForPartialMain.minutes}:${timeForPartialMain.seconds},${timeForPartialCenti} </td>
-          <td class="chronometer__table-cell chronometer__table-cell--body">${amountOfTime.hours}:${amountOfTime.minutes}:${amountOfTime.seconds},${totalCenti} </td>
+          <td class="chronometer__table-cell chronometer__table-cell--body">${timeForPartialMain.hours}:${timeForPartialMain.minutes}:${timeForPartialMain.seconds},${timeForPartialCenti}</td>
+          <td class="chronometer__table-cell chronometer__table-cell--body">${amountOfTime.hours}:${amountOfTime.minutes}:${amountOfTime.seconds},${totalCenti}</td>
         </tr> 
     `;
 
-    // We insert the element just inside the element, before its first child.
+    // We insert the row just inside the table body, before its first child.
     tableBody.insertAdjacentHTML("afterbegin", tableRowHTML);
   }
 
   addTableRow();
+
+  function addEventListenerToPartial() {
+    //@ts-ignore
+    const latestPartial: HTMLTableRowElement = selectQuery(
+      ".chronometer__table-row--body",
+      tableBody
+    );
+
+    latestPartial.addEventListener("dragstart", addDraggingClassToElement);
+    latestPartial.addEventListener("dragend", removeDraggingClassToElement);
+  }
+
+  addEventListenerToPartial();
+}
+
+function addDraggingClassToElement(event: DragEvent) {
+  log(
+    "%cdrag start",
+    "background: darkgreen; font-size: 24px",
+    event.currentTarget
+  );
+  //@ts-ignore
+  event.target.classList.add("dragging");
+}
+
+function removeDraggingClassToElement(event: DragEvent) {
+  log(
+    "%cdrag end",
+    "background: darkblue; font-size: 24px",
+    event.currentTarget
+  );
+  //@ts-ignore
+  event.target.classList.remove("dragging");
 }
 
 function restartChronometer(event: MouseEvent): void {
@@ -703,6 +751,18 @@ function restartChronometer(event: MouseEvent): void {
     chronometerComponent
   );
 
+  //@ts-ignore
+  const arrayOfPartials: HTMLTableRowElement[] = selectQueryAll(
+    ".chronometer__table-row--body",
+    table
+  );
+  function removeEventListenersToPartials() {}
+  for (const partial of arrayOfPartials) {
+    partial.removeEventListener("dragstart", addDraggingClassToElement);
+    partial.removeEventListener("dragover", removeDraggingClassToElement);
+  }
+  removeEventListenersToPartials();
+
   const tableBody = selectQuery("tbody", table);
   function resetTable() {
     tableBody.innerHTML = "";
@@ -711,6 +771,80 @@ function restartChronometer(event: MouseEvent): void {
   resetTable();
 }
 
+function dragOverContainerElement(event: DragEvent) {
+  /**
+   * By def, dropping inside an element is disabled
+   *
+   * we do this to enable dropping
+   */
+  event.preventDefault();
+  //@ts-ignore
+  const container: HTMLTableSectionElement = event.currentTarget;
+  //@ts-ignore
+  const draggingElement: HTMLTableRowElement = selectQuery(
+    ".chronometer__table-row--body.dragging",
+    //@ts-ignore
+    container
+  );
+
+  const mouseAxisY: number = event.clientY;
+
+  function getClosestElementFromMouse(container: any, mouseAxisY: number) {
+    //@ts-ignore
+    const idleDraggableElements: HTMLTableRowElement[] = selectQueryAll(
+      ".chronometer__table-row--body:not(.dragging)",
+      //@ts-ignore
+      container
+    );
+
+    let closestElement: HTMLTableRowElement | null = null;
+    let minDistance: number = Infinity;
+
+    /**
+     * We iterate over each element and calculate its middle point
+     * on the Y axis using the `getBoundingClientRect()` method.
+     */
+    for (const element of idleDraggableElements) {
+      /***
+       * We get the top and bottom of the idle draggable element
+       */
+      const { top, bottom }: { top: number; bottom: number } =
+        element.getBoundingClientRect();
+      /*
+      We get the Y value of the element from the middle
+      */
+      const middle: number = (top + bottom) / 2;
+
+      /**
+       * We get the offset between the draggale element and the closest idle element
+       */
+      const offset: number = Math.abs(middle - mouseAxisY);
+
+      log({ middle, mouseAxisY, offset });
+
+      const isUnderneathElement: boolean = offset < minDistance;
+      if (isUnderneathElement) {
+        closestElement = element;
+        minDistance = offset;
+      }
+    }
+
+    return closestElement;
+  }
+
+  const afterElement = getClosestElementFromMouse(container, mouseAxisY);
+  const thereAreNoAfterElement = !afterElement;
+
+  const foundDraggable: boolean = !!draggingElement;
+  if (foundDraggable) {
+    if (thereAreNoAfterElement) {
+      //@ts-ignore
+      container.appendChild(draggingElement);
+    } else {
+      container.insertBefore(draggingElement, afterElement);
+    }
+  }
+}
 /**
  * We defined it so that we can use it
  */
