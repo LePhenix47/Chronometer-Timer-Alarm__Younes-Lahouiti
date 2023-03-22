@@ -808,8 +808,7 @@ function dragOverContainerElement(event: DragEvent) {
       /***
        * We get the top and bottom of the idle draggable element
        */
-      const { top, bottom }: { top: number; bottom: number } =
-        element.getBoundingClientRect();
+      const { top, bottom, height }: DOMRect = element.getBoundingClientRect();
       /*
       We get the Y value of the element from the middle
       */
@@ -822,8 +821,8 @@ function dragOverContainerElement(event: DragEvent) {
 
       log({ middle, mouseAxisY, offset });
 
-      const isUnderneathElement: boolean = offset < minDistance;
-      if (isUnderneathElement) {
+      const isAboveElement: boolean = minDistance > offset;
+      if (isAboveElement) {
         closestElement = element;
         minDistance = offset;
       }
